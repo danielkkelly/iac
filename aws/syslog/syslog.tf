@@ -45,7 +45,7 @@ resource "aws_network_interface" "syslog_ni" {
 resource "aws_instance" "syslog" {
   ami = "ami-0e38b48473ea57778"
   instance_type = "t2.micro"
-  key_name = "VTK-PK-Admin"
+  key_name = "aws-kp-admin"
   subnet_id = var.subnet_private_1_id
   security_groups = [aws_security_group.syslog_sg.id]
  
