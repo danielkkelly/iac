@@ -20,7 +20,7 @@ data "aws_subnet" "subnet_pub_1" {
 resource "aws_security_group" "bastion_sg" {
  
   vpc_id        = data.aws_vpc.vpc.id
-  name          = "sg-platform-bastion"
+  name          = "platform-bastion"
   description   = "Allows SSH"
  
   ingress {
@@ -37,31 +37,39 @@ resource "aws_security_group" "bastion_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-}
- 
-resource "aws_network_interface" "bastion_ni" {
-  subnet_id 	= data.aws_subnet.subnet_pub_1.id
-  private_ips 	= ["10.0.1.2"]
+
   tags = {
-    Name = "platform-bastion-ni"
+    Name 			= "platform-bastion"
+    Environment			= var.env
   }
 }
  
 resource "aws_instance" "bastion" {
   ami 			= "ami-0e38b48473ea57778"
   instance_type 	= "t2.nano"
-  key_name 		= "aws-kp-admin"
+  key_name 		= "aws-ec2-user"
   subnet_id 		= data.aws_subnet.subnet_pub_1.id
   security_groups 	= [aws_security_group.bastion_sg.id]
- 
-  network_interface {
-    network_interface_id = aws_network_interface.bastion_ni.id
-    device_index 	= 0
-  }
+  private_ip 		= var.private_ip
  
   tags = {
-    Name 	= "platform-bastion"
-    HostType	= "bastion"
-    Environment = var.env
+    Name 		= "platform-bastion"
+    HostType		= "bastion"
+    Environment 	= var.env
   }
+}
+
+resource "aws_eip" "bastion_eip" {
+  vpc				= true
+  instance			= aws_instance.bastion.id
+  associate_with_private_ip	= var.private_ip
+
+  tags = {
+    Name 			= "platform-bastion"
+    Environment			= var.env
+  }
+}
+
+output "bastion_public_ip" {
+  value 	= aws_eip.bastion_eip.public_ip
 }

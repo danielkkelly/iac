@@ -1,11 +1,32 @@
 provider "aws" {
   region = var.region
 }
+
+data "aws_vpc" "vpc" {
+  tags = {
+    Name        = "platform-vpc"
+  }
+}
+
+data "aws_subnet" "subnet_pri_1" {
+  vpc_id = data.aws_vpc.vpc.id
+
+  tags = {
+    Type        = "private"
+    Number      = "1"
+  }
+}
+
+data "aws_security_group" "bastion_sg" {
+  tags = {
+    Name 	= "platform-bastion"
+  }
+}
  
 resource "aws_security_group" "syslog_sg" {
  
-  vpc_id        = var.vpc_id
-  name          = "Syslog Server"
+  vpc_id        = data.aws_vpc.vpc.id
+  name          = "platform-syslog"
   description   = "SSH from bastion server"
  
   ingress {
@@ -13,7 +34,7 @@ resource "aws_security_group" "syslog_sg" {
     to_port     = 22
     protocol    = "tcp"
  
-    security_groups = [var.bastion_sg]
+    security_groups = [data.aws_security_group.bastion_sg.id]
   }
  
   ingress {
@@ -21,41 +42,26 @@ resource "aws_security_group" "syslog_sg" {
     to_port     = 514
     protocol    = "tcp"
  
-    security_groups = [var.bastion_sg]
+    security_groups = [data.aws_security_group.bastion_sg.id]
   }
- 
-  # Enable if Internet access is required (reverted)
-  #
-  #  egress {
-  #    from_port   = 0
-  #    to_port     = 0
-  #    protocol    = "-1"
-  #    cidr_blocks = ["0.0.0.0/0"]
-  #}
-}
- 
-resource "aws_network_interface" "syslog_ni" {
-  subnet_id = var.subnet_private_1_id
-  private_ips = ["10.0.1.50"]
-  tags {
-    Name = "Syslog Server PNI"
+
+  tags = {
+    Name 	= "platform-syslog"
+    Environment = var.env
   }
 }
  
 resource "aws_instance" "syslog" {
-  ami = "ami-0e38b48473ea57778"
+  ami 		= "ami-0e38b48473ea57778"
   instance_type = "t2.micro"
-  key_name = "aws-kp-admin"
-  subnet_id = var.subnet_private_1_id
+  key_name 	= "aws-ec2-user"
+  subnet_id 	= data.aws_subnet.subnet_pri_1.id
   security_groups = [aws_security_group.syslog_sg.id]
- 
-  network_interface {
-    network_interface_id = aws_network_interface.syslog_ni.id
-    device_index = 0
-  }
+  private_ip	= var.private_ip 
  
   tags = {
-    Name = "Syslog Server"
-    host-type = "syslog"
+    Name 	= "platform-syslog"
+    HostType 	= "syslog"
+    Environment = var.env
   }
 }
