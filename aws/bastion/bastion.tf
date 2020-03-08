@@ -21,7 +21,7 @@ resource "aws_security_group" "bastion_sg" {
  
   vpc_id        = data.aws_vpc.vpc.id
   name          = "platform-bastion"
-  description   = "Allows SSH"
+  description   = "SSH"
  
   ingress {
     from_port   = 22
@@ -58,7 +58,7 @@ resource "aws_instance" "bastion" {
     Environment 	= var.env
   }
 }
-
+  
 resource "aws_eip" "bastion_eip" {
   vpc				= true
   instance			= aws_instance.bastion.id
@@ -67,6 +67,15 @@ resource "aws_eip" "bastion_eip" {
   tags = {
     Name 			= "platform-bastion"
     Environment			= var.env
+  }
+}
+
+resource "null_resource" "provisioner" {
+
+  depends_on       = [aws_eip.bastion_eip, aws_instance.bastion] 
+
+  provisioner "local-exec" {
+    command 		= "ansible-playbook playbook.yaml" 
   }
 }
 
