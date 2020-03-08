@@ -24,6 +24,7 @@ resource "aws_subnet" "subnet_pub_1" {
     Name 		= "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment 	= var.env
     Type 		= "public"
+    Number		= "1"
   }
 }
 
@@ -36,6 +37,7 @@ resource "aws_subnet" "subnet_pub_2" {
     Name 		= "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment         = var.env
     Type                = "public"
+    Number		= "2"
   }
 }
 
@@ -48,6 +50,7 @@ resource "aws_subnet" "subnet_pri_1" {
     Name 		= "subnet-pri-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment         = var.env
     Type                = "private"
+    Number		= "1"
   }
 }
 
@@ -60,6 +63,7 @@ resource "aws_subnet" "subnet_pri_2" {
     Name 		= "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment         = var.env
     Type                = "private"
+    Number		= "2"
   }
 }
 
