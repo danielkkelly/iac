@@ -6,7 +6,7 @@
     wait_for:
       port: 22
       state: drained
-  - name: Add the user 'dkelly'
+  - name: Add a user for dan
     user:
       name: dan
       comment: Dan Kelly
@@ -15,4 +15,4 @@
     authorized_key:
       user: dan
       state: present
-      key: "{{ lookup('file', '~/iac/keys/dkelly.pub') }}"
+      key: "{{ lookup('file', '~/iac/keys/dan.pub') }}"
