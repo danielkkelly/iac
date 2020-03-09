@@ -70,15 +70,6 @@ resource "aws_eip" "bastion_eip" {
   }
 }
 
-resource "null_resource" "provisioner" {
-
-  depends_on       = [aws_eip.bastion_eip, aws_instance.bastion] 
-
-  provisioner "local-exec" {
-    command 		= "ansible-playbook playbook.yaml" 
-  }
-}
-
 output "bastion_public_ip" {
-  value 	= aws_eip.bastion_eip.public_ip
+  value 			= aws_eip.bastion_eip.public_ip
 }
