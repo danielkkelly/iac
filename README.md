@@ -20,18 +20,22 @@ aws/scripts requires
 
 Located at /etc/ansible/hosts
 
-`dev-bastion     ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem
-dev-syslog      ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem`
+```
+dev-bastion     ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem
+dev-syslog      ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem
+```
 
 ## ansible.cfg
 
+```
 [defaults]
 interpreter_python 	= auto_silent
 host_key_checking 	= False
-
+```
 
 # SSH Config
 
+```
 Host dev-bastion
    ProxyCommand nc `print-ip.sh` %p
 
@@ -41,3 +45,4 @@ Host dev-syslog
 
 Host *
    ForwardAgent yes
+```
