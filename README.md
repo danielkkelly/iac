@@ -1,6 +1,6 @@
 # General Requirements
 
-* terriform 
+* terriform (download from https://www.terraform.io/downloads.html and unzip in your path)
 * ansible 
 * paramiko
 
