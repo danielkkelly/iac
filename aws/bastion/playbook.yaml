@@ -15,6 +15,7 @@
   - name: Add a user for dan
     user:
       name: dan
+      password: $6$xlasbP1b55VK5M.5$jGaAwBxYFjLpc7kwREwYYjzagtWLrSPkhqGEJ2nQpMdDX62DzbLpiRDSXVf0ukKnTQMxMmPa68L2sBqX8XMdr0
       comment: Dan Kelly
       groups: wheel
   - name: Set authorized key taken from file
