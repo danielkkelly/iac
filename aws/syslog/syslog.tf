@@ -4,7 +4,7 @@ provider "aws" {
 
 data "aws_vpc" "vpc" {
   tags = {
-    Name        = "platform-vpc"
+    Type 	= "platform-vpc"
   }
 }
 
