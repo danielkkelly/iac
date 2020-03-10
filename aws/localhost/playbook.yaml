@@ -1,0 +1,10 @@
+- hosts: localhost
+  tasks:
+  - name: Remove dev-bastion from known hosts
+    known_hosts:
+      name: dev-bastion
+      state: absent
+  - name: Remove dev-syslog from known hosts
+    known_hosts:
+      name: dev-syslog
+      state: absent

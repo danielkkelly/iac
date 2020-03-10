@@ -4,7 +4,7 @@
   tasks:
   - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
     copy:
-      src: rsyslog-server.conf
+      src: conf/rsyslog/rsyslog-server.conf
       dest: /etc/rsyslog.conf
       owner: root
       group: root
@@ -13,3 +13,10 @@
     service:
       name: rsyslog
       state: restarted
+  - name: Add configuration to logrotate to rotate syslog client logs
+    lineinfile:
+      path: /etc/logrotate.d/syslog
+      regexp: '^/var/log/loghost'
+      line: '/var/log/loghost/*/*.log'
+      insertbefore: BOF
+      state: present

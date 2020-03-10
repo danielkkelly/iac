@@ -4,7 +4,7 @@
   tasks:
   - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
     copy:
-      src: rsyslog-client.conf
+      src: conf/rsyslog/rsyslog-client.conf
       dest: /etc/rsyslog.conf
       owner: root
       group: root

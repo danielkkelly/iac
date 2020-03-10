@@ -1,10 +1,4 @@
 ---
-- hosts: localhost
-  tasks:
-  - name: Remove dev-bastion from known hostsa
-    known_hosts:
-      name: dev-bastion
-      state: absent
 - hosts: dev-bastion
   become: yes
   tasks:
