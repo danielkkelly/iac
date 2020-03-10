@@ -4,16 +4,16 @@ provider "aws" {
 
 data "aws_vpc" "vpc" {
   tags = {
-    Name        = "platform-vpc"
+    Type        = "platform-vpc"
   }
 }
 
-data "aws_subnet" "subnet_pri_1" {
+data "aws_subnet" "subnet_docker" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
     Type        = "private"
-    Number      = "1"
+    Docker 	= "1"
   }
 }
 
@@ -38,10 +38,18 @@ resource "aws_security_group" "docker_sg" {
   }
  
   ingress {
-    from_port   = 514
-    to_port     = 514
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
  
+    security_groups = [data.aws_security_group.bastion_sg.id]
+  }
+
+  ingress {
+    from_port   = 9990
+    to_port     = 9990
+    protocol    = "tcp"
+
     security_groups = [data.aws_security_group.bastion_sg.id]
   }
 
@@ -55,7 +63,7 @@ resource "aws_instance" "docker" {
   ami 		= "ami-0e38b48473ea57778"
   instance_type = "t2.medium"
   key_name 	= "aws-ec2-user"
-  subnet_id 	= data.aws_subnet.subnet_pri_1.id
+  subnet_id 	= data.aws_subnet.subnet_docker.id
   security_groups = [aws_security_group.docker_sg.id]
   private_ip	= var.private_ip 
  

@@ -15,5 +15,5 @@ variable "env" {
 #
 
 variable "private_ip" {
-  default	= "10.0.2.30"
+  default	= "10.0.4.40"
 }

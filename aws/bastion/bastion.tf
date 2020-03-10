@@ -8,12 +8,12 @@ data "aws_vpc" "vpc" {
   }
 }
 
-data "aws_subnet" "subnet_pub_1" {
+data "aws_subnet" "subnet_bastion" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
     Type 	= "public"
-    Number	= "1"
+    Bastion	= "1"
   }
 }
 
@@ -48,7 +48,7 @@ resource "aws_instance" "bastion" {
   ami 			= "ami-0e38b48473ea57778"
   instance_type 	= "t2.nano"
   key_name 		= "aws-ec2-user"
-  subnet_id 		= data.aws_subnet.subnet_pub_1.id
+  subnet_id 		= data.aws_subnet.subnet_bastion.id
   security_groups 	= [aws_security_group.bastion_sg.id]
   private_ip 		= var.private_ip
  

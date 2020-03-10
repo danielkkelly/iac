@@ -27,6 +27,7 @@ resource "aws_subnet" "subnet_pub_1" {
     Environment 	= var.env
     Type 		= "public"
     Number		= "1"
+    Bastion		= "1"
   }
 }
 
@@ -52,6 +53,7 @@ resource "aws_subnet" "subnet_pri_1" {
     Environment         = var.env
     Type                = "private"
     Number		= "1"
+    Syslog		= "1"
   }
 }
 
@@ -64,6 +66,7 @@ resource "aws_subnet" "subnet_pri_2" {
     Environment         = var.env
     Type                = "private"
     Number		= "2"
+    Docker		= "1"
   }
 }
 

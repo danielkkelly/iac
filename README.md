@@ -39,6 +39,7 @@ all:
   hosts:
     dev-bastion:
     dev-syslog:
+    dev-docker:
   vars:
     ansible_user: ec2-user
     ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
@@ -62,6 +63,10 @@ Host dev-bastion
 
 Host dev-syslog
    HostName 10.0.2.20
+   ProxyCommand ssh -W %h:%p dev-bastion
+
+Host dev-docker
+   HostName 10.0.4.40
    ProxyCommand ssh -W %h:%p dev-bastion
 
 Host *
