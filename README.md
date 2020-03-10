@@ -34,8 +34,14 @@ aws/scripts requires
 Located at /etc/ansible/hosts
 
 ```
-dev-bastion     ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem
-dev-syslog      ansible_user=ec2-user   ansible_ssh_private_key_file=~/.ssh/aws-ec2-user.pem
+---
+all:
+  hosts:
+    dev-bastion:
+    dev-syslog:
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
 ```
 
 ## ansible.cfg
