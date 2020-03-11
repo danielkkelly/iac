@@ -53,6 +53,13 @@ resource "aws_security_group" "docker_sg" {
     security_groups = [data.aws_security_group.bastion_sg.id]
   }
 
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   tags = {
     Name 	= "platform-docker"
     Environment = var.env
@@ -61,7 +68,7 @@ resource "aws_security_group" "docker_sg" {
  
 resource "aws_instance" "docker" {
   ami 		= "ami-0e38b48473ea57778"
-  instance_type = "t2.medium"
+  instance_type = "t2.micro"
   key_name 	= "aws-ec2-user"
   subnet_id 	= data.aws_subnet.subnet_docker.id
   security_groups = [aws_security_group.docker_sg.id]

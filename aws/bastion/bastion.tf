@@ -21,7 +21,7 @@ resource "aws_security_group" "bastion_sg" {
  
   vpc_id        = data.aws_vpc.vpc.id
   name          = "platform-bastion"
-  description   = "SSH"
+  description   = "SSH from world"
  
   ingress {
     from_port   = 22

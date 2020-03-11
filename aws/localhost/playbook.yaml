@@ -8,3 +8,7 @@
     known_hosts:
       name: dev-syslog
       state: absent
+  - name: Remove dev-docker from known hosts
+    known_hosts:
+      name: dev-docker
+      state: absent

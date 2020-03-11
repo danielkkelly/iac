@@ -1,0 +1,24 @@
+---
+- hosts: dev-docker
+  become: yes
+  tasks:
+  - name: Install docker
+    yum:
+      name: docker
+      state: present
+  - name: Start service docker, if not started, make sure it is always enabled
+    service:
+      name: docker
+      state: started
+      enabled: yes
+  - name: Add a user for dan with example password in wheel and docker groups
+    user:
+      name: dan
+      password: $6$xlasbP1b55VK5M.5$jGaAwBxYFjLpc7kwREwYYjzagtWLrSPkhqGEJ2nQpMdDX62DzbLpiRDSXVf0ukKnTQMxMmPa68L2sBqX8XMdr0
+      comment: Dan Kelly
+      groups: wheel, docker
+  - name: Set authorized key for dan
+    authorized_key:
+      user: dan
+      state: present
+      key: "{{ lookup('file', '~/iac/keys/dan.pub') }}"
