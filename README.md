@@ -70,5 +70,6 @@ Host dev-docker
    ProxyCommand ssh -W %h:%p dev-bastion
 
 Host *
+   User ec2-user
    ForwardAgent yes
 ```
