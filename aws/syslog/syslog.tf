@@ -13,7 +13,7 @@ data "aws_subnet" "subnet_pri_1" {
 
   tags = {
     Type        = "private"
-    Number      = "1"
+    Syslog	= "1"
   }
 }
 
