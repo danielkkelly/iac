@@ -1,8 +1,5 @@
 #!/usr/local/bin/bash
 
-# Default to the bastion host for a given environment
-hostType=bastion
-
 # Default to the default environment
 env=default
 
@@ -12,7 +9,6 @@ for arg in "$@"; do
   shift
   case "$arg" in
     "--env")          set -- "$@" "-e" ;;
-    "--hostType")     set -- "$@" "-t" ;;
     *)                set -- "$@" "$arg"
   esac
 done
@@ -23,9 +19,6 @@ while getopts "e:t:" opt; do
   case $opt in
     e)
       env=$OPTARG
-      ;;
-    t)
-      hostType=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -38,10 +31,10 @@ if [ "x$env" == "x" ]; then
         exit 1;
 fi
 
-host=`aws ec2 describe-instances --profile $env --filters "Name=tag:HostType,Values=$hostType" "Name=instance-state-name,Values=running" | jq -r ".Reservations[] | .Instances[] | .PublicIpAddress"`
+host=`aws rds describe-db-clusters --profile $env | jq -r '.DBClusters[0].Endpoint'`
 
 if [ "$host" == "null" ]; then
-        echo "$hostType isn't running in $env"
+        echo "Issue finding RDS database cluster, perhaps it isn't running in $env"
         exit 1;
 else 
 	echo $host
