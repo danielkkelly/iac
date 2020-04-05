@@ -34,11 +34,12 @@ resource "aws_ssm_patch_group" "dev_patch_group" {
 }
 
 resource "aws_ssm_maintenance_window" "ssm_dev_mw" {
-  name     		     = "platform-dev-mw"
-  schedule_timezone 	     = "America/New_York"
-  schedule 		     = "cron(0 0,4,8,12,16,20 ? * * *)"
-  duration 		     = 4
-  cutoff   		     = 1
+  name     		               = "platform-dev-mw"
+  schedule_timezone 	       = "America/New_York"
+  schedule 		               = "cron(*/30 * ? * * *)"
+  duration 		               = 4
+  cutoff   		               = 1
+  allow_unassociated_targets = true
 }
 
 resource "aws_ssm_maintenance_window_target" "platform_dev_mw_target" {
@@ -61,6 +62,7 @@ resource "aws_ssm_maintenance_window_task" "platform_dev_mw_task" {
   name 		   = "Patching"
   max_concurrency  = 500
   max_errors       = "20%"
+  priority	   = 1
   service_role_arn = data.aws_iam_role.ssm_maintenance_window_role.arn
   task_arn         = "AWS-RunPatchBaseline"
   task_type        = "RUN_COMMAND"
@@ -78,11 +80,6 @@ resource "aws_ssm_maintenance_window_task" "platform_dev_mw_task" {
       parameter {
         name   = "Operation"
         values = ["Install"]
-      }
-
-      parameter {
-        name   = "SnapshotId"
-        values = [""]
       }
     }
   }

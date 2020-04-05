@@ -82,11 +82,11 @@ after creating instances associated with IAM profile::
 aws ssm describe-instance-information
 ```
 
-Checking maintenance window executions:
+Checking maintenance window details:
 
 ```
-aws ssm describe-maintenance-window-executions --window-id [maintenance window ID]
-
+aws ssm describe-maintenance-window-executions --window-id `print-mw-id.sh`
+aws ssm describe-maintenance-window-targets    --window-id `print-mw-id.sh`
 ```
 
 Viewing Compliance:
@@ -99,8 +99,14 @@ aws ssm list-compliance-summaries
 
 You need to run things in the correct order.
 
-1. iam
-2. network
-3. bastion
+1. localhost 
+2. iam
+3. network
+4. bastion
+5. ssm
 
 After creating these you could run the other scripts in whatever order you like.
+
+# References 
+
+https://aws.amazon.com/blogs/security/how-to-patch-linux-workloads-on-aws/
