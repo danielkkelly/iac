@@ -73,3 +73,34 @@ Host *
    User ec2-user
    ForwardAgent yes
 ```
+# Patch Management 
+
+We create the appropriate IAM object to allow our ins$ances to be managed by System Manager.  To verify,
+after creating instances associated with IAM profile::
+
+```
+aws ssm describe-instance-information
+```
+
+Checking maintenance window executions:
+
+```
+aws ssm describe-maintenance-window-executions --window-id [maintenance window ID]
+
+```
+
+Viewing Compliance:
+
+```
+aws ssm list-compliance-summaries
+```
+
+# Running Terraform and Ansible
+
+You need to run things in the correct order.
+
+1. iam
+2. network
+3. bastion
+
+After creating these you could run the other scripts in whatever order you like.
