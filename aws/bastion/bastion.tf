@@ -17,6 +17,10 @@ data "aws_subnet" "subnet_bastion" {
   }
 }
 
+data "aws_iam_instance_profile" "ec2_ssm_profile" {
+  name      	= "platform-ec2-ssm-profile"
+}
+
 resource "aws_security_group" "bastion_sg" {
  
   vpc_id        = data.aws_vpc.vpc.id
@@ -51,11 +55,13 @@ resource "aws_instance" "bastion" {
   subnet_id 		= data.aws_subnet.subnet_bastion.id
   security_groups 	= [aws_security_group.bastion_sg.id]
   private_ip 		= var.private_ip
+  iam_instance_profile  = data.aws_iam_instance_profile.ec2_ssm_profile.name
  
   tags = {
     Name 		= "platform-bastion"
     HostType		= "bastion"
     Environment 	= var.env
+    "Patch Group"	= var.env
   }
 }
   
