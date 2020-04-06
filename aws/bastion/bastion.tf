@@ -43,36 +43,36 @@ resource "aws_security_group" "bastion_sg" {
   }
 
   tags = {
-    Name 			= "platform-bastion"
+    Name 			      = "platform-bastion"
     Environment			= var.env
   }
 }
  
 resource "aws_instance" "bastion" {
-  ami 			= "ami-0e38b48473ea57778"
-  instance_type 	= "t2.nano"
-  key_name 		= "aws-ec2-user"
-  subnet_id 		= data.aws_subnet.subnet_bastion.id
-  security_groups 	= [aws_security_group.bastion_sg.id]
-  private_ip 		= var.private_ip
+  ami 			            = "ami-0e38b48473ea57778"
+  instance_type 	      = "t2.nano"
+  key_name 		          = var.key_pair_name
+  subnet_id 		        = data.aws_subnet.subnet_bastion.id
+  security_groups 	    = [aws_security_group.bastion_sg.id]
+  private_ip 		        = var.private_ip
   iam_instance_profile  = data.aws_iam_instance_profile.ec2_ssm_profile.name
  
   tags = {
-    Name 		= "platform-bastion"
-    HostType		= "bastion"
-    Environment 	= var.env
-    "Patch Group"	= var.env
+    Name 		            = "platform-bastion"
+    HostType		        = "bastion"
+    Environment 	      = var.env
+    "Patch Group"     	= var.env
   }
 }
   
 resource "aws_eip" "bastion_eip" {
-  vpc				= true
-  instance			= aws_instance.bastion.id
+  vpc				                = true
+  instance			            = aws_instance.bastion.id
   associate_with_private_ip	= var.private_ip
 
   tags = {
-    Name 			= "platform-bastion"
-    Environment			= var.env
+    Name 			              = "platform-bastion"
+    Environment			        = var.env
   }
 }
 

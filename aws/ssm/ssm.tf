@@ -3,27 +3,27 @@ provider "aws" {
 }
 
 resource "aws_ssm_patch_baseline" "dev_ssm_patch_baseline" {
-  name             = "platform-dev-patch-baseline"
-  description      = "Development patch baseline"
-  operating_system = "AMAZON_LINUX"
+  name             	= "platform-dev-patch-baseline"
+  description      	= "Development patch baseline"
+  operating_system 	= "AMAZON_LINUX"
 
   approval_rule {
     approve_after_days = 0
     compliance_level   = "CRITICAL"
 
     patch_filter {
-      key    = "SEVERITY"
-      values = ["Critical"]
+      key    		= "SEVERITY"
+      values 		= ["Critical"]
     }
   }
 
   approval_rule {
-    approve_after_days = 2
-    compliance_level   = "HIGH"
+    approve_after_days 	= 2
+    compliance_level   	= "HIGH"
     
     patch_filter {
-      key    = "SEVERITY"
-      values = ["Important", "Medium", "Low"]
+      key    		= "SEVERITY"
+      values 		= ["Important", "Medium", "Low"]
     }
   }
 }
@@ -34,11 +34,11 @@ resource "aws_ssm_patch_group" "dev_patch_group" {
 }
 
 resource "aws_ssm_maintenance_window" "ssm_dev_mw" {
-  name     		               = "platform-dev-mw"
-  schedule_timezone 	       = "America/New_York"
-  schedule 		               = "cron(*/30 * ? * * *)"
-  duration 		               = 4
-  cutoff   		               = 1
+  name     		             = "platform-dev-mw"
+  schedule_timezone 	       	     = "America/New_York"
+  schedule 		             = "cron(*/30 * ? * * *)"
+  duration 		             = 4
+  cutoff   		             = 1
   allow_unassociated_targets = true
 }
 
@@ -49,8 +49,8 @@ resource "aws_ssm_maintenance_window_target" "platform_dev_mw_target" {
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag:Patch Group"
-    values = ["dev"]
+    key    	= "tag:Patch Group"
+    values 	= ["dev"]
   }
 }
 
@@ -69,8 +69,8 @@ resource "aws_ssm_maintenance_window_task" "platform_dev_mw_task" {
   window_id        = aws_ssm_maintenance_window.ssm_dev_mw.id
 
   targets {
-    key    = "WindowTargetIds"
-    values = [aws_ssm_maintenance_window_target.platform_dev_mw_target.id]
+    key    	   = "WindowTargetIds"
+    values 	   = [aws_ssm_maintenance_window_target.platform_dev_mw_target.id]
   }
 
   task_invocation_parameters {
@@ -78,8 +78,8 @@ resource "aws_ssm_maintenance_window_task" "platform_dev_mw_task" {
       timeout_seconds = 600
 
       parameter {
-        name   = "Operation"
-        values = ["Install"]
+        name   	  = "Operation"
+        values    = ["Install"]
       }
     }
   }

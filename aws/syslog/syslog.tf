@@ -12,9 +12,13 @@ data "aws_subnet" "subnet_pri_1" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
-    Type        = "private"
+    Type    = "private"
     Syslog	= "1"
   }
+}
+
+data "aws_iam_instance_profile" "ec2_ssm_profile" {
+  name     = "platform-ec2-ssm-profile"
 }
 
 data "aws_security_group" "bastion_sg" {
@@ -52,16 +56,18 @@ resource "aws_security_group" "syslog_sg" {
 }
  
 resource "aws_instance" "syslog" {
-  ami 		= "ami-0e38b48473ea57778"
-  instance_type = "t2.micro"
-  key_name 	= "aws-ec2-user"
-  subnet_id 	= data.aws_subnet.subnet_pri_1.id
-  security_groups = [aws_security_group.syslog_sg.id]
-  private_ip	= var.private_ip 
+  ami 		              = "ami-0e38b48473ea57778"
+  instance_type         = "t2.micro"
+  key_name 	            = var.key_pair_name
+  subnet_id 	          = data.aws_subnet.subnet_pri_1.id
+  security_groups       = [aws_security_group.syslog_sg.id]
+  private_ip	          = var.private_ip 
+  iam_instance_profile  = data.aws_iam_instance_profile.ec2_ssm_profile.name
  
   tags = {
-    Name 	= "platform-syslog"
-    HostType 	= "syslog"
-    Environment = var.env
+    Name 	              = "platform-syslog"
+    HostType 	          = "syslog"
+    Environment         = var.env
+    "Patch Group"     	= var.env
   }
 }
