@@ -2,6 +2,15 @@ provider "aws" {
   region = var.region
 }
 
+/* 
+ * Sets up System Manager to provide automatic patching to EC2 instances.  These instances are
+ * configured to participate, having the correct IAM profile and Patch Group assigned.  Here 
+ * we create a patch baseline for different severities, assign the baseline the appropriate 
+ * patch group, which must match the Patch Group tag on the instances.  We create a maintenance
+ * window, and give it target instances (by tag).  Then we assign the run command for applying
+ * patch baselines.
+ */
+
 resource "aws_ssm_patch_baseline" "dev_ssm_patch_baseline" {
   name             = "platform-dev-patch-baseline"
   description      = "Development patch baseline"
@@ -54,6 +63,7 @@ resource "aws_ssm_maintenance_window_target" "platform_dev_mw_target" {
   }
 }
 
+// required permission set up in ../iam
 data "aws_iam_role" "ssm_maintenance_window_role" {
   name = "platform-ssm-maintenance-window-role"
 }
@@ -85,6 +95,7 @@ resource "aws_ssm_maintenance_window_task" "platform_dev_mw_task" {
   }
 }
 
+// useful for pull down information about the success or failure of the window
 output "dev_maintenance_window_id" {
   value = aws_ssm_maintenance_window.ssm_dev_mw.id
 }

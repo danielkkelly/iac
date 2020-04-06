@@ -30,3 +30,13 @@ variable "cidr_block_subnet_pri_1" {
 
 variable "cidr_block_subnet_pri_2" {
 }
+
+#
+# RDS
+#
+variable cidr_block_subnet_rds_1 {
+}
+
+variable cidr_block_subnet_rds_2 {
+}
+

@@ -8,41 +8,27 @@ data "aws_vpc" "vpc" {
   }
 }
 
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-resource "aws_subnet" "subnet_rds_1" {
-  vpc_id            = data.aws_vpc.vpc.id
-  cidr_block        = var.cidr_block_subnet_rds_1
-  availability_zone = data.aws_availability_zones.available.names[0]
-
+/*
+ * Find the subnets ids that are tagged for RDS, map these to subnets, and then
+ * iterate through those subnet ids to build a group that can later be used on
+ * instance creation
+*/
+data "aws_subnet_ids" "rds_subnet_ids" {
+  vpc_id = data.aws_vpc.vpc.id
   tags = {
-    Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment = var.env
-    Type        = "private"
-    Number      = "3"
-    RDS         = "1"
+    Type = "private"
+    RDS  = 1
   }
 }
 
-resource "aws_subnet" "subnet_rds_2" {
-  vpc_id            = data.aws_vpc.vpc.id
-  cidr_block        = var.cidr_block_subnet_rds_2
-  availability_zone = data.aws_availability_zones.available.names[1]
-
-  tags = {
-    Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment = var.env
-    Type        = "private"
-    Number      = "4"
-    RDS         = "1"
-  }
+data "aws_subnet" "rds_subnet_id" {
+  for_each = data.aws_subnet_ids.rds_subnet_ids.ids
+  id       = each.value
 }
 
 resource "aws_db_subnet_group" "subnet_group_rds" {
   name       = "platform-rds"
-  subnet_ids = [aws_subnet.subnet_rds_1.id, aws_subnet.subnet_rds_2.id]
+  subnet_ids = [for s in data.aws_subnet.rds_subnet_id : s.id]
 
   tags = {
     Name = "platform-rds"
@@ -64,8 +50,10 @@ resource "aws_security_group" "rds_sg" {
     from_port = 3306
     to_port   = 3306
     protocol  = "tcp"
-
+    
     security_groups = [data.aws_security_group.bastion_sg.id]
+
+    cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]    
   }
 
   tags = {
@@ -92,18 +80,14 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   engine_version = "5.7.mysql_aurora.2.07.1"
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
-  /*
-  availability_zones      = [data.aws_availability_zones.available.zone_ids[0], 
-                             data.aws_availability_zones.available.zone_ids[1],
-                             data.aws_availability_zones.available.zone_ids[2]]
-*/
+
   db_subnet_group_name = aws_db_subnet_group.subnet_group_rds.name
 
-  master_username = "manager"
-  master_password = "password"
+  master_username = var.master_username
+  master_password = var.master_password
 
-  backup_retention_period = 5
-  preferred_backup_window = "04:00-06:00"
+  backup_retention_period = var.backup_retention_period
+  preferred_backup_window = var.preferred_backup_window
   skip_final_snapshot     = true
 }
 
