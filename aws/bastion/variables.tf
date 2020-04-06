@@ -18,5 +18,5 @@ variable "key_pair_name" {
 #
 
 variable "private_ip" {
-  default	= "10.0.1.10"
+  default = "10.0.1.10"
 }
