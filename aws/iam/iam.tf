@@ -23,8 +23,8 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_attach" {
 }
 
 resource "aws_iam_instance_profile" "ec2_ssm_profile" {
-  role 	    = aws_iam_role.ec2_ssm_role.name
-  name      = "platform-ec2-ssm-profile"
+  role = aws_iam_role.ec2_ssm_role.name
+  name = "platform-ec2-ssm-profile"
 }
 
 resource "aws_iam_role" "ssm_maintenance_window_role" {
