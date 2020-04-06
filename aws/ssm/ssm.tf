@@ -36,7 +36,7 @@ resource "aws_ssm_patch_group" "dev_patch_group" {
 resource "aws_ssm_maintenance_window" "ssm_dev_mw" {
   name                       = "platform-dev-mw"
   schedule_timezone          = "America/New_York"
-  schedule                   = "cron(*/30 * ? * * *)"
+  schedule                   = var.mw_cron_dev
   duration                   = 4
   cutoff                     = 1
   allow_unassociated_targets = true

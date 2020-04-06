@@ -12,3 +12,7 @@ variable "env" {
 
 variable "key_pair_name" {
 }
+
+variable "mw_cron_dev" {
+  default = "cron(*/30 * ? * * *)"
+}
