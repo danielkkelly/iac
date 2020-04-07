@@ -20,3 +20,7 @@ variable "key_pair_name" {
 variable "private_ip" {
   default = "10.0.1.10"
 }
+
+variable "cidr_blocks_ingress" {
+  default = ["0.0.0.0/0"]
+}

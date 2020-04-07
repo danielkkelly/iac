@@ -2,6 +2,10 @@ provider "aws" {
   region = var.region
 }
 
+module "default_ami" {
+  source = "../ami"
+}
+
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
@@ -32,7 +36,7 @@ resource "aws_security_group" "bastion_sg" {
     to_port   = 22
     protocol  = "tcp"
 
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.cidr_blocks_ingress
   }
 
   egress {
@@ -49,7 +53,7 @@ resource "aws_security_group" "bastion_sg" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                  = "ami-0e38b48473ea57778"
+  ami                  = module.default_ami.id
   instance_type        = "t2.nano"
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_bastion.id

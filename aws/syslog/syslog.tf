@@ -2,6 +2,10 @@ provider "aws" {
   region = var.region
 }
 
+module "default_ami" {
+  source = "../ami"
+}
+
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
@@ -56,7 +60,7 @@ resource "aws_security_group" "syslog_sg" {
 }
 
 resource "aws_instance" "syslog" {
-  ami                  = "ami-0e38b48473ea57778"
+  ami                  = module.default_ami.id
   instance_type        = "t2.micro"
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_pri_1.id
