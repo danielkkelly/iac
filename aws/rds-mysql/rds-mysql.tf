@@ -50,9 +50,11 @@ resource "aws_security_group" "rds_sg" {
     from_port = 3306
     to_port   = 3306
     protocol  = "tcp"
-    
+
+    // open only to the bastion server on the public subnets 
     security_groups = [data.aws_security_group.bastion_sg.id]
 
+    // open to any on the private subnets
     cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]    
   }
 

@@ -35,7 +35,7 @@ resource "aws_security_group" "syslog_sg" {
 
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-syslog"
-  description = "SSH from bastion server"
+  description = "SSH from bastion server and private subnets"
 
   ingress {
     from_port = 22
@@ -50,7 +50,14 @@ resource "aws_security_group" "syslog_sg" {
     to_port   = 514
     protocol  = "tcp"
 
+    // open only to bastion server on the public subnets
     security_groups = [data.aws_security_group.bastion_sg.id]
+
+    // open to any on the private subnets
+    cidr_blocks = [
+      var.cidr_block_subnet_pri_1,
+      var.cidr_block_subnet_pri_2
+    ]
   }
 
   tags = {
