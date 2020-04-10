@@ -1,0 +1,53 @@
+{
+    "modules": [
+        {
+            "module": "base",
+            "action": "apply",
+            "target": ["localhost", "network", "iam", "ssm", "bastion"],
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml"
+        },
+        {
+            "module": "base",
+            "action": "destroy",
+            "target": ["bastion", "ssm", "iam", "network"],
+            "terraform": true,
+            "ansible": false
+        },
+        {
+            "module": "syslog-clients",
+            "action": "apply",
+            "target": ["bastion", "docker"],
+            "terraform": false,
+            "ansible": true,
+            "playbook": "playbook-syslog.yaml" 
+        },
+        {
+            "module": "all",
+            "action": "apply",
+            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "syslog", "rds-mysql"], 
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml" 
+        },
+        {
+            "module": "all",
+            "action": "destroy",
+            "target": ["docker", "rds-mysql", "bastion", "syslog", "ssm", "iam", "network"],
+            "terraform": true,
+            "ansible": false,
+            "playbook": "playbook.yaml" 
+        }
+    ],
+    "resources" : [
+        {
+            "target": "network",
+            "type": "vpc"   
+        },
+        {
+            "target": "bastion",
+            "type": "ec2"   
+        }
+    ]
+}

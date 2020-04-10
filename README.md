@@ -13,9 +13,10 @@ I used MacOS so it's:
 * pip install -user paramiko
 * pip install --user passlib
 
-# Path configuration
+# Environment variable configuration
 
-* Add /iac/aws/scripts to your path
+* Add IAC_HOME and point it to where you cloned this repo
+* Add $IAC_HOME/aws/scripts to your path
 
 # AWS Requirements
 
@@ -133,7 +134,7 @@ Use the --terraform and --ansible options to toggle those on (or omit for off).
 The builctl.sh script has metadata as an array of JSON objects.  Review that for
 all of the available modules and their configurations.  Currently includes "base",
 "all", and "syslog-clients".  Single modules (e.g. bastion) don't have entries 
-but you could run them as shown above to run individual modules.
+but you could run them as shown above .
 
 # References 
 

@@ -1,0 +1,15 @@
+---
+- hosts: dev-bastion
+  become: yes
+  tasks:
+  - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
+    copy:
+      src: ../syslog/conf/rsyslog/rsyslog-client.conf
+      dest: /etc/rsyslog.conf
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Restart syslog service
+    service:
+      name: rsyslog
+      state: restarted
