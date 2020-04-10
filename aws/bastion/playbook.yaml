@@ -2,10 +2,6 @@
 - hosts: dev-bastion
   become: yes
   tasks:
-  - name: Wait for port 22 to become open 
-    wait_for:
-      port: 22
-      search_regex: OpenSSH
   - name: Add a user for dan with example password
     user:
       name: dan
