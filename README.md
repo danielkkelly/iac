@@ -13,7 +13,7 @@ I used MacOS so it's:
 * pip install -user paramiko
 * pip install --user passlib
 
-# Environment variable configuration
+# Environment
 
 * Add IAC_HOME and point it to where you cloned this repo
 * Add $IAC_HOME/aws/scripts to your path
