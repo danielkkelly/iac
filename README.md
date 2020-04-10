@@ -107,7 +107,7 @@ You need to run things in the correct order.
 5. bastion
 6. docker
 7. syslog
-8. rds
+8. rds-mysql
 9. configure syslog clients
 
 After creating these you could run the other scripts in whatever order you like.
