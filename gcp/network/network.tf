@@ -1,11 +1,11 @@
 provider "google" {
-  credentials = file("../service-account.json")
+  credentials = file("~/iac/gcp/service-account.json")
   project     = "terraform-273919"
   region      = "us-east1"
 }
 
 resource "google_compute_network" "platform-vpc" {
-  name                    = "platform-network"
+  name                    = "platform-vpc"
   auto_create_subnetworks = false
 }
 
