@@ -148,7 +148,7 @@ function get_model_value {
 # because the "while read" causes issues if we process targets in the same loop
 # where underlying commands wait for input.  Additionally, this is cleaner even 
 # at the expense of another loop.
-function prepare_targets {
+function configure_targets {
 	local target=$(get_model_value $module $action "target")
 
 	if [[ "x${target}" == "x" ]] # add the module as the target
@@ -159,16 +159,21 @@ function prepare_targets {
 	fi
 }
 
-# After command line arguments are parsed, this is the mail driver for this 
-# script
-function main {
-	# Read configuration
+# Reads configuration from the model and sets the appropriate global variables.
+function configure_globals {
 	terraform=$(get_model_value $module $action "terraform")
 	ansible=$(get_model_value $module $action "ansible")
 	playbook=$(get_model_value $module $action "playbook")
+}
 
-	prepare_targets
-	for target in ${targets[@]};
+# After command line arguments are parsed, this is the mail driver for this 
+# script
+function main {
+	# Basic configuration work before processing
+	configure_globals
+	configure_targets
+
+	for target in ${targets[@]}; # execute scripts
 	do
 		if [[ $terraform == true ]]
 		then

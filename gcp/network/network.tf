@@ -1,3 +1,5 @@
+# TODO: create public subnet, NAT gateway, variables, routes
+
 provider "google" {
   credentials = file("~/iac/gcp/service-account.json")
   project     = "terraform-273919"
