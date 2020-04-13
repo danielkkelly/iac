@@ -1,3 +1,3 @@
 #!/usr/local/bin/bash
 
-print-ec2.sh --property PublicIpAddress
+print-ec2.sh $@ --property PublicIpAddress
