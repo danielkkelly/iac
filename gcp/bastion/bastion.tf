@@ -42,28 +42,18 @@ resource "google_compute_instance" "bastion" {
     }
   }
 
-  // Local SSD disk
-  scratch_disk {
-    interface = "SCSI"
-  }
-
   network_interface {
-    network = data.google_compute_network.platform_vpc.self_link
+    subnetwork = data.google_compute_subnetwork.subnet_bastion.self_link
     access_config {
       nat_ip = google_compute_address.static.address
-    }
-  }
-
-  network_interface {
-    network = "default"
-    network_ip   = google_compute_address.internal_with_subnet_and_address.self_link
-
-    access_config {
-      // Ephemeral IP
     }
   }
 
   service_account {
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
+}
+
+output "bastion_public_ip" {
+  value = google_compute_address.static.address
 }

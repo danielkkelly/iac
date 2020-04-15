@@ -2,7 +2,7 @@
 # delete default network per Google recommendations
 
 provider "google" {
-  credentials = file("$IAC_HOME/gcp/service-account.json")
+  credentials = file("~/iac/gcp/service-account.json")
   project     = "terraform-273919"
   region      = "us-east1"
 }
