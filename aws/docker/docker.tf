@@ -76,7 +76,7 @@ resource "aws_security_group" "docker_sg" {
 
 resource "aws_instance" "docker" {
   ami                  = module.default_ami.id
-  instance_type        = "t2.micro"
+  instance_type        = "t2.medium"
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_docker.id
   security_groups      = [aws_security_group.docker_sg.id]

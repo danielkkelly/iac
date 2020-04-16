@@ -1,3 +1,9 @@
+# TODO: assign internal IP?  We do this for docker instances and syslog but not bastion, typically (AWS).  
+# Not clear on the equivalent of security groups for GPC though, which allows us to give access by SG vs
+# network attributes.  We'll figure that out and then we'll decide on strategy
+
+# Replace credentials = line with export GOOGLE_CLOUD_KEYFILE_JSON={{path}}
+
 provider "google" {
   credentials = file("~/iac/gcp/service-account.json")
   project     = "terraform-273919"
@@ -34,8 +40,6 @@ resource "google_compute_instance" "bastion" {
   machine_type = "n1-standard-1"
   zone         = "us-east1-b"
 
-  tags = ["bastion"]
-
   boot_disk {
     initialize_params {
       image = data.google_compute_image.debian_image.self_link
@@ -43,6 +47,7 @@ resource "google_compute_instance" "bastion" {
   }
 
   network_interface {
+    network_ip = google_compute_address.internal_with_subnet_and_address.address
     subnetwork = data.google_compute_subnetwork.subnet_bastion.self_link
     access_config {
       nat_ip = google_compute_address.static.address
@@ -52,6 +57,8 @@ resource "google_compute_instance" "bastion" {
   service_account {
     scopes = ["userinfo-email", "compute-ro", "storage-ro"]
   }
+  
+  tags = ["bastion"]
 }
 
 output "bastion_public_ip" {

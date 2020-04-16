@@ -61,6 +61,7 @@ resource "aws_subnet" "subnet_pri_1" {
     Type        = "private"
     Number      = "1"
     Syslog      = "1"
+    MSK         = "1"
   }
 }
 
@@ -74,6 +75,7 @@ resource "aws_subnet" "subnet_pri_2" {
     Type        = "private"
     Number      = "2"
     Docker      = "1"
+    MSK         = "1"
   }
 }
 
