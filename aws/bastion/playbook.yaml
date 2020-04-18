@@ -1,6 +1,8 @@
 ---
 - hosts: dev-bastion
   become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
   tasks:
   - name: Add a user for dan with example password
     user:
@@ -12,4 +14,4 @@
     authorized_key:
       user: dan
       state: present
-      key: "{{ lookup('file', '~/iac/keys/dan.pub') }}"
+      key: "{{ lookup('file', iac_home + '/keys/dan.pub') }}"
