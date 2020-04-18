@@ -31,10 +31,16 @@ resource "aws_kms_key" "msk_kms" {
   description = "platform-msk"
 }
 
+resource aws_cloudwatch_log_group log_group_msk {
+  name              = "platform-msk"
+  retention_in_days = 14
+  kms_key_id        = aws_kms_key.msk_kms.id
+}
+
 resource "aws_msk_cluster" "platform_msk" {
   cluster_name           = "platform-msk"
-  kafka_version          = "2.1.0"
-  number_of_broker_nodes = 3
+  kafka_version          = "2.2.1"
+  number_of_broker_nodes = 2
 
   broker_node_group_info {
     instance_type   = "kafka.t3.small"
@@ -62,11 +68,7 @@ resource "aws_msk_cluster" "platform_msk" {
     broker_logs {
       cloudwatch_logs {
         enabled   = true
-        log_group = "${aws_cloudwatch_log_group.test.name}"
-      }
-      firehose {
-        enabled         = true
-        delivery_stream = "${aws_kinesis_firehose_delivery_stream.test_stream.name}"
+        log_group = aws_cloudwatch_log_group.log_group_msk.name
       }
     }
   }
@@ -77,15 +79,15 @@ resource "aws_msk_cluster" "platform_msk" {
 }
 
 output "zookeeper_connect_string" {
-  value = "${aws_msk_cluster.platform_msk.zookeeper_connect_string}"
+  value = aws_msk_cluster.platform_msk.zookeeper_connect_string
 }
 
 output "bootstrap_brokers" {
   description = "Plaintext connection host:port pairs"
-  value       = "${aws_msk_cluster.platform_msk.bootstrap_brokers}"
+  value       = aws_msk_cluster.platform_msk.bootstrap_brokers
 }
 
 output "bootstrap_brokers_tls" {
   description = "TLS connection host:port pairs"
-  value       = "${aws_msk_cluster.platform_msk.bootstrap_brokers_tls}"
+  value       = aws_msk_cluster.platform_msk.bootstrap_brokers_tls
 }
