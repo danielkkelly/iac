@@ -55,7 +55,7 @@ resource "aws_security_group" "rds_sg" {
     security_groups = [data.aws_security_group.bastion_sg.id]
 
     // open to any on the private subnets
-    cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]    
+    cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]
   }
 
   tags = {
@@ -83,7 +83,8 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 
-  db_subnet_group_name = aws_db_subnet_group.subnet_group_rds.name
+  db_subnet_group_name            = aws_db_subnet_group.subnet_group_rds.name
+  db_cluster_parameter_group_name = aws_rds_cluster_parameter_group.platform_rds_cluster_pg.name
 
   master_username = var.master_username
   master_password = var.master_password
