@@ -43,6 +43,8 @@ resource "aws_ec2_client_vpn_endpoint" "vpn_endpoint" {
   server_certificate_arn = data.aws_acm_certificate.server.arn
   split_tunnel           = true # consider disabling for added security
 
+  dns_servers = [cidrhost(data.aws_vpc.vpc.cidr_block, 2)]
+
   authentication_options {
     type                       = "certificate-authentication"
     root_certificate_chain_arn = data.aws_acm_certificate.client.arn
@@ -81,16 +83,22 @@ resource "aws_ec2_client_vpn_network_association" "vpn_subnet_assoc" {
  * and null resource to do this automatically but I haven't had time to set that
  * up.
  * https://github.com/terraform-providers/terraform-provider-aws/issues/7494
+ */
+resource "null_resource" "client_vpn_ingress" {
+  triggers = {
+    vpn_endpoint_id = aws_ec2_client_vpn_endpoint.vpn_endpoint.id
+  }
 
-  aws ec2 revoke-client-vpn-ingress --client-vpn-endpoint-id ${vpn_id} \
-                                    --target-network-cidr ${vpc_cidr_block} \
-                                    --revoke-all-groups"
+  provisioner "local-exec" {
+    command = <<EOC
+          aws ec2 authorize-client-vpn-ingress \
+                    --client-vpn-endpoint-id ${aws_ec2_client_vpn_endpoint.vpn_endpoint.id} \
+                    --target-network-cidr ${data.aws_vpc.vpc.cidr_block} \
+                    --authorize-all-groups
+    EOC
+  }
+}
 
-  aws ec2 authorize-client-vpn-ingress --client-vpn-endpoint-id ${vpn_id} \
-                                           --target-network-cidr ${vpc_cidr_block} \
-                                           --authorize-all-groups
- */ 
-
- output vpn_endpoint_id {
+output vpn_endpoint_id {
   value = aws_ec2_client_vpn_endpoint.vpn_endpoint.id
 }
