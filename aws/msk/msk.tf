@@ -34,7 +34,6 @@ resource "aws_kms_key" "msk_kms" {
 resource aws_cloudwatch_log_group log_group_msk {
   name              = "platform-msk"
   retention_in_days = 14
-  kms_key_id        = aws_kms_key.msk_kms.id
 }
 
 resource "aws_msk_cluster" "platform_msk" {
@@ -80,11 +79,6 @@ resource "aws_msk_cluster" "platform_msk" {
 
 output "zookeeper_connect_string" {
   value = aws_msk_cluster.platform_msk.zookeeper_connect_string
-}
-
-output "bootstrap_brokers" {
-  description = "Plaintext connection host:port pairs"
-  value       = aws_msk_cluster.platform_msk.bootstrap_brokers
 }
 
 output "bootstrap_brokers_tls" {

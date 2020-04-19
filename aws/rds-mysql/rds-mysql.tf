@@ -104,3 +104,16 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
 }
+
+/*
+ * Output the endpoint for RDS 
+ */
+output "rds_cluster_endpoint" {
+  description = "The cluster read and writ endpoint"
+  value       = aws_rds_cluster.platform_rds_cluster.endpoint
+}
+
+output "rds_cluster_endpoint_reader" {
+  description = "The cluster reader endpoint"
+  value       = aws_rds_cluster.platform_rds_cluster.reader_endpoint
+}

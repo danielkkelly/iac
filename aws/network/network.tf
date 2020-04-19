@@ -200,3 +200,24 @@ resource "aws_subnet" "subnet_rds_2" {
   }
 }
 
+/* 
+ * Create a subnet (could be multiple in different zones if needed) to act as a VPN
+ * endpoint.  This will host the ENIs for the VPN endpoint for easy visibility and
+ * traceability of client VPN traffic.  This subnet can be ignored if you don't 
+ * use a VPN
+ */
+
+ resource "aws_subnet" "subnet_vpn_1" {
+  vpc_id                = aws_vpc.vpc.id
+  cidr_block            = "10.0.60.0/24"
+  availability_zone     = data.aws_availability_zones.available.names[0]
+
+  tags = {
+    Name                = "subnet-vpn-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment         = var.env
+    Type                = "private"
+    Number              = "5"
+    VPN                 = "1"
+  }
+}
+
