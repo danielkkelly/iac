@@ -82,3 +82,16 @@ resource "aws_instance" "syslog" {
     "Patch Group" = var.env
   }
 }
+
+data "aws_route53_zone" "private" {
+  name         = "${var.env}.internal."
+  private_zone = true
+}
+
+resource "aws_route53_record" "syslog" {
+  zone_id = data.aws_route53_zone.private.zone_id
+  name    = "syslog.${data.aws_route53_zone.private.name}"
+  type    = "A"
+  ttl     = "300"
+  records = [var.private_ip]
+}

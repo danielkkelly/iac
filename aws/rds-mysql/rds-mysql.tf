@@ -55,9 +55,9 @@ resource "aws_security_group" "rds_sg" {
     security_groups = [data.aws_security_group.bastion_sg.id]
 
     // open to any on the private subnets
-    cidr_blocks = [var.cidr_block_subnet_pri_1, 
-                   var.cidr_block_subnet_pri_2,
-                   var.cidr_block_subnet_vpn_1,
+    cidr_blocks = [var.cidr_block_subnet_pri_1,
+      var.cidr_block_subnet_pri_2,
+      var.cidr_block_subnet_vpn_1,
 
     ]
   }
@@ -107,6 +107,27 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   identifier     = "platform-rds-cluster-${count.index}"
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
+}
+
+data "aws_route53_zone" "private" {
+  name         = "${var.env}.internal."
+  private_zone = true
+}
+
+resource "aws_route53_record" "rds_writer" {
+  zone_id = data.aws_route53_zone.private.zone_id
+  name    = "db-writer.${data.aws_route53_zone.private.name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_rds_cluster.platform_rds_cluster.endpoint]
+}
+
+resource "aws_route53_record" "rds_reader" {
+  zone_id = data.aws_route53_zone.private.zone_id
+  name    = "db-reader.${data.aws_route53_zone.private.name}"
+  type    = "CNAME"
+  ttl     = "300"
+  records = [aws_rds_cluster.platform_rds_cluster.reader_endpoint]
 }
 
 /*

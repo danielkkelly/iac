@@ -90,3 +90,16 @@ resource "aws_instance" "docker" {
     "Patch Group" = var.env
   }
 }
+
+data "aws_route53_zone" "private" {
+  name         = "${var.env}.internal."
+  private_zone = true
+}
+
+resource "aws_route53_record" "docker" {
+  zone_id = data.aws_route53_zone.private.zone_id
+  name    = "docker.${data.aws_route53_zone.private.name}"
+  type    = "A"
+  ttl     = "300"
+  records = [var.private_ip]
+}

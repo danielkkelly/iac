@@ -173,30 +173,30 @@ resource "aws_route_table_association" "rta_subnet_pri_2" {
  * Subnets for RDS servers.  These servers don't have any outbound access.
  */
 resource "aws_subnet" "subnet_rds_1" {
-  vpc_id                = aws_vpc.vpc.id
-  cidr_block            = var.cidr_block_subnet_rds_1
-  availability_zone     = data.aws_availability_zones.available.names[0]
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.cidr_block_subnet_rds_1
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name                = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment         = var.env
-    Type                = "private"
-    Number              = "3"
-    RDS			= "1"
+    Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment = var.env
+    Type        = "private"
+    Number      = "3"
+    RDS         = "1"
   }
 }
 
 resource "aws_subnet" "subnet_rds_2" {
-  vpc_id                = aws_vpc.vpc.id
-  cidr_block            = var.cidr_block_subnet_rds_2
-  availability_zone     = data.aws_availability_zones.available.names[1]
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.cidr_block_subnet_rds_2
+  availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name                = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment         = var.env
-    Type                = "private"
-    Number              = "4"
-    RDS                 = "1"
+    Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[1]}"
+    Environment = var.env
+    Type        = "private"
+    Number      = "4"
+    RDS         = "1"
   }
 }
 
@@ -207,17 +207,28 @@ resource "aws_subnet" "subnet_rds_2" {
  * use a VPN
  */
 
- resource "aws_subnet" "subnet_vpn_1" {
-  vpc_id                = aws_vpc.vpc.id
-  cidr_block            = var.cidr_block_subnet_vpn_1
-  availability_zone     = data.aws_availability_zones.available.names[0]
+resource "aws_subnet" "subnet_vpn_1" {
+  vpc_id            = aws_vpc.vpc.id
+  cidr_block        = var.cidr_block_subnet_vpn_1
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name                = "subnet-vpn-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment         = var.env
-    Type                = "private"
-    Number              = "5"
-    VPN                 = "1"
+    Name        = "subnet-vpn-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment = var.env
+    Type        = "private"
+    Number      = "5"
+    VPN         = "1"
   }
 }
 
+resource "aws_route53_zone" "private" {
+  name = "${var.env}.internal"
+
+  vpc {
+    vpc_id = aws_vpc.vpc.id
+  }
+
+  tags = {
+    Environment = var.env
+  }
+}
