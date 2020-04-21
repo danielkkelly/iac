@@ -23,8 +23,40 @@ data "aws_subnet" "msk_subnet_id" {
   id       = each.value
 }
 
+// open to specific private networks that will use the service
+locals {
+    ingress_cidr_blocks = [var.cidr_block_subnet_pri_1, 
+                           var.cidr_block_subnet_pri_2,
+                           var.cidr_block_subnet_vpn_1]
+}
+
 resource "aws_security_group" "msk_sg" {
-  vpc_id = data.aws_vpc.vpc.id
+  vpc_id      = data.aws_vpc.vpc.id
+  name        = "platform-msk"
+  description = "Kafka from private networks and vpn"
+
+  // brokers use TLS
+  ingress {
+    from_port = 9094
+    to_port   = 9094
+    protocol  = "tcp"
+
+    cidr_blocks = local.ingress_cidr_blocks
+  }
+
+  // zookeeper
+  ingress {
+    from_port = 2181
+    to_port   = 2181
+    protocol  = "tcp"
+
+    cidr_blocks = local.ingress_cidr_blocks
+  }
+
+  tags = {
+    Name        = "platform-rds"
+    Environment = var.env
+  }
 }
 
 resource "aws_kms_key" "msk_kms" {
@@ -38,7 +70,7 @@ resource aws_cloudwatch_log_group log_group_msk {
 
 resource "aws_msk_cluster" "platform_msk" {
   cluster_name           = "platform-msk"
-  kafka_version          = "2.2.1"
+  kafka_version          = "2.4.1"
   number_of_broker_nodes = 2
 
   broker_node_group_info {

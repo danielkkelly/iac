@@ -38,11 +38,13 @@ variable backup_retention_period {
 }
 
 # Variables that help allow private network access to the RDS server
-
 variable cidr_block_subnet_pri_1 {
 }
 
 variable cidr_block_subnet_pri_2 {
+}
+
+variable cidr_block_subnet_vpn_1 {
 }
 
 # To silence TF warnings

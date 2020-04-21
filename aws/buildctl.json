@@ -1,6 +1,21 @@
 {
     "modules": [
         {
+            "module": "base-vpn",
+            "action": "apply",
+            "target": ["network", "iam", "ssm", "client-vpn"],
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml"
+        },
+        {
+            "module": "base-vpn",
+            "action": "destroy",
+            "target": ["client-vpn", "ssm", "iam", "network"],
+            "terraform": true,
+            "ansible": false
+        },
+        {
             "module": "base",
             "action": "apply",
             "target": ["localhost", "network", "iam", "ssm", "bastion"],

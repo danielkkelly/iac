@@ -44,7 +44,7 @@ data "aws_security_group" "bastion_sg" {
 resource "aws_security_group" "rds_sg" {
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-rds"
-  description = "MySQL from bastion"
+  description = "MySQL from private networks and vpn"
 
   ingress {
     from_port = 3306
@@ -55,7 +55,11 @@ resource "aws_security_group" "rds_sg" {
     security_groups = [data.aws_security_group.bastion_sg.id]
 
     // open to any on the private subnets
-    cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]
+    cidr_blocks = [var.cidr_block_subnet_pri_1, 
+                   var.cidr_block_subnet_pri_2,
+                   var.cidr_block_subnet_vpn_1,
+
+    ]
   }
 
   tags = {

@@ -209,7 +209,7 @@ resource "aws_subnet" "subnet_rds_2" {
 
  resource "aws_subnet" "subnet_vpn_1" {
   vpc_id                = aws_vpc.vpc.id
-  cidr_block            = "10.0.60.0/24"
+  cidr_block            = var.cidr_block_subnet_vpn_1
   availability_zone     = data.aws_availability_zones.available.names[0]
 
   tags = {

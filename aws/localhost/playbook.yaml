@@ -12,3 +12,19 @@
     known_hosts:
       name: dev-docker
       state: absent
+  - name: Remove bastion AWS host name from known hosts
+    known_hosts:
+      name: ip-10-0-1-10.us-east-2.compute.internal
+      state: absent
+  - name: Remove bastion IP from known hosts
+    known_hosts:
+      name: 10.0.1.10
+      state: absent
+  - name: Remove syslog IP from known hosts
+    known_hosts:
+      name: 10.0.1.20
+      state: absent
+  - name: Remove docker IP from known hosts
+    known_hosts:
+      name: 10.0.1.40
+      state: absent
