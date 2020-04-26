@@ -16,7 +16,7 @@ I used MacOS so it's:
 # Environment
 
 * Add IAC_HOME and point it to where you cloned this repo
-* Add $IAC_HOME/aws/scripts to your path
+* Add $IAC_HOME/[script & aws/script && gcp script]  to your path
 
 # AWS Requirements
 
@@ -63,11 +63,11 @@ Host dev-bastion
    ProxyCommand nc `print-ip.sh` %p
 
 Host dev-syslog
-   HostName 10.0.2.20
+   HostName syslog.dev.internal
    ProxyCommand ssh -W %h:%p dev-bastion
 
 Host dev-docker
-   HostName 10.0.4.40
+   HostName docker.dev.internal
    ProxyCommand ssh -W %h:%p dev-bastion
 
 Host *

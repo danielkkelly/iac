@@ -1,1 +1,2 @@
-region = "us-east1"
+region       = "us-east1"
+project_name = "platform"

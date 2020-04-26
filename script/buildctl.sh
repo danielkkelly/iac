@@ -6,6 +6,7 @@
 # TODO: test for terraform initialization and terraform init if not done already
 # TODO: fix iam / ssn / network not available
 
+declare provider
 declare module
 declare action
 declare terraform=false
@@ -18,6 +19,7 @@ function parse_cli {
 	for arg in "$@"; do # transform long options to short ones 
 		shift
 		case "$arg" in
+			"--provider")     set -- "$@" "-c" ;;
 			"--module")       set -- "$@" "-m" ;;
 			"--action")       set -- "$@" "-a" ;;
 			"--terraform")    set -- "$@" "-t" ;;
@@ -28,8 +30,9 @@ function parse_cli {
 	done
 
 	# Parse command line options safely using getops
-	while getopts "m:a:tnp:" opt; do
+	while getopts "c:m:a:tnp:" opt; do
 		case $opt in
+			c) provider=$OPTARG ;;
 			m) module=$OPTARG ;;
 			a) action=$OPTARG ;;
 			t) terraform=true ;;
@@ -43,7 +46,7 @@ function parse_cli {
 }
 
 function check_cli { # by making sure that the requied options are supplied, etc.
-	declare -a required_opts=("module" "action")
+	declare -a required_opts=("provider" "module" "action")
 
 	for opt in ${required_opts[@]};
 	do
@@ -53,6 +56,11 @@ function check_cli { # by making sure that the requied options are supplied, etc
 			exit 1;
 		fi
 	done;
+
+	if [[ ! -d $IAC_HOME/$provider ]]
+	then
+		echo "provider \"$provider\" doens't exist"
+	fi
 }
 
 # Verify that the prerequisite environment variable exists, otherwise things don't 
@@ -99,7 +107,7 @@ function wait_for_instance {
 function exec_terraform {
 	local target=$1
 	local action=$2
-	local target_dir="$IAC_HOME/aws/$1"
+	local target_dir="$IAC_HOME/$provider/$1"
 
 	if [[ -f "$target_dir/tf.sh" ]]
 	then
@@ -112,7 +120,7 @@ function exec_terraform {
 function exec_ansible {
 	local target=$1
 	local playbook=$2
-	local playbook_file="$IAC_HOME/aws/$target/$playbook"
+	local playbook_file="$IAC_HOME/$provider/$target/$playbook"
 
 	if [[ $action == "destroy" ]] # no need to run scripts
 	then 
@@ -136,7 +144,7 @@ function get_model_value {
 	local action=$2
 	local property=$3
 
-	local value=`cat $IAC_HOME/aws/buildctl.json | 
+	local value=`cat $IAC_HOME/$provider/buildctl.json | 
 		jq -r -c ".modules[] | select(.module==\"${module}\" 
 				                  and .action==\"${action}\").$property"`
 
@@ -152,6 +160,7 @@ function get_model_value {
 # where underlying commands wait for input.  Additionally, this is cleaner even 
 # at the expense of another loop.
 function configure_targets {
+
 	local target=$(get_model_value $module $action "target")
 
 	if [[ "x${target}" == "x" ]] # add the module as the target
@@ -191,6 +200,6 @@ function main {
 }
 
 parse_cli $@
-check_cli
 check_env
+check_cli
 main

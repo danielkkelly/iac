@@ -23,23 +23,15 @@ resource "google_service_networking_connection" "private_vpc_connection" {
   reserved_peering_ranges = [google_compute_global_address.private_ip_block.name]
 }
 
-resource "google_compute_firewall" "allow_ssh" {
-  name        = "allow-ssh"
-  network     = data.google_compute_network.platform_vpc.name
-  direction   = "INGRESS"
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-  target_tags = ["ssh-enabled"]
-}
-
-// ha enabled, autogrow storage, private ip?, "database flags": lower_case_table_names = 1, backups, maintwindow interval, maint window
+// ha enabled, backups, maintwindow interval, maint window
 resource "google_sql_database_instance" "platform_db" {
   name             = "platform-${var.env}"
  
   database_version = "MYSQL_5_7"
+  disk_autoresize  = true
+  binary_log_enabled = true
   depends_on       = [google_service_networking_connection.private_vpc_connection]
+
 
   settings {
     tier              = "db-f1-micro"
@@ -55,6 +47,11 @@ resource "google_sql_database_instance" "platform_db" {
       name = "lower_case_table_names"
       value = "1"
     }
+
+    maintenance_window {
+      day = 6
+      hour = 6
+    }
   }
 }
 
@@ -62,4 +59,8 @@ resource "google_sql_user" "db_user" {
   name     = var.user
   instance = google_sql_database_instance.platform_db.name
   password = var.password
+}
+
+output "connection_name" {
+  value = google_sql_database_instance.platform_db.connection_name
 }

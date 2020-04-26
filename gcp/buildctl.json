@@ -1,0 +1,19 @@
+{
+    "modules": [
+        {
+            "module": "all",
+            "action": "apply",
+            "target": ["network", "bastion", "cloud-sql"],
+            "terraform": true,
+            "ansible": false,
+            "playbook": "playbook.yaml"
+        },
+        {
+            "module": "all",
+            "action": "destroy",
+            "target": ["cloud-sql", "bastion", "network"],
+            "terraform": true,
+            "ansible": false
+        }
+    ]
+}

@@ -40,3 +40,5 @@ variable cidr_block_subnet_rds_1 {
 }
 variable cidr_block_subnet_rds_2 {
 }
+variable cidr_block_subnet_vpn_1 {
+}
