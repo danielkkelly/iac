@@ -23,7 +23,8 @@ resource "google_project" "project" {
 
 resource "google_project_service" "service" {
   for_each = toset([
-    "compute.googleapis.com"
+    "compute.googleapis.com",
+    "servicenetworking.googleapis.com" # Cloud SQL networking
   ])
 
   service = each.key

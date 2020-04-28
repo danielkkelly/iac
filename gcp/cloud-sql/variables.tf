@@ -1,21 +1,16 @@
-#
-# Specifies the environment
-#
+variable region {}
+variable project_id {}
+variable env {}
+variable network_id {}
 
-variable region {
-}
+# Access 
+variable bastion_ip {}
 
-variable env {
-}
-
-#
 # Database defaults
-#
-
 variable user {
-    default = "manager"
+  default = "manager"
 }
 
 variable password {
-    default = "top-s3cr3t!"
+  default = "top-s3cr3t!"
 }

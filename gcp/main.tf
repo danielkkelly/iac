@@ -18,10 +18,21 @@ module "network" {
 }
 
 module "bastion" {
-  source     = "./bastion"
+  source          = "./bastion"
+  region          = var.region
+  project_id      = module.project.project_id
+  env             = var.env
+  network_id      = module.network.network_id
+  subnet_app_1_id = module.network.subnet_app_1_id
+}
+
+module cloud_sql {
+  source     = "./cloud-sql"
   region     = var.region
   project_id = module.project.project_id
   env        = var.env
+  network_id = module.network.network_id
+  bastion_ip = module.bastion.private_ip
 }
 
 output "project_name" {
@@ -33,8 +44,13 @@ output "project_id" {
 }
 
 output "bastion_instance_id" {
-    value = module.bastion.instance_id
+  value = module.bastion.instance_id
 }
+
+output "bastion_private_ip" {
+  value = module.bastion.private_ip
+}
+
 output "bastion_public_ip" {
   value = module.bastion.public_ip
 }

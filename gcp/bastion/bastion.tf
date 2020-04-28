@@ -6,20 +6,10 @@ provider "google" {
   region = var.region
 }
 
-data "google_compute_network" "platform_vpc" {
-  name    = "platform-vpc"
-  project = var.project_id
-}
-
-data "google_compute_subnetwork" "subnet_bastion" {
-  name    = "platform-app-subnet-1"
-  project = var.project_id
-}
-
 resource "google_compute_address" "internal_with_subnet_and_address" {
   name         = "platform-bastion"
   project      = var.project_id
-  subnetwork   = data.google_compute_subnetwork.subnet_bastion.id
+  subnetwork   = var.subnet_app_1_id
   address_type = "INTERNAL"
   address      = var.private_ip
   region       = var.region
@@ -49,7 +39,7 @@ resource "google_compute_instance" "bastion" {
 
   network_interface {
     network_ip = google_compute_address.internal_with_subnet_and_address.address
-    subnetwork = data.google_compute_subnetwork.subnet_bastion.self_link
+    subnetwork = var.subnet_app_1_id
     access_config {
       nat_ip = google_compute_address.static.address
     }
@@ -65,7 +55,7 @@ resource "google_compute_instance" "bastion" {
 resource "google_compute_firewall" "firewall_bastion" {
   name    = "platform-bastion"
   project = var.project_id
-  network = data.google_compute_network.platform_vpc.name
+  network = var.network_id
 
   allow {
     protocol = "icmp"
@@ -83,4 +73,8 @@ output "instance_id" {
 
 output "public_ip" {
   value = google_compute_address.static.address
+}
+
+output "private_ip" {
+  value = google_compute_address.internal_with_subnet_and_address.address
 }
