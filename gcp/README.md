@@ -5,4 +5,5 @@ In addition to the services enabled in the article we'll need to enable others, 
 ```
 gcloud services enable servicenetworking.googleapis.com
 gcloud services enable sqladmin.googleapis.com
+gcloud services enable dns.googleapis.com
 ```

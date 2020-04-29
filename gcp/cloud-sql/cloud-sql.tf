@@ -1,3 +1,5 @@
+# TODO: maint and notificaiton preferences
+
 provider "google" {
   region = var.region
 }
@@ -61,9 +63,3 @@ resource "google_sql_user" "db_user" {
   name     = var.user
   password = var.password
 }
-
-output "connection_name" {
-  value = google_sql_database_instance.platform_db.connection_name
-}
-
-# TODO: maint and notificaiton preferences

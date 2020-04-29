@@ -35,6 +35,16 @@ module cloud_sql {
   bastion_ip = module.bastion.private_ip
 }
 
+module private_dns {
+  source             = "./private-dns"
+  region             = var.region
+  project_id         = module.project.project_id
+  network_id = module.network.network_id
+  env                = var.env
+  private_ip_bastion = module.bastion.private_ip
+  private_ip_mysql   = module.cloud_sql.private_ip
+}
+
 output "project_name" {
   value = module.project.project_name
 }
@@ -47,10 +57,14 @@ output "bastion_instance_id" {
   value = module.bastion.instance_id
 }
 
+output "bastion_public_ip" {
+  value = module.bastion.public_ip
+}
+
 output "bastion_private_ip" {
   value = module.bastion.private_ip
 }
 
-output "bastion_public_ip" {
-  value = module.bastion.public_ip
+output "mysql_private_ip" {
+  value = module.cloud_sql.private_ip
 }

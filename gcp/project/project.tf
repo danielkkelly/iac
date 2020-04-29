@@ -24,7 +24,8 @@ resource "google_project" "project" {
 resource "google_project_service" "service" {
   for_each = toset([
     "compute.googleapis.com",
-    "servicenetworking.googleapis.com" # Cloud SQL networking
+    "servicenetworking.googleapis.com", # Cloud SQL networking
+    "dns.googleapis.com" # DNS
   ])
 
   service = each.key

@@ -27,6 +27,7 @@ resource "google_compute_subnetwork" "subnet_app_2" {
   network       = google_compute_network.platform_vpc.self_link
 }
 
+
 output "network_id" {
   value = google_compute_network.platform_vpc.self_link
 }
