@@ -24,12 +24,11 @@ Other packages that are required for scripts include
 * Add IAC_HOME and point it to where you cloned this repo
 * Add $IAC_HOME/[script & aws/script && gcp script]  to your path
 
-
-
-
 # Ansible
 
 ## Ansible hosts 
+
+TODO: genericize to use across providers
 
 Located at /etc/ansible/hosts
 
