@@ -1,7 +1,3 @@
-# TODO: assign internal IP?  We do this for docker instances and syslog but not bastion, typically (AWS).  
-# Not clear on the equivalent of security groups for GPC though, which allows us to give access by SG vs
-# network attributes.  We'll figure that out and then we'll decide on strategy
-
 provider "google" {
   region = var.region
 }
@@ -65,16 +61,4 @@ resource "google_compute_firewall" "firewall_bastion" {
     protocol = "tcp"
     ports    = ["22"]
   }
-}
-
-output "instance_id" {
-  value = google_compute_instance.bastion.self_link
-}
-
-output "public_ip" {
-  value = google_compute_address.static.address
-}
-
-output "private_ip" {
-  value = google_compute_address.internal_with_subnet_and_address.address
 }

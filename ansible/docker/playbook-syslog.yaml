@@ -1,10 +1,12 @@
 ---
-- hosts: dev-bastion
+- hosts: dev-docker
   become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
   tasks:
   - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
     copy:
-      src: ../syslog/conf/rsyslog/rsyslog-client.conf
+      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-client.conf'
       dest: /etc/rsyslog.conf
       owner: root
       group: root

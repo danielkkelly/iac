@@ -1,12 +1,14 @@
 ---
 - hosts: dev-syslog
   become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
   tasks:
   - name: Wait for port 22 to become open 
     wait_for_connection:
   - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
     copy:
-      src: conf/rsyslog/rsyslog-server.conf
+      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-server.conf'
       dest: /etc/rsyslog.conf
       owner: root
       group: root

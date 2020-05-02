@@ -9,9 +9,10 @@ Terraform is a single binary - put that somewhere like ~/bin or /usr/local/bin. 
 can be found in the installation guide (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
 I used MacOS so it's:
 
-* pip install -user ansible
-* pip install -user paramiko
+* pip install --user ansible
+* pip install --user paramiko
 * pip install --user passlib
+* pip install --user pymysql
 
 # Environment
 

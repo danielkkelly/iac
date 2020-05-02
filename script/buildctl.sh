@@ -120,7 +120,7 @@ function exec_terraform {
 function exec_ansible {
 	local target=$1
 	local playbook=$2
-	local playbook_file="$IAC_HOME/$provider/$target/$playbook"
+	local playbook_file="$IAC_HOME/ansible/$target/$playbook"
 
 	if [[ $action == "destroy" ]] # no need to run scripts
 	then 
