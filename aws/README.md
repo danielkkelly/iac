@@ -48,8 +48,8 @@ set IAC_HOME to wherever you put the top level directory of this project.  Then
 execute the command:
 
 ```
-./buildctl.sh --module base --action apply    # build
-./buildctl.sh --module base --action destroy  # tear down
+./buildctl.sh --provider aws --module base --terraform --ansible --action apply    # build
+./buildctl.sh --provider aws --module base --terraform --action destroy  # tear down
 ```
 
 This executes the terraform and ansible modules above in the proper order.  You 
