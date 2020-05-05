@@ -46,8 +46,8 @@ resource "aws_security_group" "docker_sg" {
   }
 
   ingress {
-    from_port = 443
-    to_port   = 443
+    from_port = 8443
+    to_port   = 8443
     protocol  = "tcp"
 
     security_groups = [data.aws_security_group.bastion_sg.id]
