@@ -86,12 +86,31 @@ function is_instance_available {
 		fi
 }
 
+# Determines whether or not the target is a virtual machine instance.  This allows us 
+# to check whether or not we need to wait for it to spin up, etc.
+function is_vm {
+	local value=`cat $IAC_HOME/$provider/buildctl.json | 
+		jq -r -c ".resources[] | select(.target==\"${target}\").type"` 
+
+	if [[ "x$value" == "x" ]]
+	then
+		return 1
+	else
+		return 0
+	fi
+}
+
 # This method wil check if there's an EC2 instance for the given target.  Not all
 # targets are EC2 instances.  This will make a CLI call for each regardless but 
 # better than managing meta data on targets, at least for now.
 function wait_for_instance {
 	local target=$1
 	local instance_id=`print-ec2.sh --hostType $target`
+
+	if ! is_vm $target 
+	then
+		return 0
+	fi
 
 	if [[ "x$instance_id" != "x" ]] # we have an EC2 instance
 	then

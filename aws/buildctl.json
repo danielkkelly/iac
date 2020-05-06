@@ -57,12 +57,16 @@
     ],
     "resources" : [
         {
-            "target": "network",
-            "type": "vpc"   
+            "target": "bastion",
+            "type": "vm"   
         },
         {
-            "target": "bastion",
-            "type": "ec2"   
+            "target": "docker",
+            "type": "vm"
+        },
+        {
+            "target": "syslog",
+            "type": "vm"
         }
     ]
 }

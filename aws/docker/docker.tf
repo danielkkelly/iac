@@ -32,7 +32,6 @@ data "aws_security_group" "bastion_sg" {
 }
 
 resource "aws_security_group" "docker_sg" {
-
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-docker"
   description = "SSH from bastion server"
