@@ -7,7 +7,6 @@
   - name: Add a user for dan with example password
     user:
       name: dan
-      password: $6$xlasbP1b55VK5M.5$jGaAwBxYFjLpc7kwREwYYjzagtWLrSPkhqGEJ2nQpMdDX62DzbLpiRDSXVf0ukKnTQMxMmPa68L2sBqX8XMdr0
       comment: Dan Kelly
       groups: wheel
   - name: Set authorized key for dan
@@ -15,3 +14,7 @@
       user: dan
       state: present
       key: "{{ lookup('file', iac_home + '/keys/dan.pub') }}"
+  - name: Unlock password and set it to empty for Dan
+    command: passwd -d dan
+  - name: Expire password for Dan
+    command: chage -d 0 dan
