@@ -4,7 +4,6 @@
 # JSON model below.
 
 # TODO: test for terraform initialization and terraform init if not done already
-# TODO: fix iam / ssn / network not available
 
 declare provider
 declare module
