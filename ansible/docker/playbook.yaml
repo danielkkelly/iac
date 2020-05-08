@@ -3,6 +3,8 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+    users:
+     - dan
   tasks:
   - name: Install docker
     yum:
@@ -13,14 +15,11 @@
       name: docker
       state: started
       enabled: yes
-  - name: Add a user for dan with example password in wheel and docker groups
-    user:
-      name: dan
-      password: $6$xlasbP1b55VK5M.5$jGaAwBxYFjLpc7kwREwYYjzagtWLrSPkhqGEJ2nQpMdDX62DzbLpiRDSXVf0ukKnTQMxMmPa68L2sBqX8XMdr0
-      comment: Dan Kelly
-      groups: wheel, docker
-  - name: Set authorized key for dan
-    authorized_key:
-      user: dan
-      state: present
-      key: "{{ lookup('file', iac_home + '/keys/dan.pub') }}"
+  - include_tasks: "../users/playbook-admin.yaml"
+    loop: "{{ users }}"
+    loop_control:
+      loop_var: user
+  - include_tasks: "../users/playbook-docker.yaml"
+    loop: "{{ users }}"
+    loop_control:
+      loop_var: user

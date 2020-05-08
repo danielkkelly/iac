@@ -3,18 +3,10 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+    users:
+     - dan
   tasks:
-  - name: Add a user for dan with example password
-    user:
-      name: dan
-      comment: Dan Kelly
-      groups: wheel
-  - name: Set authorized key for dan
-    authorized_key:
-      user: dan
-      state: present
-      key: "{{ lookup('file', iac_home + '/keys/dan.pub') }}"
-  - name: Unlock password and set it to empty for Dan
-    command: passwd -d dan
-  - name: Expire password for Dan
-    command: chage -d 0 dan
+    - include_tasks: "../users/playbook-admin.yaml"
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user

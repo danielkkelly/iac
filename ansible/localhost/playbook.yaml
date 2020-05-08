@@ -1,24 +1,28 @@
 - hosts: localhost
   tasks:
-  - name: Remove dev-bastion from known hosts
+  - name: Remove bastion by SSH alias
     known_hosts:
       name: dev-bastion
       state: absent
-  - name: Remove dev-syslog from known hosts
+  - name: Remove bastion by host name
+    known_hosts:
+      name: bastion.dev.internal
+      state: absent
+  - name: Remove syslog by SSH alias
     known_hosts:
       name: dev-syslog
       state: absent
-  - name: Remove dev-docker from known hosts
+  - name: Remove syslog by host name
+    known_hosts:
+      name: syslog.dev.internal
+      state: absent
+  - name: Remove docker by SSH alias
     known_hosts:
       name: dev-docker
       state: absent
   - name: Remove docker by host name
     known_hosts:
       name: docker.dev.internal
-      state: absent
-  - name: Remove docker by host name
-    known_hosts:
-      name: syslog.dev.internal
       state: absent
   - name: Remove bastion IP from known hosts
     known_hosts:
