@@ -3,7 +3,7 @@
 * terriform (download from https://www.terraform.io/downloads.html and unzip in your path)
 * ansible 
 * paramiko
-* passlib (allows creating password hashes for users)
+* passlib (allows creating password hashes for users, not strictly required)
 
 Terraform is a single binary - put that somewhere like ~/bin or /usr/local/bin.  Ansible and paramiko instructions
 can be found in the installation guide (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
