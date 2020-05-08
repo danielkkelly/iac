@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+    users:
+      - dan
+  tasks:
+    - include_tasks: "playbook-admin.yaml"
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user
+
+
+- hosts: dev-docker
+  become: yes
+  vars:
+    users:
+      - dan
+  tasks:
+    - include_tasks: "playbook-docker.yaml"
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user

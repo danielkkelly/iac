@@ -1,0 +1,6 @@
+---
+- name: Add user "{{ user }}" to the docker group
+  user:
+    name: "{{ user }}"
+    groups: docker
+    append: yes

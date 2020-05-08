@@ -1,0 +1,14 @@
+---
+- name: Add an admin user for "{{ user }}"
+  user:
+    name: "{{ user }}"
+    groups: wheel
+- name: Set authorized key
+  authorized_key:
+    user: "{{ user }}"
+    state: present
+    key: "{{ lookup('file', iac_home + '/keys/{{ user }}.pub') }}"
+- name: Unlock password and set it to empty
+  command: passwd -d "{{ user }}"
+- name: Expire password
+  command: chage -d 0 "{{ user }}"
