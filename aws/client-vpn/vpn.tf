@@ -1,7 +1,10 @@
 # Generate a CA and associated server and client public and private keys.  To do follow
 # https://docs.aws.amazon.com/vpn/latest/clientvpn-admin/authentication-authorization.html#mutual
-# The outputs get uploaded to the AWS ACM.  After this is done you'll have two ACM certs and
-# these are referenced below as "server" and "client1.domain.tld" (keeping with the AWS example).
+# The outputs get uploaded to the AWS ACM.  After this is done you'll have an ACM cert and
+# referred to as "server".  
+
+# You don't need to also upload the client as stated in the AWS instructions.  You'll notice that 
+# we don't use the client certificate below.
 
 # After the certificates are squared away you'll run terraform to build out the endpoint and add
 # network associations.  This script will find all of your private subnets and add them.
@@ -17,11 +20,6 @@ provider "aws" {
 
 data "aws_acm_certificate" "server" {
   domain   = "server"
-  statuses = ["ISSUED"]
-}
-
-data "aws_acm_certificate" "client" {
-  domain   = "client1.domain.tld"
   statuses = ["ISSUED"]
 }
 
@@ -47,7 +45,7 @@ resource "aws_ec2_client_vpn_endpoint" "vpn_endpoint" {
 
   authentication_options {
     type                       = "certificate-authentication"
-    root_certificate_chain_arn = data.aws_acm_certificate.client.arn
+    root_certificate_chain_arn = data.aws_acm_certificate.server.arn
   }
 
   connection_log_options {
@@ -80,9 +78,7 @@ resource "aws_ec2_client_vpn_network_association" "vpn_subnet_assoc" {
 /*
  * After the resources are created, we need to add ingress for the VPN.  This isn't 
  * yet available as a feature of terraform.  You could use a local provisioner
- * and null resource to do this automatically but I haven't had time to set that
- * up.
- * https://github.com/terraform-providers/terraform-provider-aws/issues/7494
+ * and null resource to do this automatically, as show below.
  */
 resource "null_resource" "client_vpn_ingress" {
   triggers = {
