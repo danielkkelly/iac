@@ -1,3 +1,5 @@
+provider "tls" {}
+
 resource "tls_private_key" "ca_key" {
   algorithm = "RSA"
 }

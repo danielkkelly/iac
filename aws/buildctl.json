@@ -39,6 +39,21 @@
             "playbook": "playbook-syslog.yaml" 
         },
         {
+            "module": "lb",
+            "action": "apply",
+            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "alb"], 
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml" 
+        },
+        {
+            "module": "lb",
+            "action": "destroy",
+            "target": ["alb", "docker", "bastion", "ssm", "iam", "network"],
+            "terraform": true,
+            "ansible": false
+        },
+        {
             "module": "all",
             "action": "apply",
             "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "ecr", "syslog", "rds-mysql"], 
