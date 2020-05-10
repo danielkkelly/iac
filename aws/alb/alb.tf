@@ -1,5 +1,12 @@
-# Error: Failure configuring LB attributes: InvalidConfigurationRequest: Access Denied for bucket: platform-lb-bucket. Please check S3bucket permission
-#        status code: 400, request id: a1a46d88-9a17-4493-ad60-c6463c66ec9e
+//TODO: health checks on 8080
+// add ingress for 80 and 443
+// add ingress on docker instance from LB (or network)
+// add egress on LB to docker
+// variables
+
+# Error: error deleting S3 Bucket (platform-lb-bucket): BucketNotEmpty: The bucket you tried to delete is not empty
+#        status code: 409, request id: 743E934804A20FDB, host id: QfKxUnNkGJn2R2+2uHBac4l9o90QBpDGplTwKsz5OoOHx05oi9C5ArwshbBnRs+vn6qJWP84TU4=
+#
 
 provider "aws" {
   region = var.region
@@ -14,10 +21,9 @@ data "aws_vpc" "vpc" {
 }
 
 /*
- * Find the subnets ids that are tagged public, map these to subnets, and then
- * iterate through those subnet ids to build a group that can later be used on
- * instance creation
-*/
+ * Find the subnets ids that are tagged public, map these to subnets, and then iterate through 
+ * those subnet ids to build a group that can later be used on instance creation. 
+ */
 data "aws_subnet_ids" "public_subnet_ids" {
   vpc_id = data.aws_vpc.vpc.id
   tags = {
@@ -30,11 +36,52 @@ data "aws_subnet" "public_subnet_id" {
   id       = each.value
 }
 
-// for logs
+
+/* 
+ * Create an S3 bucket for logs and attach the appropriate policy.  Note the variable for 
+ * the region-specific load balancer account.  More inforomation available in the docs.
+ * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
+ */
 resource "aws_s3_bucket" "lb_s3_bucket" {
   bucket = "platform-lb-bucket"
   acl    = "private"
-  
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${var.alb_account}:root"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::platform-lb-bucket/*"
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+      },
+      "Action": "s3:PutObject",
+      "Resource": "arn:aws:s3:::platform-lb-bucket/*",
+      "Condition": {
+        "StringEquals": {
+          "s3:x-amz-acl": "bucket-owner-full-control"
+        }
+      }
+    },
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "delivery.logs.amazonaws.com"
+      },
+      "Action": "s3:GetBucketAcl",
+      "Resource": "arn:aws:s3:::platform-lb-bucket"
+    }
+  ]
+}
+EOF
+
   tags = {
     Name        = "platform-lb-bucket"
     Environment = var.env
@@ -54,6 +101,9 @@ resource "aws_security_group" "lb_sg" {
   }
 }
 
+/* 
+ * Create the load balancer. 
+ */
 resource "aws_lb" "platform_lb" {
   name               = "platform-lb"
   internal           = false
@@ -72,13 +122,41 @@ resource "aws_lb" "platform_lb" {
   }
 }
 
+/* 
+ * Create a target group.  This is where we define groups where listeners will forward traffice
+ * based on their rules.  This is also where health checks are specified.
+ * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
+ */
 resource "aws_lb_target_group" "platform_lb_tg" {
   name     = "platform-lb"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.vpc.id
 }
 
+/* 
+ * Attach the target group to an instance or autoscaling group.  We'll connect this one to our 
+ * docker instance
+ */
+
+data "aws_instance" "docker" {
+  instance_tags = {
+    Name        = "platform-docker"
+  }
+}
+
+resource "aws_alb_target_group_attachment" "docker_tga" {
+  target_group_arn = aws_lb_target_group.platform_lb_tg.arn
+  target_id        = data.aws_instance.docker.id
+  port             = 8080
+}
+
+/* 
+ * Create the self-signed TLS certificate and move it to the AWS Certificate Manager.  You could do 
+ * this manually as well.  If you have a production certificate you would upload it to the ACM
+ * and then look it up by name and apply it here.  The client-vpn module has an example of looking
+ * up a cert.
+ */
 resource "tls_private_key" "private_key" {
   algorithm = "RSA"
 }
@@ -106,6 +184,9 @@ resource "aws_acm_certificate" "cert" {
   certificate_body = tls_self_signed_cert.cert.cert_pem
 }
 
+/*
+ * Listeners to listing on 80 and 443
+ */
 resource "aws_lb_listener" "lb_listener_https" {
   load_balancer_arn = aws_lb.platform_lb.arn
   port              = "443"
@@ -134,8 +215,4 @@ resource "aws_lb_listener" "lb_listener_http" {
       status_code = "HTTP_301"
     }
   }
-}
-
-output "lb_dns_name" {
-    value = aws_lb.platform_lb.dns_name
 }
