@@ -40,41 +40,46 @@ resource "aws_security_group" "docker_sg" {
   name        = "platform-docker"
   description = "SSH from bastion server"
 
-  ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
-
-    security_groups = [data.aws_security_group.bastion_sg.id]
-  }
-
-  ingress {
-    from_port = 8443
-    to_port   = 8443
-    protocol  = "tcp"
-
-    security_groups = [data.aws_security_group.bastion_sg.id]
-  }
-
-  ingress {
-    from_port = 9990
-    to_port   = 9990
-    protocol  = "tcp"
-
-    security_groups = [data.aws_security_group.bastion_sg.id]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
   tags = {
     Name        = "platform-docker"
     Environment = var.env
   }
+}
+
+resource "aws_security_group_rule" "bastion_ssh_sgr" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  source_security_group_id = data.aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.docker_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_http_sgr" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = data.aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.docker_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_mgmt_sgr" {
+  type                     = "ingress"
+  from_port                = 9990
+  to_port                  = 9990
+  protocol                 = "tcp"
+  source_security_group_id = data.aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.docker_sg.id
+}
+
+resource "aws_security_group_rule" "bastion_egress_sgr" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.docker_sg.id
 }
 
 resource "aws_instance" "docker" {

@@ -1,13 +1,3 @@
-//TODO: health checks on 8080
-// add ingress for 80 and 443
-// add ingress on docker instance from LB (or network)
-// add egress on LB to docker
-// variables
-
-# Error: error deleting S3 Bucket (platform-lb-bucket): BucketNotEmpty: The bucket you tried to delete is not empty
-#        status code: 409, request id: 743E934804A20FDB, host id: QfKxUnNkGJn2R2+2uHBac4l9o90QBpDGplTwKsz5OoOHx05oi9C5ArwshbBnRs+vn6qJWP84TU4=
-#
-
 provider "aws" {
   region = var.region
 }
@@ -36,16 +26,16 @@ data "aws_subnet" "public_subnet_id" {
   id       = each.value
 }
 
-
 /* 
  * Create an S3 bucket for logs and attach the appropriate policy.  Note the variable for 
  * the region-specific load balancer account.  More inforomation available in the docs.
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
  */
 resource "aws_s3_bucket" "lb_s3_bucket" {
-  bucket = "platform-lb-bucket"
-  acl    = "private"
-  policy = <<EOF
+  bucket        = "platform-lb-bucket"
+  force_destroy = true
+  acl           = "private"
+  policy        = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -88,12 +78,33 @@ EOF
   }
 }
 
-#TODO: update
 resource "aws_security_group" "lb_sg" {
 
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-lb"
   description = "HTTPS from world"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port = 8080
+    to_port   = 8080
+    protocol  = "tcp"
+    cidr_blocks = [var.cidr_block_subnet_pri_1,
+                   var.cidr_block_subnet_pri_2]
+  }
 
   tags = {
     Name        = "platform-lb"
@@ -141,7 +152,7 @@ resource "aws_lb_target_group" "platform_lb_tg" {
 
 data "aws_instance" "docker" {
   instance_tags = {
-    Name        = "platform-docker"
+    Name = "platform-docker"
   }
 }
 
@@ -215,4 +226,20 @@ resource "aws_lb_listener" "lb_listener_http" {
       status_code = "HTTP_301"
     }
   }
+}
+
+data "aws_security_group" "docker_sg" {
+  tags = {
+    Name = "platform-docker"
+  }
+}
+
+// Update the docker server to allow ingress
+resource "aws_security_group_rule" "lb_http_sgr" {
+  type                     = "ingress"
+  from_port                = 8080
+  to_port                  = 8080
+  protocol                 = "tcp"
+  source_security_group_id = aws_security_group.lb_sg.id
+  security_group_id        = data.aws_security_group.docker_sg.id
 }
