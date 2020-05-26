@@ -17,6 +17,6 @@ variable "key_pair_name" {
 # Network
 #
 
-variable "private_ip" {
-  default = "10.0.4.40"
+variable "host_number" {
+  default = "40"
 }

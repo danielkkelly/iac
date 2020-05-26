@@ -6,13 +6,17 @@ module "default_ami" {
   source = "../ami"
 }
 
+locals {
+  private_ip = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host_number)
+}
+
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
   }
 }
 
-data "aws_subnet" "subnet_pri_1" {
+data "aws_subnet" "subnet_syslog" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
@@ -70,9 +74,9 @@ resource "aws_instance" "syslog" {
   ami                  = module.default_ami.id
   instance_type        = "t2.micro"
   key_name             = var.key_pair_name
-  subnet_id            = data.aws_subnet.subnet_pri_1.id
+  subnet_id            = data.aws_subnet.subnet_syslog.id
   security_groups      = [aws_security_group.syslog_sg.id]
-  private_ip           = var.private_ip
+  private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   tags = {
@@ -93,5 +97,5 @@ resource "aws_route53_record" "syslog" {
   name    = "syslog.${data.aws_route53_zone.private.name}"
   type    = "A"
   ttl     = "300"
-  records = [var.private_ip]
+  records = [local.private_ip]
 }

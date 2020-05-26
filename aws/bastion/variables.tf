@@ -17,8 +17,8 @@ variable "key_pair_name" {
 # Network
 #
 
-variable "private_ip" {
-  default = "10.0.1.10"
+variable "private_ip" { # .10 on whatever network is designated
+  default = "10"
 }
 
 variable "cidr_blocks_ingress" {

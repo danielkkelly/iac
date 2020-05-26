@@ -6,6 +6,10 @@ module "default_ami" {
   source = "../ami"
 }
 
+locals {
+  private_ip = cidrhost(data.aws_subnet.subnet_docker.cidr_block, var.host_number)
+}
+
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
@@ -79,7 +83,7 @@ resource "aws_instance" "docker" {
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_docker.id
   security_groups      = [aws_security_group.docker_sg.id]
-  private_ip           = var.private_ip
+  private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   tags = {
@@ -100,5 +104,5 @@ resource "aws_route53_record" "docker" {
   name    = "docker.${data.aws_route53_zone.private.name}"
   type    = "A"
   ttl     = "300"
-  records = [var.private_ip]
+  records = [local.private_ip]
 }

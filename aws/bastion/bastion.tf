@@ -6,6 +6,10 @@ module "default_ami" {
   source = "../ami"
 }
 
+locals {
+  private_ip = cidrhost(data.aws_subnet.subnet_bastion.cidr_block, var.host_number)
+}
+
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
@@ -58,7 +62,7 @@ resource "aws_instance" "bastion" {
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_bastion.id
   security_groups      = [aws_security_group.bastion_sg.id]
-  private_ip           = var.private_ip
+  private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   tags = {
@@ -72,7 +76,7 @@ resource "aws_instance" "bastion" {
 resource "aws_eip" "bastion_eip" {
   vpc                       = true
   instance                  = aws_instance.bastion.id
-  associate_with_private_ip = var.private_ip
+  associate_with_private_ip = local.private_ip
 
   tags = {
     Name        = "platform-bastion"
@@ -90,7 +94,7 @@ resource "aws_route53_record" "bastion" {
   name    = "bastion.${data.aws_route53_zone.private.name}"
   type    = "A"
   ttl     = "300"
-  records = [var.private_ip]
+  records = [local.private_ip]
 }
 
 output "bastion_public_ip" {

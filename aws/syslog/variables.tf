@@ -17,8 +17,8 @@ variable "key_pair_name" {
 # Network
 #
 
-variable "private_ip" {
-  default = "10.0.2.20"
+variable "host_number" {
+  default = "20"
 }
 
 # Variables that help allow private network access to the RDS server
