@@ -17,7 +17,7 @@ variable "key_pair_name" {
 # Network
 #
 
-variable "private_ip" { # .10 on whatever network is designated
+variable "host_number" { # .10 on whatever network is designated
   default = "10"
 }
 
