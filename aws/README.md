@@ -5,6 +5,38 @@
 * Install aws cli (v2)
 * Configure aws (~/.aws/credentials and config)
 
+# AWS Configuration
+
+AWS allows the definition of different credientials and profiles.  Some of the scripts in this project 
+rely on that to determine the target environment.  Example of a ~/.aws/credentials file:
+
+```
+[default]
+aws_access_key_id=your_key_id
+aws_secret_access_key=your_access_key
+
+[dev]
+aws_access_key_id=your_key_id
+aws_secret_access_key=your_access_key
+
+[test]
+aws_access_key_id=your_key_id
+aws_secret_access_key=your_access_key
+```
+
+And ~/.aws/config:
+
+```
+[default]
+region=us-east-2
+
+[profile dev]
+region=us-east-2
+
+[profile test]
+region=us-east-2
+```
+
 # Patch Management 
 
 We create the appropriate IAM object to allow our ins$ances to be managed by System Manager.  To verify,
@@ -26,46 +58,6 @@ Viewing Compliance:
 ```
 aws ssm list-compliance-summaries
 ```
-
-# Running Terraform and Ansible
-
-You need to run things in the correct order.
-
-1. localhost 
-2. iam
-3. network
-4. ssm
-5. bastion
-6. docker
-7. syslog
-8. rds-mysql
-9. configure syslog clients
-
-After creating these you could run the other scripts in whatever order you like.
-
-You could also use buildctl.sh for this purpose.  If you decide to use that then
-set IAC_HOME to wherever you put the top level directory of this project.  Then
-execute the command:
-
-```
-./buildctl.sh --provider aws --module base --terraform --ansible --action apply    # build
-./buildctl.sh --provider aws --module base --terraform --action destroy  # tear down
-```
-
-This executes the terraform and ansible modules above in the proper order.  You 
-could also use the command below to execute a single module, in this case the 
-bastion server.
-
-```
-./buildctl.sh --module bastion --action apply --terraform --ansible
-```
-
-Use the --terraform and --ansible options to toggle those on (or omit for off).
-
-The builctl.sh script has metadata as an array of JSON objects.  Review that for
-all of the available modules and their configurations.  Currently includes "base",
-"all", and "syslog-clients".  Single modules (e.g. bastion) don't have entries 
-but you could run them as shown above .
 
 # References 
 

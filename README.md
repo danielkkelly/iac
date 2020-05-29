@@ -28,13 +28,12 @@ Other packages that are required for scripts include
 
 ## Ansible hosts 
 
-TODO: genericize to use across providers
-
-Located at /etc/ansible/hosts
+Located at /etc/ansible/hosts.  The stanzas below specify the same infrastructure across multiple
+environments.
 
 ```
 ---
-all:
+dev-all:
   hosts:
     dev-bastion:
     dev-syslog:
@@ -42,6 +41,18 @@ all:
   vars:
     ansible_user: ec2-user
     ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
+test-all:
+  hosts:
+    test-bastion:
+    test-syslog:
+    test-docker:
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
+  children:
+    syslog-clients:
+      test-bastion:
+      test-docker:
 ```
 
 ## ansible.cfg
@@ -67,6 +78,17 @@ Host dev-syslog
 Host dev-docker
    HostName docker.dev.internal
    ProxyCommand ssh -W %h:%p dev-bastion
+
+Host test-bastion
+   ProxyCommand nc `print-ip.sh --env test` %p
+
+Host test-syslog
+   HostName syslog.test.internal
+   ProxyCommand ssh -W %h:%p test-bastion
+
+Host test-docker
+   HostName docker.test.internal
+   ProxyCommand ssh -W %h:%p test-bastion
 
 Host *
    User ec2-user
