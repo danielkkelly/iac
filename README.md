@@ -1,3 +1,13 @@
+# Overview
+
+The goal of this project, outside of my own source control management related to my own learning,
+is to provide some useful examples for others who are coming up the learning curve on infrastructure
+as code using AWS and GCP.
+
+# Topologies
+
+TODO
+
 # General Requirements
 
 * terriform (download from https://www.terraform.io/downloads.html and unzip in your path)
