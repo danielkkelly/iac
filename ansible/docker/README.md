@@ -1,0 +1,1 @@
+https://medium.com/better-programming/docker-centralized-logging-with-syslog-97b9c147bd30

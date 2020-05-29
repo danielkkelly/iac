@@ -11,6 +11,7 @@ declare action
 declare terraform=false
 declare ansible=false
 declare playbook="playbook.yaml"
+declare env="dev"
 
 declare -a targets=()
 
@@ -24,12 +25,13 @@ function parse_cli {
 			"--terraform")    set -- "$@" "-t" ;;
 			"--ansible")      set -- "$@" "-n" ;;
 			"--playbook")     set -- "$@" "-p" ;;
+			"--env")          set -- "$@" "-e" ;;
 			*)                set -- "$@" "$arg"
 		esac
 	done
 
 	# Parse command line options safely using getops
-	while getopts "c:m:a:tnp:" opt; do
+	while getopts "c:m:a:tnp:e:" opt; do
 		case $opt in
 			c) provider=$OPTARG ;;
 			m) module=$OPTARG ;;
@@ -37,6 +39,7 @@ function parse_cli {
 			t) terraform=true ;;
 			n) ansible=true ;;
 			p) playbook=$OPTARG ;;
+			e) env=$OPTARG ;;
 			\?)
 				echo "Invalid option: -$OPTARG" >&2
 				;;
@@ -149,7 +152,8 @@ function exec_ansible {
 	then
 		if [[ -f $playbook_file ]] # run the playbook
 		then
-			ansible-playbook $playbook_file
+			ansible-playbook $playbook_file \
+				--extra-vars "@$IAC_HOME/ansible/env-$env.json"
 		fi
 	fi
 }
