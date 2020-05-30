@@ -3,6 +3,7 @@
 The project is organized into providers, modules, keys, and scripts.  Configuration scripts 
 run in parallel to modules but are stored in the "ansible" top level directory.
 
+```
 .
 ├── ansible
 │   ├── module1
@@ -15,6 +16,7 @@ run in parallel to modules but are stored in the "ansible" top level directory.
 │   └── module2
 ├── keys
 └── script
+```
 
 ## Ansible
 
