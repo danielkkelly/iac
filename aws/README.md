@@ -5,6 +5,11 @@
 * Install aws cli (v2)
 * Configure aws (~/.aws/credentials and config)
 
+# Create a KeyPair in whatever region(s) you will use
+
+AWS uses a key pair to default the default SSH keys for a newly created EC2 instance.  You'll need to 
+create a key pair and pull it down for logging into the instance and use with Ansible.
+
 # AWS Configuration
 
 AWS allows the definition of different credientials and profiles.  Some of the scripts in this project 
