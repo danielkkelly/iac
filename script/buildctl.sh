@@ -3,8 +3,6 @@
 # targets Run terraform or ansible for each target based on the configuration in 
 # JSON model below.
 
-# TODO: test for terraform initialization and terraform init if not done already
-
 declare provider
 declare module
 declare action
