@@ -104,7 +104,7 @@ Host *
 ```
 # Project Framework and Tools
 
-[Framework] (script/README.md) 
+[Project Framework and Tools](script/README.md) 
 
 # Provider Specific Documentation
 
