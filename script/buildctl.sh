@@ -149,7 +149,7 @@ function exec_terraform {
 		terraform workspace select $env
 
 		# execute action
-		./tf.sh $action 
+		./tf.sh $action $env 
 	fi
 }
 

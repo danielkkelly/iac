@@ -1,3 +1,2 @@
-terraform $1 --var-file=../aws.tfvars \
-             --var-file=../dev-env.tfvars \
-             --var-file=../dev-net.tfvars
+terraform $1 --var-file=../$2-env.tfvars \
+             --var-file=../$2-net.tfvars

@@ -33,10 +33,10 @@ And ~/.aws/config:
 
 ```
 [default]
-region=us-east-2
+region=us-east-1
 
 [profile dev]
-region=us-east-2
+region=us-east-1
 
 [profile test]
 region=us-east-2
