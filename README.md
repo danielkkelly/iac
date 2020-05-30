@@ -102,9 +102,9 @@ Host *
    User ec2-user
    ForwardAgent yes
 ```
-# Project Overview and Tools
+# Project Framework and Tools
 
-[Overview and Tools] (script/README.md) 
+[Framework] (script/README.md) 
 
 # Provider Specific Documentation
 
