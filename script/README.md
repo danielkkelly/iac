@@ -164,3 +164,8 @@ configuration isn't in one place.  More time and production use across multiple
 environments will hammer out the ideal use and correct functionality.  That said,
 the modular structure allows you to delegate what you want to buildctl.sh.  This 
 could be one module or ten.
+
+# tfctl.sh
+
+This script supports actions that allow you to manage terraform.  For example, 
+migrating from the default workspace to another workspace. 
