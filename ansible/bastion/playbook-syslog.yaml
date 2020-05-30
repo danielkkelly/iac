@@ -3,10 +3,11 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+    env: "{{ env }}"
   tasks:
   - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
-    copy:
-      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-client.conf'
+    template:
+      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-client.conf.j2'
       dest: /etc/rsyslog.conf
       owner: root
       group: root
