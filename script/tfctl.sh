@@ -1,5 +1,6 @@
 #!/usr/local/bin/bash
 # Script that performs terraform operations across an entire provider
+# TODO: add a task for upgrading terraform modules?
 
 declare provider
 declare env="dev"
