@@ -129,11 +129,27 @@ function exec_terraform {
 	local target=$1
 	local action=$2
 	local target_dir="$IAC_HOME/$provider/$1"
+	local tf_state_dir="$target_dir/terraform.tfstate.d"
 
 	if [[ -f "$target_dir/tf.sh" ]]
 	then
 		cd $target_dir  # module
-		./tf.sh $action # action
+
+		if [[ ! -d $target_dir/.terraform ]] # initialize terraform
+		then
+			terraform init
+		fi	
+
+		if [[ ! -d $tf_state_dir || ! -d $tf_state_dir/$env ]] # initialize workspace
+		then
+			terraform workspace new $env
+		fi
+
+		# switch to workspace
+		terraform workspace select $env
+
+		# execute action
+		./tf.sh $action 
 	fi
 }
 
