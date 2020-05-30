@@ -1,9 +1,13 @@
+# We add the environment in the naming of roles, etc.  This is not strictly necessary if
+# you use separate credentials for all of your environments.  However, if you choose to
+# run all of your environments on one account then this makes that a bit easier.
+
 provider "aws" {
   region = var.region
 }
 
 resource "aws_iam_role" "ec2_ssm_role" {
-  name = "platform-ec2-ssm-role"
+  name = "platform-${ var.env }-ec2-ssm-role"
 
   assume_role_policy = <<EOF
 {
@@ -24,11 +28,11 @@ resource "aws_iam_role_policy_attachment" "ec2_ssm_attach" {
 
 resource "aws_iam_instance_profile" "ec2_ssm_profile" {
   role = aws_iam_role.ec2_ssm_role.name
-  name = "platform-ec2-ssm-profile"
+  name = "platform-${ var.env }-ec2-ssm-profile"
 }
 
 resource "aws_iam_role" "ssm_maintenance_window_role" {
-  name = "platform-ssm-maintenance-window-role"
+  name = "platform-${ var.env }-ssm-maintenance-window-role"
 
   assume_role_policy = <<EOF
 {

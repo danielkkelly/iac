@@ -26,7 +26,7 @@ data "aws_subnet" "subnet_bastion" {
 }
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-ec2-ssm-profile"
+  name = "platform-${ var.env }-ec2-ssm-profile"
 }
 
 resource "aws_security_group" "bastion_sg" {
