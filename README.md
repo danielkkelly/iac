@@ -2,9 +2,12 @@
 
 The goal of this project, outside of my own source control management related to my own learning,
 is to provide some useful examples for others who are coming up the learning curve on infrastructure
-as code using AWS and GCP.  This project provides a framework and tools for managing production 
-infrastructure.  It offers a cloud independent framework for creating infrastructure and configuring
-it, as as code.
+as code using AWS and GCP.  
+
+This project provides a framework and tools for managing production infrastructure.  It offers a 
+cloud independent framework for creating infrastructure and configuring it, as as code.
+
+For more information, review the [project overview and tools](script/README.md)
 
 # Prerequisites
 
