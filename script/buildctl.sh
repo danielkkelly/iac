@@ -105,7 +105,7 @@ function is_vm {
 # better than managing meta data on targets, at least for now.
 function wait_for_instance {
 	local target=$1
-	local instance_id=`print-ec2.sh --hostType $target`
+	local instance_id=`print-ec2.sh --hostType $target --env $env`
 
 	if ! is_vm $target 
 	then
@@ -115,7 +115,7 @@ function wait_for_instance {
 	if [[ "x$instance_id" != "x" ]] # we have an EC2 instance
 	then
 		echo "$target is an EC2 instance, waiting..."
-		aws ec2 wait instance-status-ok --instance $instance_id
+		aws ec2 wait instance-status-ok --instance $instance_id --profile $env
 	else 
 		echo "$target isn't available"
 		return 1
