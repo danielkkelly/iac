@@ -1,0 +1,10 @@
+/var/log/docker/*.log {
+  copytruncate
+  compress
+  dateext
+  create 0640 root docker
+  size 50M
+  dateformat -%Y%m%d%H%s
+  missingok
+  rotate 48
+}

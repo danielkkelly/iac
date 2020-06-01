@@ -1,0 +1,42 @@
+---
+- hosts: dev-docker
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+  tasks:
+  - name: Copy daemon.json to /etc/docker
+    copy:
+      src: '{{ iac_home }}/ansible/docker/conf/docker/daemon.json'
+      dest: /etc/docker/daemon.json
+      owner: root
+      group: root
+      mode: '0644'
+    tags:
+    - conf
+  - name: Copy docker.conf to /etc/rsyslog.d
+    copy:
+      src: '{{ iac_home }}/ansible/docker/conf/rsyslog/docker.conf'
+      dest: /etc/rsyslog.d
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Copy docker to /etc/logrotate.d
+    copy:
+      src: '{{ iac_home }}/ansible/docker/conf/logrotate/docker'
+      dest: /etc/logrotate.d
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Restart syslog service
+    service:
+      name: rsyslog
+      state: restarted
+  - name: Restart docker
+    service:
+      name: docker
+      state: restarted
+  - name: create a symlink for logrotate in cron.hourly
+    file:
+      src: /etc/cron.daily/logrotate
+      dest: /etc/cron.hourly/logrotate
+      state: link
