@@ -4,7 +4,7 @@
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
   tasks:
-  - name: Update /etc/rsyslog.conf from rsyslog-client.conf.js template
+  - name: Replace /etc/rsyslog.conf from rsyslog-client.conf.js template
     template:
       src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-client.conf.j2'
       dest: /etc/rsyslog.conf
