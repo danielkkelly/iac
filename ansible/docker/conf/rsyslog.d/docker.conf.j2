@@ -3,7 +3,7 @@
 
 $template DockerContainerLogs, "/var/log/docker/%syslogtag:R,ERE,1,ZERO:.*container_name/([^\[]+)--end%.log"
 
-if $syslogtag contains 'container_name' or $programname startswith 'docker' then @@syslog.dev.internal:514
+if $syslogtag contains 'container_name' or $programname startswith 'docker' then @@syslog.{{ env }}.internal:514
 if $syslogtag contains 'container_name' then {
   $umask 0000
   action (type="omfile"

@@ -3,9 +3,8 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
-    env: "{{ env }}"
   tasks:
-  - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
+  - name: Update /etc/rsyslog.conf from rsyslog-client.conf.js template
     template:
       src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-client.conf.j2'
       dest: /etc/rsyslog.conf

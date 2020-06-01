@@ -1,5 +1,5 @@
 ---
-- hosts: dev-docker
+- hosts: "{{ env | default('dev')}}-docker"
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
@@ -13,10 +13,10 @@
       mode: '0644'
     tags:
     - conf
-  - name: Copy docker.conf to /etc/rsyslog.d
-    copy:
-      src: '{{ iac_home }}/ansible/docker/conf/rsyslog/docker.conf'
-      dest: /etc/rsyslog.d
+  - name: Add docker.conf to /etc/rsyslog.d using docker.confg.js template
+    template:
+      src: '{{ iac_home }}/ansible/docker/conf/rsyslog.d/docker.conf.j2'
+      dest: /etc/rsyslog.d/docker.conf
       owner: root
       group: root
       mode: '0644'

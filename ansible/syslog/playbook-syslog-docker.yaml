@@ -1,12 +1,12 @@
 ---
-- hosts: dev-syslog
+- hosts: "{{ env | default('dev')}}-syslog"
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
   tasks:
   - name: Copy docker.conf to /etc/rsyslog.d
     copy:
-      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog.d/docker.conf'
+      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog.d/docker.conf'
       dest: /etc/rsyslog.d
       owner: root
       group: root
