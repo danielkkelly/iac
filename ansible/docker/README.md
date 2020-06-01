@@ -4,7 +4,7 @@ The following scripts will implement centralized logging.  The first playbook is
 remote logging.  The second configures docker to use syslog.
 
 * playbook-syslog.yaml
-* playbook-syslog-docker.yaml
+* playbook-syslog-docker.yaml (in both docker and syslog)
 
 ## References 
 

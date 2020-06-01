@@ -64,7 +64,10 @@
         {
             "module": "all",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "ecr", "syslog", "syslog-forwarding", "syslog-docker", "rds-mysql"], 
+            "target": ["localhost", "network", "iam", "ssm", "bastion", 
+                       "docker", "ecr", 
+                       "syslog", "syslog-forwarding", "syslog-docker", 
+                       "rds-mysql"], 
             "terraform": true,
             "ansible": true,
             "playbook": "playbook.yaml" 
