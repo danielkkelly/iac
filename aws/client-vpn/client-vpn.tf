@@ -90,7 +90,8 @@ resource "null_resource" "client_vpn_ingress" {
           aws ec2 authorize-client-vpn-ingress \
                     --client-vpn-endpoint-id ${aws_ec2_client_vpn_endpoint.vpn_endpoint.id} \
                     --target-network-cidr ${data.aws_vpc.vpc.cidr_block} \
-                    --authorize-all-groups
+                    --authorize-all-groups \
+                    --profile ${var.env}
     EOC
   }
 }
