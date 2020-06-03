@@ -1,0 +1,21 @@
+---
+- hosts: "{{ env | default('dev')}}-syslog"
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+  tasks:
+  - name: Add kafka.conf to /etc/rsyslog.d using kafka.conf.js template
+    template:
+      src: '{{ iac_home }}/ansible/syslog/conf/rsyslog.d/kafka.conf.j2'
+      dest: /etc/rsyslog.d/kafka.conf
+      owner: root
+      group: root
+      mode: '0644'
+  - name: Install rsyslog-kafka
+    yum:
+      name: rsyslog-kafka
+      state: present
+  - name: Restart syslog service
+    service:
+      name: rsyslog
+      state: restarted

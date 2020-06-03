@@ -13,7 +13,7 @@
       mode: '0644'
     tags:
     - conf
-  - name: Add docker.conf to /etc/rsyslog.d using docker.confg.js template
+  - name: Add docker.conf to /etc/rsyslog.d using docker.conf.js template
     template:
       src: '{{ iac_home }}/ansible/docker/conf/rsyslog.d/docker.conf.j2'
       dest: /etc/rsyslog.d/docker.conf

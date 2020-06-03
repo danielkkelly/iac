@@ -14,7 +14,7 @@ data "aws_subnet_ids" "msk_subnet_ids" {
   vpc_id = data.aws_vpc.vpc.id
   tags = {
     Type = "private"
-    MSK = 1
+    MSK  = 1
   }
 }
 
@@ -25,9 +25,9 @@ data "aws_subnet" "msk_subnet_id" {
 
 // open to specific private networks that will use the service
 locals {
-    ingress_cidr_blocks = [var.cidr_block_subnet_pri_1, 
-                           var.cidr_block_subnet_pri_2,
-                           var.cidr_block_subnet_vpn_1]
+  ingress_cidr_blocks = [var.cidr_block_subnet_pri_1,
+                         var.cidr_block_subnet_pri_2,
+                         var.cidr_block_subnet_vpn_1]
 }
 
 resource "aws_security_group" "msk_sg" {
@@ -71,12 +71,12 @@ resource aws_cloudwatch_log_group log_group_msk {
 resource "aws_msk_cluster" "platform_msk" {
   cluster_name           = "platform-msk"
   kafka_version          = "2.4.1"
-  number_of_broker_nodes = 2
+  number_of_broker_nodes = length(var.brokers)
 
   broker_node_group_info {
     instance_type   = "kafka.t3.small"
     ebs_volume_size = 1000
-    client_subnets = [for s in data.aws_subnet.msk_subnet_id : s.id]
+    client_subnets  = [for s in data.aws_subnet.msk_subnet_id : s.id]
     security_groups = [aws_security_group.msk_sg.id]
   }
 
@@ -107,4 +107,25 @@ resource "aws_msk_cluster" "platform_msk" {
   tags = {
     Environment = var.env
   }
+}
+
+data "aws_route53_zone" "private" {
+  name         = "${var.env}.internal."
+  private_zone = true
+}
+
+locals {
+  msk_broker_names = split(",", aws_msk_cluster.platform_msk.bootstrap_brokers_tls)
+  dns_broker_names = {
+    for broker in var.brokers : index(var.brokers, broker) => broker
+  }
+}
+
+resource "aws_route53_record" "msk" {
+  for_each = local.dns_broker_names
+  zone_id  = data.aws_route53_zone.private.zone_id
+  name     = "${each.value}.${data.aws_route53_zone.private.name}"
+  type     = "CNAME"
+  ttl      = "300"
+  records  = [trimsuffix(element(local.msk_broker_names, each.key), ":9094")]
 }

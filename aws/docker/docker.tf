@@ -73,7 +73,7 @@ resource "aws_security_group_rule" "bastion_mgmt_sgr" {
   security_group_id        = aws_security_group.docker_sg.id
 }
 
-resource "aws_security_group_rule" "bastion_egress_sgr" {
+resource "aws_security_group_rule" "egress_sgr" {
   type              = "egress"
   from_port         = 0
   to_port           = 0

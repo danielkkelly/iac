@@ -1,16 +1,14 @@
 #$DebugFile /var/log/rsyslog-debug.log
 #$DebugLevel 2
  
-module(
-    load = "omkafka"
-)
+module(load = "omkafka")
  
 # Given a message of a certain type, put it on a Kafka topic.  This could use any
 # of the typical conditionals.  For example, $hostname == "logger.internal"
-if ( $msg startswith "platform kafka:" ) then
+if ( $msg contains "kafka-test:" ) then
     action(
         type      = "omkafka"
-        broker    = ["msk-b1.dev.internal:9094", "msk-b2.dev.internal:9094"]
+        broker    = ["kafka-broker1.{{ env }}.internal:9094", "kafka-broker2.{{ env }}.internal:9094"]
         confParam = ["security.protocol=ssl", "debug=all"]
         topic     = "platform.module.test.v1"
     )
