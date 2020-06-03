@@ -45,7 +45,15 @@
             "terraform": false,
             "ansible": true,
             "playbook": "playbook-syslog-docker.yaml" 
-        },        
+        },
+        {
+            "module": "syslog-kafka", 
+            "action": "apply",
+            "target": ["syslog"],
+            "terraform": false,
+            "ansible": true,
+            "playbook": "playbook-syslog-kafka.yaml" 
+        },                        
         {
             "module": "lb",
             "action": "apply",
