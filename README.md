@@ -52,6 +52,10 @@ dev-all:
   vars:
     ansible_user: ec2-user
     ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
+      children:
+  syslog-clients:
+      dev-bastion:
+      dev-docker:
 test-all:
   hosts:
     test-bastion:
