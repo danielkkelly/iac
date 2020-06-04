@@ -6,7 +6,7 @@
   tasks:
   - name: Wait for port 22 to become open 
     wait_for_connection:
-  - name: Copy rsyslog-client.conf to /etc/rsyslog.conf
+  - name: Copy rsyslog-server.conf to /etc/rsyslog.conf
     copy:
       src: '{{ iac_home }}/ansible/syslog/conf/rsyslog/rsyslog-server.conf'
       dest: /etc/rsyslog.conf
