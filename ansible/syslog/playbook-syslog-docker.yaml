@@ -22,10 +22,6 @@
       owner: root
       group: root
       mode: '0644'
-  - name: Restart syslog service
-    service:
-      name: rsyslog
-      state: restarted
   - name: create a symlink for logrotate in cron.hourly
     file:
       src: /etc/cron.daily/logrotate
