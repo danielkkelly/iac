@@ -10,7 +10,7 @@ if ( $msg contains "kafka-test:" ) then
         type      = "omkafka"
         broker    = ["kafka-broker1.{{ env }}.internal:9094", "kafka-broker2.{{ env }}.internal:9094"]
         confParam = ["security.protocol=ssl", "debug=all"]
-        topic     = "platform.module.test.v1"
+        topic     = "platform.test.v1"
     )
     stop
 }
