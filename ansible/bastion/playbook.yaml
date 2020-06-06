@@ -3,6 +3,7 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+    notify_on_login: root
     users:
      - dan
   tasks:
@@ -10,3 +11,21 @@
       loop: "{{ users }}"
       loop_control:
         loop_var: user
+    - name: Install mailx
+      yum:
+        name: mailx
+        state: present
+    - name: Add configuration to logrotate to rotate syslog client logs
+      lineinfile:
+        path: /etc/pam.d/sshd
+        regexp: 'login-notify-.sh'
+        line: 'session optional pam_exec.so seteuid /usr/local/bin/login-notify.sh'
+        insertafter: EOF
+        state: present        
+    - name: Add login-notify.sh to /usr/local/bin
+      template:
+        src: '{{ iac_home }}/ansible/bastion/conf/login-notify.sh.j2'
+        dest: /usr/local/bin/login-notify.sh
+        owner: root
+        group: root
+        mode: '0700'

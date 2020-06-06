@@ -1,0 +1,13 @@
+#!/bin/sh
+# Thank you to https://pario.no/2018/10/30/login-notification-on-ssh-login-using-pam/
+
+sender="root"
+recepient="{{ notify_on_login }}"
+
+if [ "$PAM_TYPE" != "close_session" ]; then
+    host="`hostname`"
+    subject="SSH Login: $PAM_USER from $PAM_RHOST on {{ env }}-bastion"
+    # Message to send, e.g. the current environment variables.
+    message="`env`"
+    echo "$message" | mailx -r "$sender" -s "$subject" "$recepient"
+fi
