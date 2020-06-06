@@ -1,2 +1,6 @@
 #!/bin/bash
-terraform $1 --var-file=../$2-env.tfvars
+action=$1
+env=$2
+shift 2
+
+terraform $action --var-file=../$env-env.tfvars $@

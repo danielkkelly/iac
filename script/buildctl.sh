@@ -10,6 +10,7 @@ declare terraform=false
 declare ansible=false
 declare playbook="playbook.yaml"
 declare env="dev"
+declare auto_approve
 
 declare -a targets=()
 
@@ -24,12 +25,13 @@ function parse_cli {
 			"--ansible")      set -- "$@" "-n" ;;
 			"--playbook")     set -- "$@" "-p" ;;
 			"--env")          set -- "$@" "-e" ;;
+			"--auto-approve") set -- "$@" "-b" ;;
 			*)                set -- "$@" "$arg"
 		esac
 	done
 
 	# Parse command line options safely using getops
-	while getopts "c:m:a:tnp:e:" opt; do
+	while getopts "c:m:a:tnp:e:b" opt; do
 		case $opt in
 			c) provider=$OPTARG ;;
 			m) module=$OPTARG ;;
@@ -38,6 +40,7 @@ function parse_cli {
 			n) ansible=true ;;
 			p) playbook=$OPTARG ;;
 			e) env=$OPTARG ;;
+			b) auto_approve="--auto-approve" ;;
 			\?)
 				echo "Invalid option: -$OPTARG" >&2
 				;;
@@ -147,7 +150,7 @@ function exec_terraform {
 		terraform workspace select $env
 
 		# execute action
-		./tf.sh $action $env 
+		./tf.sh $action $env $auto_approve
 	fi
 }
 
