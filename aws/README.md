@@ -64,7 +64,7 @@ Viewing Compliance:
 aws ssm list-compliance-summaries
 ```
 
-# Modules
+# Modules Specific Documentation
 
 * [IAM](iam/README.md)
 * [VPN](client-vpn/README.md)
