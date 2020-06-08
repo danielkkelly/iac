@@ -108,8 +108,16 @@ resource "aws_iam_group_policy_attachment" "dev_admin_policy_attachment" {
 }
 
 resource "aws_iam_user" "user" {
-  for_each = var.users_groups
-  name  = "${each.key}.${var.env}"
+  for_each      = var.users_groups
+  name          = "${each.key}.${var.env}"
+  force_destroy = true
+}
+
+resource "aws_iam_access_key" "user_access_key" {
+  for_each   = var.users_groups
+  user       = "${each.key}.${var.env}"
+  pgp_key    = file("${var.iac_home}/keys/${each.key}-gpg.pub")
+  depends_on = [aws_iam_user.user]
 }
 
 resource "aws_iam_user_group_membership" "dev_ugm" {
@@ -123,4 +131,12 @@ resource "aws_iam_user_group_membership" "dev_ugm" {
                 aws_iam_group.dev_group, 
                 aws_iam_group.dev_admin_group
                ]
+}
+
+output "user_key_id" {
+  value = [for access_key in aws_iam_access_key.user_access_key: {
+     "user"   = access_key.user,
+     "id"     = access_key.id,
+     "secret" = access_key.encrypted_secret
+  }]
 }
