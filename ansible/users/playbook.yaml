@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ env | default('dev')}}-all"
+- hosts: "{{ env | default('dev')}}_all"
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"

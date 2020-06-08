@@ -50,30 +50,22 @@ environments.
 
 ```
 ---
-dev-all:
+dev_all:
   hosts:
     dev-bastion:
     dev-syslog:
     dev-docker:
   vars:
     ansible_user: ec2-user
-    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
-      children:
-  syslog-clients:
-      dev-bastion:
-      dev-docker:
-test-all:
+    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user-use1.pem
+test_all:
   hosts:
     test-bastion:
     test-syslog:
     test-docker:
   vars:
     ansible_user: ec2-user
-    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user.pem
-  children:
-    syslog-clients:
-      test-bastion:
-      test-docker:
+    ansible_ssh_private_key_file: ~/.ssh/aws-ec2-user-use2.pem
 ```
 
 ## ansible.cfg
