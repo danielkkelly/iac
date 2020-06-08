@@ -66,10 +66,10 @@ aws ssm list-compliance-summaries
 
 # Modules
 
-* [IAM] (iam/README.md)
-* [VPN] (client-vpn/README.md)
-* [Docker] (docker/README.md)
-* [MSK] (msk/README.md)
+* [IAM](iam/README.md)
+* [VPN](client-vpn/README.md)
+* [Docker](docker/README.md)
+* [MSK](msk/README.md)
 
 # References 
 
