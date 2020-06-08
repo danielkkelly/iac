@@ -18,6 +18,13 @@ run in parallel to modules but are stored in the "ansible" top level directory.
 └── script
 ```
 
+# Modules
+
+* [IAM] (iam/README.md)
+* [Client VPN] (client-vpn/README.md)
+* [Docker] (docker/README.md)
+* [MSK] (msk/README.md)
+
 ## Ansible
 
 All ansible artifacts are stored under the "ansible" top level directory.  These configuration
