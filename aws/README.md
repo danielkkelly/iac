@@ -64,6 +64,13 @@ Viewing Compliance:
 aws ssm list-compliance-summaries
 ```
 
+# Modules
+
+* [IAM] (iam/README.md)
+* [Client VPN] (client-vpn/README.md)
+* [Docker] (docker/README.md)
+* [MSK] (msk/README.md)
+
 # References 
 
 https://aws.amazon.com/blogs/security/how-to-patch-linux-workloads-on-aws/
