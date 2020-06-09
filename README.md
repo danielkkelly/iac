@@ -40,9 +40,11 @@ Other packages that are required for scripts include
 * Make IAC_HOME available to Terraform
 
 ## Example
+```
 export IAC_HOME=~/iac
 export PATH=$PATH:$IAC_HOME/script:$IAC_HOME/aws/script:$IAC_HOME/gcp/script
 export TF_VAR_iac_home=$IAC_HOME
+```
 
 # Ansible
 

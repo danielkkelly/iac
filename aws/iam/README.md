@@ -43,7 +43,7 @@ export GPG_TTY
 ### Generate keys
 
 ```
-gpg --gen-keys
+gpg --generate-key
 ```
 
 ### List keys
