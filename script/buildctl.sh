@@ -103,8 +103,8 @@ function is_vm {
 	fi
 }
 
-# This method wil check if there's an EC2 instance for the given target.  Not all
-# targets are EC2 instances.  This will make a CLI call for each regardless but 
+# This method wil check if there's an VM instance for the given target.  Not all
+# targets are VM instances.  This will make a CLI call for each regardless but 
 # better than managing meta data on targets, at least for now.
 function wait_for_instance {
 	local target=$1
@@ -117,7 +117,7 @@ function wait_for_instance {
 
 	if [[ "x$instance_id" != "x" ]] # we have an EC2 instance
 	then
-		echo "$target is an EC2 instance, waiting..."
+		echo "$target is a VM instance, waiting..."
 		aws ec2 wait instance-status-ok --instance $instance_id --profile $env
 	else 
 		echo "$target isn't available"
