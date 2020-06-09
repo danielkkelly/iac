@@ -1,5 +1,6 @@
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = var.env
 }
 
 /* 
@@ -192,7 +193,7 @@ resource "aws_subnet" "subnet_rds_2" {
   availability_zone = data.aws_availability_zones.available.names[1]
 
   tags = {
-    Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[1]}"
+    Name        = "subnet-rds-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment = var.env
     Type        = "private"
     Number      = "4"

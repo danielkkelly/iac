@@ -1,5 +1,6 @@
 provider aws {
-  region = var.region
+  region  = var.region
+  profile = var.env
 }
 
 resource aws_sns_topic platform_sns_topic {

@@ -3,7 +3,8 @@
 # run all of your environments on one account then this makes that a bit easier.
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = var.env
 }
 
 # The following resources are related to system manager, which patches machines on a 

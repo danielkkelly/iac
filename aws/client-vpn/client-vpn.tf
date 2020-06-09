@@ -15,7 +15,8 @@
 # You also need to have an Open VPN client installed.  Try https://openvpn.net/.
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = var.env
 }
 
 data "aws_acm_certificate" "server" {

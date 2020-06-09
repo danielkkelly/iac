@@ -1,7 +1,8 @@
 # TODO: cloudwatch alarm at 85% of KafkaDataLogsDiskUsed
 
 provider "aws" {
-  region = var.region
+  region  = var.region
+  profile = var.env
 }
 
 data "aws_vpc" "vpc" {

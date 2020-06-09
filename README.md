@@ -16,9 +16,12 @@ For more information, review the [project overview and tools](script/README.md)
 * paramiko
 * passlib (allows creating password hashes for users, not strictly required)
 
-Terraform is a single binary - put that somewhere like ~/bin or /usr/local/bin.  Ansible and paramiko instructions
-can be found in the installation guide (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
-I used MacOS so it's:
+Terraform is a single binary - put that somewhere like ~/bin or /usr/local/bin.  Ansible and paramiko 
+instructions can be found in the installation guide:
+
+ (https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html).
+
+I use MacOS so it's:
 
 * pip install --user ansible
 * pip install --user paramiko
@@ -45,8 +48,8 @@ export TF_VAR_iac_home=$IAC_HOME
 
 ## Ansible hosts 
 
-Located at /etc/ansible/hosts.  The stanzas below specify the same infrastructure across multiple
-environments.
+Located at /etc/ansible/hosts.  The stanzas below specify the same infrastructure across 
+multiple environments.
 
 ```
 ---
