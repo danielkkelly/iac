@@ -65,6 +65,15 @@ resource "aws_security_group_rule" "bastion_http_sgr" {
   security_group_id        = aws_security_group.docker_sg.id
 }
 
+resource "aws_security_group_rule" "bastion_http_sgr" {
+  type                     = "ingress"
+  from_port                = 8443
+  to_port                  = 8443
+  protocol                 = "tcp"
+  source_security_group_id = data.aws_security_group.bastion_sg.id
+  security_group_id        = aws_security_group.docker_sg.id
+}
+
 resource "aws_security_group_rule" "bastion_mgmt_sgr" {
   type                     = "ingress"
   from_port                = 9990
