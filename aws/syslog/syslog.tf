@@ -48,6 +48,10 @@ resource "aws_security_group" "syslog_sg" {
     protocol  = "tcp"
 
     security_groups = [data.aws_security_group.bastion_sg.id]
+
+    cidr_blocks = [
+      var.cidr_block_subnet_vpn_1
+    ]
   }
 
   ingress {
@@ -61,8 +65,7 @@ resource "aws_security_group" "syslog_sg" {
     // open to any on the private subnets
     cidr_blocks = [
       var.cidr_block_subnet_pri_1,
-      var.cidr_block_subnet_pri_2,
-      var.cidr_block_subnet_vpn_1
+      var.cidr_block_subnet_pri_2
     ]
   }
 
