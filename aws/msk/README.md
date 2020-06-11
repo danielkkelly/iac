@@ -17,7 +17,7 @@ ssl.endpoint.identification.algorithm=
                   --replication-factor 1 \
                   --partitions 2 \
                   --command-config client-ssl.properties \
-                  --topic "platform.module.test.v1"
+                  --topic "platform.test.v1"
 ```
 
 We have two brokers so create a partition on each and replicate to the other.
@@ -29,14 +29,14 @@ In separate terminals do the following.
 Terminal 1
 
 ```
-./kafka-console-producer.sh --broker-list kafka-broker1.test.internal:9094,kafka-broker2.test.internal:9094 --topic platform.module.test.v1 --producer.config client-ssl.properties
+./kafka-console-producer.sh --broker-list kafka-broker1.test.internal:9094,kafka-broker2.test.internal:9094 --topic platform.test.v1 --producer.config client-ssl.properties
 
 ```
 
 Terminal 2
 
 ```
-./kafka-console-consumer.sh --bootstrap-server kafka-broker1.test.internal:9094 --topic platform.module.test.v1 --consumer.config client-ssl.properties
+./kafka-console-consumer.sh --bootstrap-server kafka-broker1.test.internal:9094 --topic platform.test.v1 --consumer.config client-ssl.properties
 ```
 
 # Non-JVM based produder and consumer
