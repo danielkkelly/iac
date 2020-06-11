@@ -79,7 +79,7 @@ Send an entire stanza to your user.  Note the secret below is edited for brevity
 ```
 {
   "id": "AKX123...",
-  "secret": "wcBURzAiUZHrZulpnTCN7LP+lsmWH/WHjPUBK9h6w7EWsgwUbJauP7Al8I3QmdpcqOxeDB4Gr60UkCVt==
+  "secret": "wcBURzAiUZHrZulpnTCN7LP+lsmWH/WHjPUBK9h6w7EWsgwUbJauP7Al8I3QmdpcqOxeDB4Gr60UkCVt==",
   "user": "dan.test"
 }
 ```
