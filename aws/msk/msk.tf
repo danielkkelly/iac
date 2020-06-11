@@ -55,7 +55,7 @@ resource "aws_security_group" "msk_sg" {
   }
 
   tags = {
-    Name        = "platform-rds"
+    Name        = "platform-msk"
     Environment = var.env
   }
 }

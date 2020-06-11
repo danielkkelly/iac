@@ -165,9 +165,9 @@ function exec_ansible {
 		return
 	fi
 
-	if wait_for_instance $target; 
+	if [[ -f $playbook_file ]] # continue
 	then
-		if [[ -f $playbook_file ]] # run the playbook
+		if wait_for_instance $target; 
 		then
 			ansible-playbook $playbook_file \
 				--extra-vars "@$IAC_HOME/ansible/env-$env.json"
