@@ -56,6 +56,15 @@ resource "aws_security_group_rule" "bastion_ssh_sgr" {
   security_group_id        = aws_security_group.docker_sg.id
 }
 
+resource "aws_security_group_rule" "vpn_mgmt_sgr" {
+  type                     = "ingress"
+  from_port                = 22
+  to_port                  = 22
+  protocol                 = "tcp"
+  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
+  security_group_id        = aws_security_group.docker_sg.id
+}
+
 resource "aws_security_group_rule" "bastion_http_sgr" {
   type                     = "ingress"
   from_port                = 8080
@@ -65,7 +74,7 @@ resource "aws_security_group_rule" "bastion_http_sgr" {
   security_group_id        = aws_security_group.docker_sg.id
 }
 
-resource "aws_security_group_rule" "bastion_http_sgr" {
+resource "aws_security_group_rule" "bastion_https_sgr" {
   type                     = "ingress"
   from_port                = 8443
   to_port                  = 8443
