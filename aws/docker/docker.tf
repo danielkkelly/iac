@@ -47,51 +47,23 @@ resource "aws_security_group" "docker_sg" {
   }
 }
 
-resource "aws_security_group_rule" "bastion_ssh_sgr" {
+resource "aws_security_group_rule" "bastion_sgr" {
+  for_each                 = toset(var.ingress_ports)
   type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
+  from_port                = each.value
+  to_port                  = each.value
   protocol                 = "tcp"
   source_security_group_id = data.aws_security_group.bastion_sg.id
   security_group_id        = aws_security_group.docker_sg.id
 }
 
 resource "aws_security_group_rule" "vpn_mgmt_sgr" {
+  for_each                 = toset(var.ingress_ports)
   type                     = "ingress"
-  from_port                = 22
-  to_port                  = 22
+  from_port                = each.value
+  to_port                  = each.value
   protocol                 = "tcp"
   cidr_blocks              = [var.cidr_block_subnet_vpn_1]
-  security_group_id        = aws_security_group.docker_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_http_sgr" {
-  type                     = "ingress"
-  from_port                = 8080
-  to_port                  = 8080
-  protocol                 = "tcp"
-  source_security_group_id = data.aws_security_group.bastion_sg.id
-  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
-  security_group_id        = aws_security_group.docker_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_https_sgr" {
-  type                     = "ingress"
-  from_port                = 8443
-  to_port                  = 8443
-  protocol                 = "tcp"
-  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
-  source_security_group_id = data.aws_security_group.bastion_sg.id
-  security_group_id        = aws_security_group.docker_sg.id
-}
-
-resource "aws_security_group_rule" "bastion_mgmt_sgr" {
-  type                     = "ingress"
-  from_port                = 9990
-  to_port                  = 9990
-  protocol                 = "tcp"
-  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
-  source_security_group_id = data.aws_security_group.bastion_sg.id
   security_group_id        = aws_security_group.docker_sg.id
 }
 

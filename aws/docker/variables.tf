@@ -17,6 +17,11 @@ variable "key_pair_name" {
 # Network
 #
 
+variable ingress_ports {
+  type    = list
+  default = ["22", "8080", "8443", "9990"]
+}
+
 variable "host_number" {
   default = "40"
 }
