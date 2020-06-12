@@ -39,7 +39,7 @@ data "aws_security_group" "bastion_sg" {
 resource "aws_security_group" "docker_sg" {
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-docker"
-  description = "SSH from bastion server"
+  description = "SSH from bastion server and VPN"
 
   tags = {
     Name        = "platform-docker"
@@ -71,6 +71,7 @@ resource "aws_security_group_rule" "bastion_http_sgr" {
   to_port                  = 8080
   protocol                 = "tcp"
   source_security_group_id = data.aws_security_group.bastion_sg.id
+  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
   security_group_id        = aws_security_group.docker_sg.id
 }
 
@@ -79,6 +80,7 @@ resource "aws_security_group_rule" "bastion_https_sgr" {
   from_port                = 8443
   to_port                  = 8443
   protocol                 = "tcp"
+  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
   source_security_group_id = data.aws_security_group.bastion_sg.id
   security_group_id        = aws_security_group.docker_sg.id
 }
@@ -88,6 +90,7 @@ resource "aws_security_group_rule" "bastion_mgmt_sgr" {
   from_port                = 9990
   to_port                  = 9990
   protocol                 = "tcp"
+  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
   source_security_group_id = data.aws_security_group.bastion_sg.id
   security_group_id        = aws_security_group.docker_sg.id
 }
