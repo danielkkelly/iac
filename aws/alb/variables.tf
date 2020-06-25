@@ -6,29 +6,26 @@ variable "env" {}
  * it for your region
  */
 variable "alb_account" {
-  default = "033677994240"
+  default = {
+    us-east-1 = "127311923021"
+    us-east-2 = "033677994240"
+  }
+}
+
+variable "cidr_blocks_ingress" {
+  default = ["0.0.0.0/0"]
 }
 
 # Variables for app subnets, to which we'll allow egress
-variable cidr_block_subnet_pri_1 {
-}
-
-variable cidr_block_subnet_pri_2 {
-}
+variable cidr_block_subnet_pri_1 {}
+variable cidr_block_subnet_pri_2 {}
 
 # To silence TF warnings
-variable "key_pair_name" {
-}
-variable cidr_block_vpc {
-}
-variable cidr_block_subnet_pub_1 {
-}
-variable cidr_block_subnet_pub_2 {
-}
-variable cidr_block_subnet_rds_1 {
-}
-variable cidr_block_subnet_rds_2 {
-}
-variable cidr_block_subnet_vpn_1 {
-}
+variable "key_pair_name" {}
+variable cidr_block_vpc {}
+variable cidr_block_subnet_pub_1 {}
+variable cidr_block_subnet_pub_2 {}
+variable cidr_block_subnet_rds_1 {}
+variable cidr_block_subnet_rds_2 {}
+variable cidr_block_subnet_vpn_1 {}
 

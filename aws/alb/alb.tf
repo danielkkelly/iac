@@ -33,7 +33,7 @@ data "aws_subnet" "public_subnet_id" {
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
  */
 resource "aws_s3_bucket" "lb_s3_bucket" {
-  bucket        = "platform-lb-bucket"
+  bucket        = "platform-lb-bucket-${var.env}"
   force_destroy = true
   acl           = "private"
   policy        = <<EOF
@@ -43,10 +43,10 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
     {
       "Effect": "Allow",
       "Principal": {
-        "AWS": "arn:aws:iam::${var.alb_account}:root"
+        "AWS": "arn:aws:iam::${var.alb_account[var.region]}:root"
       },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::platform-lb-bucket/*"
+      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*"
     },
     {
       "Effect": "Allow",
@@ -54,7 +54,7 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
         "Service": "delivery.logs.amazonaws.com"
       },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::platform-lb-bucket/*",
+      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*",
       "Condition": {
         "StringEquals": {
           "s3:x-amz-acl": "bucket-owner-full-control"
@@ -67,7 +67,7 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
         "Service": "delivery.logs.amazonaws.com"
       },
       "Action": "s3:GetBucketAcl",
-      "Resource": "arn:aws:s3:::platform-lb-bucket"
+      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}"
     }
   ]
 }
@@ -89,14 +89,14 @@ resource "aws_security_group" "lb_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.cidr_blocks_ingress
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.cidr_blocks_ingress
   }
 
   egress {
