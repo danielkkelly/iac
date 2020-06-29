@@ -22,7 +22,6 @@ variable "host_number" {
 }
 
 # Variables that help allow private network access to the RDS server
-
 variable cidr_block_subnet_pri_1 {}
 variable cidr_block_subnet_pri_2 {}
 
