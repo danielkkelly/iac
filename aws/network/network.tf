@@ -31,11 +31,12 @@ resource "aws_subnet" "subnet_pub_1" {
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = "true"
   tags = {
-    Name        = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment = var.env
-    Type        = "public"
-    Number      = "1"
-    Bastion     = "1"
+    Name                                            = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment                                     = var.env
+    Type                                            = "public"
+    Bastion                                         = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
+    "kubernetes.io/role/elb"                        = "1"
   }
 }
 
@@ -45,10 +46,11 @@ resource "aws_subnet" "subnet_pub_2" {
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = "true"
   tags = {
-    Name        = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment = var.env
-    Type        = "public"
-    Number      = "2"
+    Name                                            = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
+    Environment                                     = var.env
+    Type                                            = "public"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
+    "kubernetes.io/role/elb"                        = "1"
   }
 }
 
@@ -57,12 +59,13 @@ resource "aws_subnet" "subnet_pri_1" {
   cidr_block        = var.cidr_block_subnet_pri_1
   availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
-    Name        = "subnet-pri-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment = var.env
-    Type        = "private"
-    Number      = "1"
-    Syslog      = "1"
-    MSK         = "1"
+    Name                                            = "subnet-pri-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment                                     = var.env
+    Type                                            = "private"
+    Syslog                                          = "1"
+    MSK                                             = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"               = "1"
   }
 }
 
@@ -71,12 +74,13 @@ resource "aws_subnet" "subnet_pri_2" {
   cidr_block        = var.cidr_block_subnet_pri_2
   availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
-    Name        = "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment = var.env
-    Type        = "private"
-    Number      = "2"
-    Docker      = "1"
-    MSK         = "1"
+    Name                                            = "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
+    Environment                                     = var.env
+    Type                                            = "private"
+    Docker                                          = "1"
+    MSK                                             = "1"
+    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
+    "kubernetes.io/role/internal-elb"               = "1"
   }
 }
 
@@ -182,7 +186,6 @@ resource "aws_subnet" "subnet_rds_1" {
     Name        = "subnet-rds-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment = var.env
     Type        = "private"
-    Number      = "3"
     RDS         = "1"
   }
 }
@@ -196,7 +199,6 @@ resource "aws_subnet" "subnet_rds_2" {
     Name        = "subnet-rds-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment = var.env
     Type        = "private"
-    Number      = "4"
     RDS         = "1"
   }
 }
@@ -217,7 +219,6 @@ resource "aws_subnet" "subnet_vpn_1" {
     Name        = "subnet-vpn-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment = var.env
     Type        = "private"
-    Number      = "5"
     VPN         = "1"
   }
 }
