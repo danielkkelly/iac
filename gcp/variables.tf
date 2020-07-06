@@ -5,6 +5,7 @@ variable org_id {}
 variable billing_account {}
 variable region {}
 variable project_name {}
+variable admin_project_name {}
 variable env {}
 
 #

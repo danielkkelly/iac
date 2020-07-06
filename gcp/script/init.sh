@@ -4,4 +4,5 @@ gcloud services enable \
     iam.googleapis.com \
     oslogin.googleapis.com \
     servicenetworking.googleapis.com \
-    sqladmin.googleapis.com
+    sqladmin.googleapis.com \
+    container.googleapis.com

@@ -31,4 +31,28 @@ In addition to the services enabled in the article we'll need to enable the serv
 gcloud services enable servicenetworking.googleapis.com
 gcloud services enable sqladmin.googleapis.com
 gcloud services enable dns.googleapis.com
+gcloud services enable container.googleapis.com
+```
+
+See init.sh for details.
+
+The service account will also need additional privileges for GKE:
+
+```
+gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+  --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+  --role roles/container.admin
+
+
+gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+  --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+  --role roles/compute.admin
+
+gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+  --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+  --role roles/iam.serviceAccountUser
+
+gcloud projects add-iam-policy-binding ${TF_ADMIN} \
+  --member serviceAccount:terraform@${TF_ADMIN}.iam.gserviceaccount.com \
+  --role roles/resourcemanager.projectIamAdmin
 ```

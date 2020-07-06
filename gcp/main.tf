@@ -1,3 +1,11 @@
+provider "google" {
+  region      = var.region
+}
+
+provider "google-beta" {
+  region      = var.region
+}
+
 module "project" {
   source          = "./project"
   project_name    = "${var.project_name}-${var.env}"
@@ -45,26 +53,69 @@ module private_dns {
   private_ip_mysql   = module.cloud_sql.private_ip
 }
 
-output "project_name" {
-  value = module.project.project_name
-}
+module "gke" {
+  source                     = "terraform-google-modules/kubernetes-engine/google//modules/private-cluster"
+  project_id                 = module.project.project_id
+  name                       = "platform-gke"
+  region                     = var.region
+  zones                      = ["us-east1-b", "us-east1-c"]
+  network                    = module.network.network_name
+  subnetwork                 = module.network.subnet_app_1_name
+  ip_range_pods              = ""
+  ip_range_services          = ""
+  http_load_balancing        = false
+  horizontal_pod_autoscaling = true
+  network_policy             = true
+  enable_private_endpoint    = false
+  enable_private_nodes       = true
 
-output "project_id" {
-  value = module.project.project_id
-}
+  node_pools = [
+    {
+      name               = "default-node-pool"
+      machine_type       = "n1-standard-2"
+      min_count          = 1
+      max_count          = 5
+      local_ssd_count    = 0
+      disk_size_gb       = 100
+      disk_type          = "pd-standard"
+      image_type         = "COS"
+      auto_repair        = true
+      auto_upgrade       = true
+      service_account    = "terraform@${var.admin_project_name}.iam.gserviceaccount.com"
+      preemptible        = false
+      initial_node_count = 80
+    },
+  ]
 
-output "bastion_instance_id" {
-  value = module.bastion.instance_id
-}
+  node_pools_oauth_scopes = {
+    all = []
 
-output "bastion_public_ip" {
-  value = module.bastion.public_ip
-}
+    default-node-pool = [
+      "https://www.googleapis.com/auth/cloud-platform",
+    ]
+  }
 
-output "bastion_private_ip" {
-  value = module.bastion.private_ip
-}
+  node_pools_labels = {
+    all = {}
 
-output "mysql_private_ip" {
-  value = module.cloud_sql.private_ip
+    default-node-pool = {
+      default-node-pool = true
+    }
+  }
+
+  node_pools_metadata = {
+    all = {}
+
+    default-node-pool = {
+      node-pool-metadata-custom-value = "platform-gke-node-pool"
+    }
+  }
+
+  node_pools_tags = {
+    all = []
+
+    default-node-pool = [
+      "default-node-pool",
+    ]
+  }
 }

@@ -32,6 +32,14 @@ output "network_id" {
   value = google_compute_network.platform_vpc.self_link
 }
 
+output "network_name" {
+  value = google_compute_network.platform_vpc.name
+}
+
 output "subnet_app_1_id" {
   value = google_compute_subnetwork.subnet_app_1.self_link
+}
+
+output "subnet_app_1_name" {
+  value = google_compute_subnetwork.subnet_app_1.name
 }

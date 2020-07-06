@@ -17,7 +17,7 @@ variable "host_number" {
   default = "20"
 }
 
-# Variables that help allow private network access to the RDS server
+# Variables that are passed to the eks module
 variable cidr_block_subnet_pri_1 {}
 variable cidr_block_subnet_pri_2 {}
 
