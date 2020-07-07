@@ -74,16 +74,15 @@ module "gke" {
       name               = "default-node-pool"
       machine_type       = "n1-standard-2"
       min_count          = 1
-      max_count          = 5
+      max_count          = 2
       local_ssd_count    = 0
-      disk_size_gb       = 100
+      disk_size_gb       = 10
       disk_type          = "pd-standard"
       image_type         = "COS"
       auto_repair        = true
       auto_upgrade       = true
-      service_account    = "terraform@${var.admin_project_name}.iam.gserviceaccount.com"
       preemptible        = false
-      initial_node_count = 80
+      initial_node_count = 2
     },
   ]
 

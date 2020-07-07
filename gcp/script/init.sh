@@ -6,3 +6,8 @@ gcloud services enable \
     servicenetworking.googleapis.com \
     sqladmin.googleapis.com \
     container.googleapis.com
+
+gcloud iam service-accounts add-iam-policy-binding \
+  terraform@$GOOGLE_PROJECT.iam.gserviceaccount.com \
+  --member=user:$GOOGLE_USER\
+  --role=roles/iam.serviceAccountUser`
