@@ -6,7 +6,7 @@ variable "key_pair_name" {}
 variable "env" {}
 
 # EKS
-variable "cluster_name" {
+variable "eks_cluster_name" {
   default = "platform-eks"
 }
 

@@ -35,6 +35,7 @@ resource "aws_subnet" "subnet_pub_1" {
     Environment                                     = var.env
     Type                                            = "public"
     Bastion                                         = "1"
+    Kubernetes                                      = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
     "kubernetes.io/role/elb"                        = "1"
   }
@@ -49,6 +50,7 @@ resource "aws_subnet" "subnet_pub_2" {
     Name                                            = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment                                     = var.env
     Type                                            = "public"
+    Kubernetes                                      = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
     "kubernetes.io/role/elb"                        = "1"
   }
@@ -64,6 +66,7 @@ resource "aws_subnet" "subnet_pri_1" {
     Type                                            = "private"
     Syslog                                          = "1"
     MSK                                             = "1"
+    Kubernetes                                      = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"               = "1"
   }
@@ -79,6 +82,7 @@ resource "aws_subnet" "subnet_pri_2" {
     Type                                            = "private"
     Docker                                          = "1"
     MSK                                             = "1"
+    Kubernetes                                      = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"               = "1"
   }

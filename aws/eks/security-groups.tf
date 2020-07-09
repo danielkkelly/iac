@@ -1,3 +1,4 @@
+/*
 data "aws_security_group" "bastion_sg" {
   tags = {
     Name = "platform-bastion"
@@ -5,7 +6,8 @@ data "aws_security_group" "bastion_sg" {
 }
 
 resource "aws_security_group" "eks_worker_sg" {
-  name_prefix = "platform-eks-worker"
+  name        = "platform-eks-workers"
+  description = "Platform EKS worker nodes"
   vpc_id      = data.aws_vpc.vpc.id
 
   ingress {
@@ -15,4 +17,4 @@ resource "aws_security_group" "eks_worker_sg" {
     
     security_groups = [data.aws_security_group.bastion_sg.id]
   }
-}
+}*/
