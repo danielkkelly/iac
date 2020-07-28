@@ -1,14 +1,6 @@
 #
-# AWS Region
+# Environment
 #
-variable "region" {
-}
-
-#
-# Specifies the environment
-#
-variable "env" {
-}
-
-variable "key_pair_name" {
-}
+variable "region" {}
+variable "env" {}
+variable "key_pair_name" {}

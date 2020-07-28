@@ -55,7 +55,7 @@
             "playbook": "playbook-syslog-kafka.yaml" 
         },                        
         {
-            "module": "lb",
+            "module": "lb-docker",
             "action": "apply",
             "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "alb"], 
             "terraform": true,
@@ -63,7 +63,7 @@
             "playbook": "playbook.yaml" 
         },
         {
-            "module": "lb",
+            "module": "lb-docker",
             "action": "destroy",
             "target": ["alb", "docker", "bastion", "ssm", "iam", "network"],
             "terraform": true,

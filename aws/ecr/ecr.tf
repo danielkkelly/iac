@@ -15,3 +15,5 @@ resource "aws_ecr_repository" "platform_ecr" {
       Environment = var.env
   }
 }
+
+//TODO: aws_ecr_lifecycle_policy
