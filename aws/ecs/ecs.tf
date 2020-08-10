@@ -70,7 +70,7 @@ resource "aws_ecs_task_definition" "app" {
                                     app_port       = var.app_port,
                                     fargate_cpu    = var.fargate_cpu,
                                     fargate_memory = var.fargate_memory,
-                                    aws_region     = var.region,
+                                    aws_region     = var.region
                                 })
 }
 
@@ -88,7 +88,7 @@ resource "aws_ecs_service" "platform_ecs_service" {
   }
 
   load_balancer {
-    target_group_arn = data.aws_alb_target_group.platform_lb_tg.id
+    target_group_arn = data.aws_lb_target_group.platform_lb_tg.id
     container_name   = "app"
     container_port   = var.app_port
   }
