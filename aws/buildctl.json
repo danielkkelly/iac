@@ -57,7 +57,7 @@
         {
             "module": "lb-docker",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "alb"], 
+            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "ecr", "alb"], 
             "terraform": true,
             "ansible": true,
             "playbook": "playbook.yaml" 
@@ -65,7 +65,7 @@
         {
             "module": "lb-docker",
             "action": "destroy",
-            "target": ["alb", "docker", "bastion", "ssm", "iam", "network"],
+            "target": ["alb", "ecr", "docker", "bastion", "ssm", "iam", "network"],
             "terraform": true,
             "ansible": false
         },

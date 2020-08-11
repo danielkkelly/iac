@@ -16,4 +16,30 @@ resource "aws_ecr_repository" "platform_ecr" {
   }
 }
 
-//TODO: aws_ecr_lifecycle_policy
+/* 
+ * We'll keep tagged images indefinitely and untagged images get purged after a 
+ * few weeks
+ */
+resource "aws_ecr_lifecycle_policy" "platform_ecr_policy" {
+  repository = aws_ecr_repository.platform_ecr.name
+
+  policy = <<EOF
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Expire images older than 7 days",
+            "selection": {
+                "tagStatus": "untagged",
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber": 7
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}
+EOF
+}
