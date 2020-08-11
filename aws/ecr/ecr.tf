@@ -4,7 +4,7 @@ provider "aws" {
 }
 
 resource "aws_ecr_repository" "platform_ecr" {
-  name                 = "platform-ecr"
+  name                 = "platform"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
