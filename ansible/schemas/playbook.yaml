@@ -1,0 +1,69 @@
+---
+  - hosts: "{{ env | default('dev')}}-bastion"
+    become: yes
+    vars:
+      iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+      schema_home: "{{ lookup('env', 'SCHEMA_HOME') }}"
+      remote_dir: /root/schemas
+    tasks:
+    - name: Install mysql client
+      yum:
+        name: mysql
+        state: present
+    - name: Add my.cnf for root
+      template:
+        src: '{{ iac_home }}/ansible/schemas/conf/my.cnf.j2'
+        dest: /root/.my.cnf
+        owner: root
+        group: root
+        mode: '0600'        
+    - name: Copy schemas and related scrips
+      copy:
+        src: '{{ schema_home }}'
+        dest: '/root'
+        mode: '0644'
+      tags:
+        - copy
+    - name: Find gzipped schemas
+      find: 
+        paths: '{{ remote_dir }}'
+        patterns: "*.gz"
+      register: find_result
+    - name: Unzip schemas
+      shell: "gunzip {{ item.path }}"
+      with_items:
+        "{{ find_result.files }}"
+    - name: Create the processed directory to store processed scripts
+      file:
+        path: "{{ remote_dir }}/processed"
+        state: directory
+    - name: Initial database setup using db-setup.sql
+      include_tasks: playbook-import.yaml
+      vars:
+        item: { path: "{{ remote_dir}}/db-setup.sql" }
+      tags:
+        - db-setup
+    - name: Find schemas to import
+      find: 
+        paths: '{{ remote_dir }}'
+        patterns: "*.sql"
+      register: find_result
+    - name: Import schemas
+      include_tasks: playbook-import.yaml
+      with_items:
+        "{{ find_result.files }}"
+    - name: Find procesed scripts to compress
+      find: 
+        paths: '{{ remote_dir }}/processed'
+        patterns: "*.sql"
+      register: find_result
+      tags:
+        - cleanup
+    - name: Compress processed scripts
+      archive:
+        path: '{{ item.path }}'
+        remove: yes    
+      with_items:
+        "{{ find_result.files }}"
+      tags:
+        - cleanup
