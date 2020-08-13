@@ -34,7 +34,7 @@ variable preferred_backup_window {
 }
 
 variable backup_retention_period {
-  default = 5
+  default = 14
 }
 
 # Variables that help allow private network access to the RDS server

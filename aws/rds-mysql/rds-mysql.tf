@@ -78,6 +78,12 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
     value        = "1"
     apply_method = "pending-reboot"
   }
+
+    parameter {
+    name         = "log_bin_trust_function_creators"
+    value        = "1"
+    apply_method = "pending-reboot"
+  }
 }
 
 resource "aws_rds_cluster" "platform_rds_cluster" {
