@@ -55,6 +55,9 @@ resource "aws_ecs_cluster" "platform_ecs_cluster" {
   name = "platform-ecs"
 }
 
+locals {
+  docker_image = "${var.ecr}/${var.app_image}"
+}
 
 //TODO: needs task_role_arn?  Necessary for services like DynamoDB, for example
 resource "aws_ecs_task_definition" "app" {
@@ -66,7 +69,7 @@ resource "aws_ecs_task_definition" "app" {
   memory                   = var.fargate_memory
   container_definitions    = templatefile("./app.json.tmpl", 
                                 {
-                                    app_image      = var.app_image,
+                                    app_image      = local.docker_image,
                                     app_port       = var.app_port,
                                     fargate_cpu    = var.fargate_cpu,
                                     fargate_memory = var.fargate_memory,
