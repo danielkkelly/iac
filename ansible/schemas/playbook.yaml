@@ -21,7 +21,7 @@
       copy:
         src: '{{ schema_home }}'
         dest: '/root'
-        mode: '0644'
+        mode: '0640'
       tags:
         - copy
     - name: Find gzipped schemas
@@ -37,33 +37,33 @@
       file:
         path: "{{ remote_dir }}/processed"
         state: directory
-    - name: Initial database setup using db-setup.sql
+    - name: Initial database setup using setup.sql
       include_tasks: playbook-import.yaml
       vars:
-        item: { path: "{{ remote_dir}}/db-setup.sql" }
-      tags:
-        - db-setup
+        item: { path: "{{ remote_dir}}/setup.sql" }
     - name: Find schemas to import
       find: 
         paths: '{{ remote_dir }}'
         patterns: "*.sql"
+        recurse: no
+        excludes: "post-import.sql"
       register: find_result
     - name: Import schemas
       include_tasks: playbook-import.yaml
       with_items:
         "{{ find_result.files }}"
+    - name: Post processing using post-import.sql
+      include_tasks: playbook-import.yaml
+      vars:
+        item: { path: "{{ remote_dir}}/post-import.sql" }        
     - name: Find procesed scripts to compress
       find: 
         paths: '{{ remote_dir }}/processed'
         patterns: "*.sql"
       register: find_result
-      tags:
-        - cleanup
     - name: Compress processed scripts
       archive:
         path: '{{ item.path }}'
         remove: yes    
       with_items:
         "{{ find_result.files }}"
-      tags:
-        - cleanup

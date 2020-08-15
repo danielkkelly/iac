@@ -17,7 +17,7 @@ variable rds_instance_count {
 }
 
 variable rds_instance_class {
-  default = "db.t2.small"
+  default = "db.t2.medium"
 }
 
 # Database

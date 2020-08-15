@@ -1,11 +1,11 @@
 ---
-- name: Import {{ item.path }}
+- name: Run {{ item.path }}
   shell: "mysql < {{ item.path }}"
 - name: Copy {{ item.path }} to processed directory
   copy: 
     remote_src: true 
     src: "{{ item.path }}"
-    dest: /root/schemas/processed
+    dest: "{{ remote_dir}}/processed"
 - name: Remove {{ item.path }}
   file:
     path: "{{ item.path }}"
