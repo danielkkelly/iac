@@ -26,10 +26,6 @@ data "aws_security_group" "lb_sg" {
     name = "platform-lb"
 }
 
-data "aws_lb_target_group" "platform_lb_tg" {
-  name     = "platform-lb"
-}
-
 # Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs_tasks" {
   name        = "platform-ecs-tasks"
@@ -55,26 +51,30 @@ resource "aws_ecs_cluster" "platform_ecs_cluster" {
   name = "platform-ecs"
 }
 
-locals {
-  docker_image = "${var.ecr}/${var.app_image}"
-}
-
-//TODO: needs task_role_arn?  Necessary for services like DynamoDB, for example
 resource "aws_ecs_task_definition" "app" {
   family                   = "app-task"
-  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn            = aws_iam_role.ecs_task_role.arn           # role needed to make calls to other AWS services
+  execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn # role ECS container agent and docker can assume
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
   container_definitions    = templatefile("./app.json.tmpl", 
                                 {
-                                    app_image      = local.docker_image,
+                                    app_image      = var.app_image,
                                     app_port       = var.app_port,
                                     fargate_cpu    = var.fargate_cpu,
                                     fargate_memory = var.fargate_memory,
                                     aws_region     = var.region
                                 })
+}
+
+resource "aws_lb_target_group" "ecs_tg" {
+  name        = "platform-ecs"
+  port        = var.app_port
+  protocol    = "HTTP"
+  vpc_id      = data.aws_vpc.vpc.id
+  target_type = "ip"
 }
 
 resource "aws_ecs_service" "platform_ecs_service" {
@@ -91,7 +91,7 @@ resource "aws_ecs_service" "platform_ecs_service" {
   }
 
   load_balancer {
-    target_group_arn = data.aws_lb_target_group.platform_lb_tg.id
+    target_group_arn = aws_lb_target_group.ecs_tg.id
     container_name   = "app"
     container_port   = var.app_port
   }
