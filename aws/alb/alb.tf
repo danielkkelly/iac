@@ -3,8 +3,6 @@ provider "aws" {
   profile = var.env
 }
 
-provider "tls" {}
-
 data "aws_vpc" "vpc" {
   tags = {
     Type = "platform-vpc"
@@ -104,7 +102,7 @@ resource "aws_security_group" "lb_sg" {
     to_port   = 8080
     protocol  = "tcp"
     cidr_blocks = [var.cidr_block_subnet_pri_1,
-                   var.cidr_block_subnet_pri_2]
+    var.cidr_block_subnet_pri_2]
   }
 
   tags = {
@@ -134,68 +132,6 @@ resource "aws_lb" "platform_lb" {
   }
 }
 
-/* 
- * Create a target group.  This is where we define groups where listeners will forward traffice
- * based on their rules.  This is also where health checks are specified.
- * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
- */
-resource "aws_lb_target_group" "platform_lb_tg" {
-  name     = "platform-lb"
-  port     = 8080
-  protocol = "HTTP"
-  vpc_id   = data.aws_vpc.vpc.id
-}
-
-/* 
- * Attach the target group to an instance or autoscaling group.  We'll connect this one to our 
- * docker instance
- */
-
-data "aws_instance" "docker" {
-  instance_tags = {
-    Name = "platform-docker"
-  }
-}
-
-resource "aws_alb_target_group_attachment" "docker_tga" {
-  target_group_arn = aws_lb_target_group.platform_lb_tg.arn
-  target_id        = data.aws_instance.docker.id
-  port             = 8080
-}
-
-/* 
- * Create the self-signed TLS certificate and move it to the AWS Certificate Manager.  You could do 
- * this manually as well.  If you have a production certificate you would upload it to the ACM
- * and then look it up by name and apply it here.  The client-vpn module has an example of looking
- * up a cert.
- */
-resource "tls_private_key" "private_key" {
-  algorithm = "RSA"
-}
-
-resource "tls_self_signed_cert" "cert" {
-  key_algorithm   = "RSA"
-  private_key_pem = tls_private_key.private_key.private_key_pem
-
-  subject {
-    common_name  = "dev.internal"
-    organization = "Developers, Inc"
-  }
-
-  validity_period_hours = 72
-
-  allowed_uses = [
-    "key_encipherment",
-    "digital_signature",
-    "server_auth",
-  ]
-}
-
-resource "aws_acm_certificate" "cert" {
-  private_key      = tls_private_key.private_key.private_key_pem
-  certificate_body = tls_self_signed_cert.cert.cert_pem
-}
-
 /*
  * Listeners to listing on 80 and 443
  */
@@ -207,8 +143,13 @@ resource "aws_lb_listener" "lb_listener_https" {
   certificate_arn   = aws_acm_certificate.cert.arn
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.platform_lb_tg.arn
+    type = "fixed-response"
+
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "OK"
+      status_code  = "200"
+    }
   }
 }
 
@@ -229,18 +170,3 @@ resource "aws_lb_listener" "lb_listener_http" {
   }
 }
 
-data "aws_security_group" "docker_sg" {
-  tags = {
-    Name = "platform-docker"
-  }
-}
-
-// Update the docker server to allow ingress
-resource "aws_security_group_rule" "lb_http_sgr" {
-  type                     = "ingress"
-  from_port                = 8080
-  to_port                  = 8080
-  protocol                 = "tcp"
-  source_security_group_id = aws_security_group.lb_sg.id
-  security_group_id        = data.aws_security_group.docker_sg.id
-}
