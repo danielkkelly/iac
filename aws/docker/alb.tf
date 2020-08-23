@@ -1,3 +1,12 @@
+data "aws_lb" "platform_lb" {
+  name = "platform-lb"
+}
+
+data "aws_lb_listener" "lb_listener_https" {
+  load_balancer_arn = data.aws_lb.platform_lb.arn
+  port              = 443
+}
+
 /* 
  * Create a target group.  This is where we define groups where listeners will forward traffice
  * based on their rules.  This is also where health checks are specified.
@@ -15,20 +24,14 @@ resource "aws_lb_target_group" "platform_docker_lb_tg" {
  * docker instance
  */
 
-data "aws_instance" "docker" {
-  instance_tags = {
-    Name = "platform-docker"
-  }
-}
-
 resource "aws_alb_target_group_attachment" "docker_tga" {
   target_group_arn = aws_lb_target_group.platform_docker_lb_tg.arn
-  target_id        = data.aws_instance.docker.id
+  target_id        = aws_instance.docker.id
   port             = 8080
 }
 
 resource "aws_lb_listener_rule" "docker_listener_rule" {
-  listener_arn = aws_lb_listener.lb_listener_https.arn
+  listener_arn = data.aws_lb_listener.lb_listener_https.arn
   priority     = 10
 
   action {
@@ -45,19 +48,19 @@ resource "aws_lb_listener_rule" "docker_listener_rule" {
 
 /* 
  * Docker security group updates to allow the load balancer access to the instance
+ * Update the docker server to allow ingress
  */
-data "aws_security_group" "docker_sg" {
+data "aws_security_group" "lb_sg" {
   tags = {
-    Name = "platform-docker"
+    Name = "platform-lb"
   }
 }
 
-// Update the docker server to allow ingress
 resource "aws_security_group_rule" "lb_http_sgr" {
   type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
   protocol                 = "tcp"
-  source_security_group_id = aws_security_group.lb_sg.id
-  security_group_id        = data.aws_security_group.docker_sg.id
+  source_security_group_id = data.aws_security_group.lb_sg.id
+  security_group_id        = aws_security_group.docker_sg.id
 }

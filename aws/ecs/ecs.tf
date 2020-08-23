@@ -22,10 +22,7 @@ data "aws_subnet" "ecs_subnet_id" {
   id       = each.value
 }
 
-data "aws_security_group" "lb_sg" {
-    name = "platform-lb"
-}
-
+#TODO: break out security group rules, move alb rule to alb.tf
 # Traffic to the ECS cluster should only come from the ALB
 resource "aws_security_group" "ecs_tasks" {
   name        = "platform-ecs-tasks"
@@ -67,14 +64,6 @@ resource "aws_ecs_task_definition" "app" {
                                     fargate_memory = var.fargate_memory,
                                     aws_region     = var.region
                                 })
-}
-
-resource "aws_lb_target_group" "ecs_tg" {
-  name        = "platform-ecs"
-  port        = var.app_port
-  protocol    = "HTTP"
-  vpc_id      = data.aws_vpc.vpc.id
-  target_type = "ip"
 }
 
 resource "aws_ecs_service" "platform_ecs_service" {

@@ -57,7 +57,7 @@
         {
             "module": "lb-docker",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion", "docker", "ecr", "alb", "rds-mysql", "schemas"], 
+            "target": ["localhost", "network", "iam", "ssm", "bastion", "alb", "docker", "ecr"], 
             "terraform": true,
             "ansible": true,
             "playbook": "playbook.yaml" 
@@ -65,7 +65,7 @@
         {
             "module": "lb-docker",
             "action": "destroy",
-            "target": ["rds-mysql", "alb", "ecr", "docker", "bastion", "ssm", "iam", "network"],
+            "target": ["ecr", "docker", "alb", "bastion", "ssm", "iam", "network"],
             "terraform": true,
             "ansible": false
         },
