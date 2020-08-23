@@ -22,26 +22,34 @@ data "aws_subnet" "ecs_subnet_id" {
   id       = each.value
 }
 
-#TODO: break out security group rules, move alb rule to alb.tf
 # Traffic to the ECS cluster should only come from the ALB
-resource "aws_security_group" "ecs_tasks" {
+resource "aws_security_group" "ecs_tasks_sg" {
   name        = "platform-ecs-tasks"
   description = "Allow inbound access from the ALB only"
   vpc_id      = data.aws_vpc.vpc.id
 
-  ingress {
-    protocol        = "tcp"
-    from_port       = var.app_port
-    to_port         = var.app_port
-    security_groups = [data.aws_security_group.lb_sg.id]
+  tags = {
+    Name        = "platform-ecs-tasks"
+    Environment = var.env
   }
+}
 
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+resource "aws_security_group_rule" "ecs_tasks_sgr" {
+  type                     = "ingress"
+  from_port                = var.app_port
+  to_port                  = var.app_port
+  protocol                 = "tcp"
+  source_security_group_id = data.aws_security_group.lb_sg.id
+  security_group_id        = aws_security_group.ecs_tasks_sg.id
+}
+
+resource "aws_security_group_rule" "egress_sgr" {
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = aws_security_group.ecs_tasks_sg.id
 }
 
 resource "aws_ecs_cluster" "platform_ecs_cluster" {
@@ -74,13 +82,13 @@ resource "aws_ecs_service" "platform_ecs_service" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [aws_security_group.ecs_tasks.id]
+    security_groups  = [aws_security_group.ecs_tasks_sg.id]
     subnets          = [for s in data.aws_subnet.ecs_subnet_id : s.id]
-    assign_public_ip = true //TODO: make false
+    assign_public_ip = false
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.ecs_tg.id
+    target_group_arn = aws_lb_target_group.platform_ecs_lb_tg.id
     container_name   = "app"
     container_port   = var.app_port
   }
