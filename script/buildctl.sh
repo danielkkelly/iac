@@ -11,8 +11,10 @@ declare ansible=false
 declare playbook="playbook.yaml"
 declare env="dev"
 declare auto_approve
+declare verbose=false
 
 declare -a targets=()
+declare -a dependencies=()
 
 function parse_cli {
 	for arg in "$@"; do # transform long options to short ones 
@@ -31,13 +33,14 @@ function parse_cli {
 	done
 
 	# Parse command line options safely using getops
-	while getopts "c:m:a:tnp:e:b" opt; do
+	while getopts "c:m:a:tnp:e:bv" opt; do
 		case $opt in
 			c) provider=$OPTARG ;;
 			m) module=$OPTARG ;;
 			a) action=$OPTARG ;;
 			t) terraform=true ;;
 			n) ansible=true ;;
+			v) verbose=true ;;
 			p) playbook=$OPTARG ;;
 			e) env=$OPTARG ;;
 			b) auto_approve="--auto-approve" ;;
@@ -176,8 +179,7 @@ function exec_ansible {
 }
 
 # Searches our JSON model array to pull the correct object and then the requested
-# property.  The object represents the module or directory where we have our
-# configuration for terraform, ansible, or both.
+# property.  
 function get_model_value {
 	local module=$1
 	local action=$2
@@ -186,35 +188,90 @@ function get_model_value {
 	local value=`cat $IAC_HOME/$provider/buildctl.json | 
 		jq -r -c ".modules[] | select(.module==\"${module}\" 
 				                  and .action==\"${action}\").$property"`
+	echo $value
+}
+
+# Searches our JSON model array to pull the correct object and then the requested
+# property.  If the property isn't found then see if there's a global variable 
+# with the appropriate value and use that
+function get_model_value_or_default {
+	local module=$1
+	local action=$2
+	local property=$3
+	local value=$(get_model_value $module $action $property)
 
 	if [[ "x${value}" == "x" ]] # grab the default value 
 	then
+		# property contains something like "ansible", for example
+		# this will reference the value of the global variable 
+		# given that value is empty
 		value="${!property}"
 	fi
 	echo $value
 }
 
-# Prepares the list of targets for processing.  This is done as a separate loop 
-# because the "while read" causes issues if we process targets in the same loop
-# where underlying commands wait for input.  Additionally, this is cleaner even 
-# at the expense of another loop.
+# Prepares the list of targets for processing.  This method will also expand the
+# list of targets based on dependencies.
 function configure_targets {
+	# Add the specified module as the first in the list of dependencies
+	dependencies+=$module	
 
-	local target=$(get_model_value $module $action "target")
+	# Find all of the dependencies for this module
+	configure_dependencies $module
+
+	if [[ $action == "destroy" ]] # iterate in order deps were added
+	then 
+		for dependency in ${dependencies[@]};
+		do
+			configure_target $dependency
+		done
+	else # iterate in reverse order for apply or plan
+		n=${#dependencies[*]}	
+		for (( i = n-1; i >= 0; i-- ))
+		do 
+			configure_target ${dependencies[i]}
+		done
+	fi
+}
+
+# Get the targets for a given dependency
+function configure_target {
+	local dependency=$1
+	local target=$(get_model_value $dependency $action "target")
 
 	if [[ "x${target}" == "x" ]] # add the module as the target
 	then
-		targets+=($module)
+		targets+=($dependency)
 	else 
-		targets=($(echo $target | jq -c -r '.[]'))
+		targets+=($(echo $target | jq -c -r '.[]'))
+	fi	
+}
+
+# Given a module, search the JSON configuration to find all of the dependenciesi
+# recursively until no additional dependencies are specified
+function configure_dependencies {
+	local module=$1
+	local depends_on=$(get_model_value $module $action "depends_on")
+	if [[ $depends_on != '' && $depends_on != 'null' ]]
+	then	
+		dependencies+=($depends_on)
+		configure_dependencies $depends_on
 	fi
 }
 
 # Reads configuration from the model and sets the appropriate global variables.
 function configure_globals {
-	terraform=$(get_model_value $module $action "terraform")
-	ansible=$(get_model_value $module $action "ansible")
-	playbook=$(get_model_value $module $action "playbook")
+	terraform=$(get_model_value_or_default $module $action "terraform")
+	ansible=$(get_model_value_or_default $module $action "ansible")
+	playbook=$(get_model_value_or_default $module $action "playbook")
+}
+
+# Prints the targets for the module requested as well as dependancies.
+function print_targets {
+	for target in ${targets[@]}; 
+	do
+		echo $target
+	done
 }
 
 # After command line arguments are parsed, this is the mail driver for this 
@@ -223,6 +280,11 @@ function main {
 	# Basic configuration work before processing
 	configure_globals
 	configure_targets
+
+	if [[ $verbose == true ]]
+	then
+		print_targets
+	fi
 
 	for target in ${targets[@]}; # execute scripts
 	do

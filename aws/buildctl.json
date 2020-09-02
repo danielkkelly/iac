@@ -1,34 +1,52 @@
 {
     "modules": [
         {
-            "module": "base-vpn",
-            "action": "apply",
-            "target": ["network", "iam", "ssm", "client-vpn"],
-            "terraform": true,
-            "ansible": true,
-            "playbook": "playbook.yaml"
-        },
-        {
-            "module": "base-vpn",
-            "action": "destroy",
-            "target": ["client-vpn", "ssm", "iam", "network"],
-            "terraform": true,
-            "ansible": false
-        },
-        {
             "module": "base",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion"],
+            "target": ["localhost", "network", "iam", "ssm"],
             "terraform": true,
-            "ansible": true,
-            "playbook": "playbook.yaml"
+            "ansible": true
         },
         {
             "module": "base",
             "action": "destroy",
-            "target": ["bastion", "ssm", "iam", "network"],
+            "target": ["ssm", "iam", "network"],
             "terraform": true,
             "ansible": false
+        }, 
+        {
+            "module": "base-vpn",
+            "action": "apply",
+            "target": ["client-vpn"],
+            "terraform": true,
+            "ansible": false,
+            "playbook": "playbook.yaml",
+            "depends_on": "base"
+        },
+        {
+            "module": "base-vpn",
+            "action": "destroy",
+            "target": ["client-vpn"],
+            "terraform": true,
+            "ansible": false,
+            "depends_on": "base"
+        },
+        {
+            "module": "base-bastion",
+            "action": "apply",
+            "target": ["bastion"],
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml",
+            "depends_on": "base"
+        },
+        {
+            "module": "base-bastion",
+            "action": "destroy",
+            "target": ["bastion"],
+            "terraform": true,
+            "ansible": false,
+            "depends_on": "base"
         },
         {
             "module": "syslog-forwarding", 
@@ -53,40 +71,65 @@
             "terraform": false,
             "ansible": true,
             "playbook": "playbook-syslog-kafka.yaml" 
-        },                        
+        },
         {
-            "module": "lb-docker",
+            "module": "syslog-default",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion", "alb", "docker", "ecr"], 
+            "target": ["syslog", "syslog-forwarding", "syslog-docker"], 
             "terraform": true,
             "ansible": true,
-            "playbook": "playbook.yaml" 
-        },
+            "playbook": "playbook.yaml"
+        },       
         {
-            "module": "lb-docker",
-            "action": "destroy",
-            "target": ["ecr", "docker", "alb", "bastion", "ssm", "iam", "network"],
-            "terraform": true,
-            "ansible": false
-        },
-        {
-            "module": "all",
+            "module": "lb",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm", "bastion", 
-                       "docker", "ecr", 
-                       "syslog", "syslog-forwarding", "syslog-docker", 
-                       "rds-mysql"], 
+            "target": ["alb", "ecr"], 
             "terraform": true,
             "ansible": true,
-            "playbook": "playbook.yaml" 
+            "playbook": "playbook.yaml",
+            "depends_on": "base-bastion" 
         },
         {
-            "module": "all",
+            "module": "lb",
             "action": "destroy",
-            "target": ["docker", "ecr", "rds-mysql", "bastion", "syslog", "ssm", "iam", "network"],
+            "target": ["ecr", "alb"], 
             "terraform": true,
             "ansible": false,
-            "playbook": "playbook.yaml" 
+            "depends_on": "base-bastion" 
+        },                                                       
+        {
+            "module": "lb-docker",
+            "action": "apply",
+            "target": ["docker"], 
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml",
+            "depends_on": "lb" 
+        },
+        {
+            "module": "lb-docker",
+            "action": "destroy",
+            "target": ["docker"],
+            "terraform": true,
+            "ansible": false,
+            "depends_on": "lb"
+        },
+        {
+            "module": "lb-app",
+            "action": "apply",
+            "target": ["rds-mysql", "schemas"], 
+            "terraform": true,
+            "ansible": true,
+            "playbook": "playbook.yaml",
+            "depends_on": "lb-docker" 
+        },
+        {
+            "module": "lb-app",
+            "action": "destroy",
+            "target": ["rds-mysql"],
+            "terraform": true,
+            "ansible": false,
+            "depends_on": "lb-docker"
         }
     ],
     "resources" : [
