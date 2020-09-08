@@ -1,0 +1,6 @@
+- name: 'run local app build and deploy script'
+  hosts: localhost
+  vars:
+    app_deploy_script: "{{ lookup('env', 'APPS_BUILD_CMD') }}"
+  tasks:
+    - local_action: script {{ app_deploy_script }} --env {{ env }}
