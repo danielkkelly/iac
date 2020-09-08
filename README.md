@@ -41,7 +41,7 @@ Other packages that are required for scripts include
 
 ## Example
 ```
-export IAC_HOME=~/iac
+export IAC_HOME=~/projects/iac
 export PATH=$PATH:$IAC_HOME/script:$IAC_HOME/aws/script:$IAC_HOME/gcp/script
 export TF_VAR_iac_home=$IAC_HOME
 ```
@@ -120,3 +120,12 @@ Host *
 
 * [AWS](aws/README.md)
 * [GCP](gcp/README.md)
+
+# CI
+
+It's possilb that you'll want to deploy applications on your infrastructure automatically. 
+The sections below cover deployment of database schemas to MySQL as well as hooks for 
+deploying applications.
+
+* [Deploying Schemas](ansible/deploy-schemas/README.md)
+* [Deploying Apps](ansible/deploy-apps/README.md)

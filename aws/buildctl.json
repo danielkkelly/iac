@@ -117,7 +117,7 @@
         {
             "module": "lb-app",
             "action": "apply",
-            "target": ["rds-mysql", "schemas"], 
+            "target": ["rds-mysql", "deploy-schemas"], 
             "terraform": true,
             "ansible": true,
             "playbook": "playbook.yaml",
