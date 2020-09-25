@@ -1,11 +1,19 @@
 {
     "modules": [
         {
+            "module": "local",
+            "target": ["localhost"],
+            "action": "apply",
+            "terraform": false,
+            "ansible": true,
+            "playbook": "playbook.yaml"
+        },
+        {
             "module": "base",
             "action": "apply",
-            "target": ["localhost", "network", "iam", "ssm"],
+            "target": ["local", "network", "iam", "ssm"],
             "terraform": true,
-            "ansible": true
+            "ansible": false
         },
         {
             "module": "base",
@@ -17,36 +25,32 @@
         {
             "module": "base-vpn",
             "action": "apply",
-            "target": ["client-vpn"],
+            "target": ["base", "client-vpn"],
             "terraform": true,
             "ansible": false,
-            "playbook": "playbook.yaml",
-            "depends_on": "base"
+            "playbook": "playbook.yaml"
         },
         {
             "module": "base-vpn",
             "action": "destroy",
-            "target": ["client-vpn"],
+            "target": ["client-vpn", "base"],
             "terraform": true,
-            "ansible": false,
-            "depends_on": "base"
+            "ansible": false
         },
         {
             "module": "base-bastion",
             "action": "apply",
-            "target": ["bastion"],
+            "target": ["base", "bastion"],
             "terraform": true,
             "ansible": true,
-            "playbook": "playbook.yaml",
-            "depends_on": "base"
+            "playbook": "playbook.yaml"
         },
         {
             "module": "base-bastion",
             "action": "destroy",
-            "target": ["bastion"],
+            "target": ["bastion", "base"],
             "terraform": true,
-            "ansible": false,
-            "depends_on": "base"
+            "ansible": false
         },
         {
             "module": "syslog-forwarding", 
@@ -65,7 +69,7 @@
             "playbook": "playbook-syslog-docker.yaml" 
         },
         {
-            "module": "syslog-kafka", 
+            "module": "syslog-kafka-config", 
             "action": "apply",
             "target": ["syslog"],
             "terraform": false,
@@ -73,7 +77,7 @@
             "playbook": "playbook-syslog-kafka.yaml" 
         },
         {
-            "module": "syslog-default",
+            "module": "syslog-default-config",
             "action": "apply",
             "target": ["syslog", "syslog-forwarding", "syslog-docker"], 
             "terraform": true,
@@ -81,55 +85,48 @@
             "playbook": "playbook.yaml"
         },       
         {
-            "module": "lb",
+            "module": "lb-container",
             "action": "apply",
-            "target": ["alb", "ecr"], 
+            "target": ["base-bastion", "alb", "ecr"], 
             "terraform": true,
-            "ansible": true,
-            "playbook": "playbook.yaml",
-            "depends_on": "base-bastion" 
+            "ansible": false
         },
         {
-            "module": "lb",
+            "module": "lb-container",
             "action": "destroy",
-            "target": ["ecr", "alb"], 
+            "target": ["ecr", "alb", "base-bastion"], 
             "terraform": true,
-            "ansible": false,
-            "depends_on": "base-bastion" 
+            "ansible": false
         },                                                       
         {
             "module": "lb-docker",
             "action": "apply",
-            "target": ["docker"], 
+            "target": ["lb-container", "docker", "syslog-default-config"], 
             "terraform": true,
             "ansible": true,
-            "playbook": "playbook.yaml",
-            "depends_on": "lb" 
+            "playbook": "playbook.yaml"
         },
         {
             "module": "lb-docker",
             "action": "destroy",
-            "target": ["docker"],
+            "target": ["docker", "syslog", "lb-container"],
             "terraform": true,
-            "ansible": false,
-            "depends_on": "lb"
+            "ansible": false
         },
         {
-            "module": "lb-app",
+            "module": "lb-apps",
             "action": "apply",
-            "target": ["rds-mysql", "deploy-schemas"], 
+            "target": ["lb-docker", "rds-mysql", "schemas"], 
             "terraform": true,
             "ansible": true,
-            "playbook": "playbook.yaml",
-            "depends_on": "lb-docker" 
+            "playbook": "playbook.yaml"
         },
         {
-            "module": "lb-app",
+            "module": "lb-apps",
             "action": "destroy",
-            "target": ["rds-mysql"],
+            "target": ["rds-mysql", "lb-docker"],
             "terraform": true,
-            "ansible": false,
-            "depends_on": "lb-docker"
+            "ansible": false
         }
     ],
     "resources" : [

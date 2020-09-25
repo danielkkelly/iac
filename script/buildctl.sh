@@ -13,8 +13,7 @@ declare env="dev"
 declare auto_approve
 declare verbose=false
 
-declare -a targets=()
-declare -a dependencies=()
+declare -a instructions_json=()
 
 function parse_cli {
 	for arg in "$@"; do # transform long options to short ones 
@@ -28,6 +27,7 @@ function parse_cli {
 			"--playbook")     set -- "$@" "-p" ;;
 			"--env")          set -- "$@" "-e" ;;
 			"--auto-approve") set -- "$@" "-b" ;;
+			"--verbose") 	  set -- "$@" "-v" ;;
 			*)                set -- "$@" "$arg"
 		esac
 	done
@@ -191,86 +191,44 @@ function get_model_value {
 	echo $value
 }
 
-# Searches our JSON model array to pull the correct object and then the requested
-# property.  If the property isn't found then see if there's a global variable 
-# with the appropriate value and use that
-function get_model_value_or_default {
-	local module=$1
-	local action=$2
-	local property=$3
-	local value=$(get_model_value $module $action $property)
+# Convert a bash array to a JSON array string. This uses "compact" format, which
+# removes whites space. 
+function array_to_json {
+	local array=($@)	
+	echo $(printf '%s\n' "${array[@]}" | jq -R '.' | jq -c -s)
+}
 
-	if [[ "x${value}" == "x" ]] # grab the default value 
-	then
-		# property contains something like "ansible", for example
-		# this will reference the value of the global variable 
-		# given that value is empty
-		value="${!property}"
-	fi
-	echo $value
+# Convert a JSON array to a bash array.
+function json_to_array {
+	echo $(echo $1 | jq -c -r '.[]')
 }
 
 # Prepares the list of targets for processing.  This method will also expand the
 # list of targets based on dependencies.
 function configure_targets {
-	# Add the specified module as the first in the list of dependencies
-	dependencies+=$module	
-
-	# Find all of the dependencies for this module
-	configure_dependencies $module
-
-	if [[ $action == "destroy" ]] # iterate in order deps were added
-	then 
-		for dependency in ${dependencies[@]};
-		do
-			configure_target $dependency
-		done
-	else # iterate in reverse order for apply or plan
-		n=${#dependencies[*]}	
-		for (( i = n-1; i >= 0; i-- ))
-		do 
-			configure_target ${dependencies[i]}
-		done
-	fi
-}
-
-# Get the targets for a given dependency
-function configure_target {
-	local dependency=$1
-	local target=$(get_model_value $dependency $action "target")
-
-	if [[ "x${target}" == "x" ]] # add the module as the target
-	then
-		targets+=($dependency)
-	else 
-		targets+=($(echo $target | jq -c -r '.[]'))
-	fi	
-}
-
-# Given a module, search the JSON configuration to find all of the dependenciesi
-# recursively until no additional dependencies are specified
-function configure_dependencies {
 	local module=$1
-	local depends_on=$(get_model_value $module $action "depends_on")
-	if [[ $depends_on != '' && $depends_on != 'null' ]]
-	then	
-		dependencies+=($depends_on)
-		configure_dependencies $depends_on
+	local instruction=("$@") # will get the module as well, i.e. four elements
+	local targets=$(get_model_value $module $action "target")
+
+	if [[ "x$targets" != "x" ]]; then # this is an instruction
+		local instruction=($(get_model_value $module $action "terraform")
+					       $(get_model_value $module $action "ansible")
+					       $(get_model_value $module $action "playbook"))
+	else # leaf
+		instructions_json+=($(array_to_json ${instruction[@]}))
 	fi
-}
-
-# Reads configuration from the model and sets the appropriate global variables.
-function configure_globals {
-	terraform=$(get_model_value_or_default $module $action "terraform")
-	ansible=$(get_model_value_or_default $module $action "ansible")
-	playbook=$(get_model_value_or_default $module $action "playbook")
-}
-
-# Prints the targets for the module requested as well as dependancies.
-function print_targets {
-	for target in ${targets[@]}; 
+	
+	for target in $(json_to_array $targets)
 	do
-		echo $target
+		configure_targets $target "${instruction[@]}"
+	done;	
+}
+
+# Prints the instructions for the module requested as well as dependancies.
+function print_instructions {
+	for instruction_json in ${instructions_json[@]};
+	do
+		echo $instruction_json
 	done
 }
 
@@ -278,24 +236,29 @@ function print_targets {
 # script
 function main {
 	# Basic configuration work before processing
-	configure_globals
-	configure_targets
-
+	configure_targets $module $terraform $ansible $playbook
+	
 	if [[ $verbose == true ]]
 	then
-		print_targets
+		print_instructions
 	fi
 
-	for target in ${targets[@]}; # execute scripts
+	for instruction_json in ${instructions_json[@]};
 	do
-		if [[ $terraform == true ]]
+		instruction=($(json_to_array $instruction_json))
+		local target=${instruction[0]}
+		local target_terraform=${instruction[1]}
+		local target_ansible=${instruction[2]}
+		local target_playbook=${instruction[3]}
+
+		if [[ $terraform == true && $target_terraform == true ]]
 		then
 			exec_terraform $target $action
 		fi
 		
-		if [[ $ansible == true ]]
+		if [[ $ansible == true && $target_ansible == true ]]
 		then
-			exec_ansible $target $playbook
+			exec_ansible $target $target_playbook
 		fi
 	done
 }

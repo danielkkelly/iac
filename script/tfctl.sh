@@ -3,6 +3,7 @@
 # TODO: add a task for upgrading terraform modules?
 
 declare provider
+declare module
 declare env="dev"
 declare action
 
@@ -13,6 +14,7 @@ function parse_cli {
 		shift
 		case "$arg" in
 			"--provider")     set -- "$@" "-c" ;;
+			"--module")       set -- "$@" "-m" ;;
 			"--action")       set -- "$@" "-a" ;;
 			"--env")          set -- "$@" "-e" ;;
 			*)                set -- "$@" "$arg"
@@ -20,9 +22,10 @@ function parse_cli {
 	done
 
 	# Parse command line options safely using getops
-	while getopts "c:a:e:" opt; do
+	while getopts "c:a:e:m:" opt; do
 		case $opt in
 			c) provider=$OPTARG ;;
+			m) module=$OPTARG ;;
 			a) action=$OPTARG ;;
 			e) env=$OPTARG ;;
 			\?)
@@ -34,6 +37,7 @@ function parse_cli {
 
 function check_cli { # by making sure that the requied options are supplied, etc.
 	declare -a required_opts=("provider" "action")
+	declare -a valid_actions=("migrate-default-workspace" "output")
 
 	for opt in ${required_opts[@]};
 	do
@@ -49,7 +53,7 @@ function check_cli { # by making sure that the requied options are supplied, etc
 		echo "provider \"$provider\" doens't exist"
 	fi
 
-	if [[ $action != "migrate-default-workspace" ]]
+	if [[ ! " ${valid_actions[@]} " =~ " ${action} " ]];
 	then
 		echo "unknown action: $action"
 	fi
@@ -65,6 +69,9 @@ function check_env {
 	fi
 }
 
+# Specialty method, used if you are going from the default terraform state file to 
+# workspaces.  This will convert your default state to a workspace specified by 
+# the env command line argument.
 function tf_migrate_default_workspace {
 	local tfstate="terraform.tfstate"
 	
@@ -95,13 +102,26 @@ function tf_migrate_default_workspace {
 	done
 }
 
+function tf_print_output {
+	local state_file="$IAC_HOME/$provider/$module/terraform.tfstate.d/$env/terraform.tfstate"
+	if [[ -f $state_file ]]
+	then
+		terraform output -state=$state_file 2>/dev/null
+		if [[ $? != 0 ]]; then
+			exit 1
+		fi
+	fi
+}
+
 # After command line arguments are parsed, this is the mail driver for this 
 # script
 function main {
-
 	if [[ $action == "migrate-default-workspace" ]] 
 	then
 		tf_migrate_default_workspace
+	elif [[ $action == "output" ]]
+	then
+		tf_print_output
 	fi
 }
 
