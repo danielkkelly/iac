@@ -1,3 +1,8 @@
+provider "aws" {
+  region  = var.region
+  profile = var.env
+}
+
 provider "tls" {}
 
 /* 
@@ -15,11 +20,11 @@ resource "tls_self_signed_cert" "cert" {
   private_key_pem = tls_private_key.private_key.private_key_pem
 
   subject {
-    common_name  = "dev.internal"
+    common_name  = "${var.env}.internal"
     organization = "Developers, Inc"
   }
 
-  validity_period_hours = 72
+  validity_period_hours = var.validity_period_hours
 
   allowed_uses = [
     "key_encipherment",

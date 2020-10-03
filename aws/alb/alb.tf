@@ -132,6 +132,14 @@ resource "aws_lb" "platform_lb" {
   }
 }
 
+/* 
+ * Find the certificate in the ACM
+ */
+data "aws_acm_certificate" "cert" {
+  domain   = "${var.env}.internal"
+  statuses = ["ISSUED"]
+}
+
 /*
  * Listeners to listing on 80 and 443
  */
@@ -140,7 +148,7 @@ resource "aws_lb_listener" "lb_listener_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = aws_acm_certificate.cert.arn
+  certificate_arn   = data.aws_acm_certificate.cert.arn
 
   default_action {
     type = "fixed-response"
