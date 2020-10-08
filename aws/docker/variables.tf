@@ -1,22 +1,20 @@
 #
-# AWS Region
+# Environment
 #
-variable "region" {
-}
+variable "region" {}
+variable "env" {}
+variable "key_pair_name" {}
 
 #
-# Specifies the environment
+# Host
 #
-variable "env" {
-}
-
-variable "key_pair_name" {
+variable "instance_type" {
+  default = "t2.large"
 }
 
 #
 # Network
 #
-
 variable ingress_ports {
   type    = list
   default = ["22", "8080", "8443", "9990"]

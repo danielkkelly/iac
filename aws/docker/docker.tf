@@ -78,7 +78,7 @@ resource "aws_security_group_rule" "egress_sgr" {
 
 resource "aws_instance" "docker" {
   ami                  = module.default_ami.id
-  instance_type        = "t2.medium"
+  instance_type        = var.instance_type
   key_name             = var.key_pair_name
   subnet_id            = data.aws_subnet.subnet_docker.id
   security_groups      = [aws_security_group.docker_sg.id]
