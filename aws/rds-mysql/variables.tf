@@ -13,7 +13,7 @@ variable "env" {
 # Cluster
 
 variable rds_instance_count {
-  default = 1
+  default = 2
 }
 
 variable rds_instance_class {
