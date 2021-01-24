@@ -43,6 +43,7 @@ provider "kubernetes" {
 module "eks" {
   source       = "terraform-aws-modules/eks/aws"
   cluster_name = var.eks_cluster_name
+  cluster_version = var.eks_cluster_version
   subnets      = [for s in data.aws_subnet.subnet_id : s.id]
 
   tags = {
@@ -51,22 +52,12 @@ module "eks" {
 
   vpc_id = data.aws_vpc.vpc.id
 
-  node_groups_defaults = {
-    ami_type  = "AL2_x86_64"
-    disk_size = 50
-  }
+  fargate_profiles = {
+    example = {
+      namespace = "default"
 
-  node_groups = {
-    node-group-1 = {
-      desired_capacity = 1
-      max_capacity     = 3
-      min_capacity     = 1
-
-      instance_type = "t2.medium"
-      k8s_labels = {
+      tags = {
         Environment = var.env
-        GithubRepo  = "terraform-aws-eks"
-        GithubOrg   = "terraform-aws-modules"
       }
     }
   }

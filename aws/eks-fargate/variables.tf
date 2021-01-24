@@ -10,11 +10,8 @@ variable "eks_cluster_name" {
   default = "platform-eks"
 }
 
-#
-# Network
-#
-variable "host_number" {
-  default = "20"
+variable "eks_cluster_version" {
+  default = "1.18"
 }
 
 # Variables that are passed to the eks module
