@@ -1,22 +1,16 @@
-#
 # AWS Region
-#
-variable "region" {
-}
+variable "region" {}
 
-#
 # Specifies the environment
-#
-variable "env" {
+variable "env" {}
+variable "key_pair_name" {}
+
+# Host
+variable "volume_size" {
+  default = 30
 }
 
-variable "key_pair_name" {
-}
-
-#
 # Network
-#
-
 variable "host_number" {
   default = "20"
 }

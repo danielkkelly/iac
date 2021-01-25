@@ -85,6 +85,10 @@ resource "aws_instance" "docker" {
   private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
+  root_block_device {
+    volume_size = var.volume_size
+  }
+
   tags = {
     Name          = "platform-docker"
     HostType      = "docker"

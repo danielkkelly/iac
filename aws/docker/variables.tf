@@ -12,6 +12,10 @@ variable "instance_type" {
   default = "t2.large"
 }
 
+variable "volume_size" {
+  default = 30
+}
+
 #
 # Network
 #
