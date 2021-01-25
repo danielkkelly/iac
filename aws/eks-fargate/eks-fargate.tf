@@ -53,7 +53,7 @@ module "eks" {
   vpc_id = data.aws_vpc.vpc.id
 
   fargate_profiles = {
-    example = {
+    platform = {
       namespace = "default"
 
       tags = {
