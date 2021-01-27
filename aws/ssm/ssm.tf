@@ -15,7 +15,7 @@ provider "aws" {
 resource "aws_ssm_patch_baseline" "ssm_patch_baseline" {
   name             = "platform-${ var.env }-patch-baseline"
   description      = "Platform ${ var.env } patch baseline"
-  operating_system = "AMAZON_LINUX"
+  operating_system = "AMAZON_LINUX_2"
 
   approval_rule {
     approve_after_days = 0

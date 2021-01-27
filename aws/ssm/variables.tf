@@ -1,18 +1,9 @@
-#
-# AWS Region
-#
-variable "region" {
-}
+# Environment
+variable "region" {}
+variable "env" {}
+variable "key_pair_name" {}
 
-#
-# Specifies the environment
-#
-variable "env" {
-}
-
-variable "key_pair_name" {
-}
-
+# Maintenance window cron expression
 variable "mw_cron" {
   default = "cron(*/30 * ? * * *)"
 }
