@@ -79,9 +79,27 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
     apply_method = "pending-reboot"
   }
 
-    parameter {
+  parameter {
     name         = "log_bin_trust_function_creators"
     value        = "1"
+    apply_method = "pending-reboot"
+  }
+
+   parameter {
+    name         = "general_log"
+    value        = "1"
+    apply_method = "pending-reboot"
+  }
+
+  parameter {
+    name         = "slow_query_log"
+    value        = "1"
+    apply_method = "pending-reboot"
+  }
+
+  parameter {
+    name         = "log_output"
+    value        = "FILE"
     apply_method = "pending-reboot"
   }
 }
@@ -103,6 +121,8 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
   skip_final_snapshot     = true
+
+  storage_encrypted = true
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
