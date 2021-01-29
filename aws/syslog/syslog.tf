@@ -92,7 +92,8 @@ resource "aws_instance" "syslog" {
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   metadata_options {
-    http_tokens = "required"
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 
   root_block_device {
