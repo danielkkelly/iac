@@ -91,8 +91,13 @@ resource "aws_instance" "syslog" {
   private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   root_block_device {
     volume_size = var.volume_size
+    encrypted   = true
   }
 
   tags = {

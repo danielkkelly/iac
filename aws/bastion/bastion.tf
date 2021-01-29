@@ -27,7 +27,7 @@ data "aws_subnet" "subnet_bastion" {
 }
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${ var.env }-ec2-ssm-profile"
+  name = "platform-${var.env}-ec2-ssm-profile"
 }
 
 resource "aws_security_group" "bastion_sg" {
@@ -65,6 +65,15 @@ resource "aws_instance" "bastion" {
   security_groups      = [aws_security_group.bastion_sg.id]
   private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
 
   tags = {
     Name          = "platform-bastion"

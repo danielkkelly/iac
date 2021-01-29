@@ -27,7 +27,7 @@ data "aws_subnet" "subnet_docker" {
 }
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${ var.env }-ec2-ssm-profile"
+  name = "platform-${var.env}-ec2-ssm-profile"
 }
 
 data "aws_security_group" "bastion_sg" {
@@ -58,13 +58,13 @@ resource "aws_security_group_rule" "bastion_sgr" {
 }
 
 resource "aws_security_group_rule" "vpn_mgmt_sgr" {
-  for_each                 = toset(var.ingress_ports)
-  type                     = "ingress"
-  from_port                = each.value
-  to_port                  = each.value
-  protocol                 = "tcp"
-  cidr_blocks              = [var.cidr_block_subnet_vpn_1]
-  security_group_id        = aws_security_group.docker_sg.id
+  for_each          = toset(var.ingress_ports)
+  type              = "ingress"
+  from_port         = each.value
+  to_port           = each.value
+  protocol          = "tcp"
+  cidr_blocks       = [var.cidr_block_subnet_vpn_1]
+  security_group_id = aws_security_group.docker_sg.id
 }
 
 resource "aws_security_group_rule" "egress_sgr" {
@@ -85,8 +85,13 @@ resource "aws_instance" "docker" {
   private_ip           = local.private_ip
   iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
+  metadata_options {
+    http_tokens = "required"
+  }
+
   root_block_device {
     volume_size = var.volume_size
+    encrypted   = true
   }
 
   tags = {

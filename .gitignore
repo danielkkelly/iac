@@ -1,3 +1,4 @@
 *.tfstate*
+.terraform.lock.hcl
 .terraform
 service-account.json

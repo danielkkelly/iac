@@ -6,6 +6,7 @@ declare provider
 declare module
 declare env="dev"
 declare action
+declare args
 
 declare -a targets=()
 
@@ -16,17 +17,19 @@ function parse_cli {
 			"--provider")     set -- "$@" "-c" ;;
 			"--module")       set -- "$@" "-m" ;;
 			"--action")       set -- "$@" "-a" ;;
+			"--args")         set -- "$@" "-b" ;;
 			"--env")          set -- "$@" "-e" ;;
 			*)                set -- "$@" "$arg"
 		esac
 	done
 
 	# Parse command line options safely using getops
-	while getopts "c:a:e:m:" opt; do
+	while getopts "c:a:b:e:m:" opt; do
 		case $opt in
 			c) provider=$OPTARG ;;
 			m) module=$OPTARG ;;
 			a) action=$OPTARG ;;
+			b) args=$OPTARG ;;
 			e) env=$OPTARG ;;
 			\?)
 				echo "Invalid option: -$OPTARG" >&2
@@ -102,10 +105,27 @@ function tf_migrate_default_workspace {
 	done
 }
 
+function tf_command {
+	cd $IAC_HOME/$provider
+
+	# requires args to be set - check this
+
+	for i in *  # run terraform init
+	do
+		if [[ -f $i/tf.sh ]]
+		then
+			echo "processing $i..."
+			cd $i 
+			terraform $args
+			cd -
+			echo "done processing $i"
+		fi
+	done
+}
+
 function tf_print_output {
 	local state_file="$IAC_HOME/$provider/$module/terraform.tfstate.d/$env/terraform.tfstate"
-	if [[ -f $state_file ]]
-	then
+	if [[ -f $state_file ]]; then
 		terraform output -state=$state_file 2>/dev/null
 		if [[ $? != 0 ]]; then
 			exit 1
@@ -116,12 +136,14 @@ function tf_print_output {
 # After command line arguments are parsed, this is the mail driver for this 
 # script
 function main {
-	if [[ $action == "migrate-default-workspace" ]] 
-	then
+	if [[ $action == "migrate-default-workspace" ]]; then
 		tf_migrate_default_workspace
-	elif [[ $action == "output" ]]
-	then
+	elif [[ $action == "output" ]]; then
 		tf_print_output
+	elif [[ $action == "command" ]]; then
+		tf_command
+	else 
+		echo "invalid action"
 	fi
 }
 

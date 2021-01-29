@@ -24,8 +24,8 @@ resource "aws_iam_role_policy_attachment" "config_role_policy_attachment" {
 }
 
 resource "aws_s3_bucket" "config_s3_bucket" {
-  bucket = "platform-config-${var.env}"
-  acl    = "private"
+  bucket        = "platform-config-${var.env}"
+  acl           = "private"
   force_destroy = true
 
   versioning {
