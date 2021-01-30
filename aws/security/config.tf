@@ -31,9 +31,16 @@ resource "aws_s3_bucket" "config_s3_bucket" {
   versioning {
     enabled = true
   }
+
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
 }
 
-# TODO: work on policy variables remains
 resource "aws_s3_bucket_policy" "config_bucket_policy" {
   bucket = aws_s3_bucket.config_s3_bucket.id
 
@@ -79,10 +86,8 @@ resource "aws_s3_bucket_policy" "config_bucket_policy" {
     {
       "Sid": "Require SSL",
       "Effect": "Deny",
-      "Principal": {
-        "AWS": "*"
-      },
-      "Action": "s3:*",
+      "Principal": "*",
+      "Action": "*",
       "Resource": "${aws_s3_bucket.config_s3_bucket.arn}/*",
       "Condition": {
         "Bool": {
