@@ -76,6 +76,8 @@ aws ssm list-compliance-summaries
 
 # Modules Specific Documentation
 
+* [Settings](settings/README.md)
+* [Security](security/README.md)
 * [IAM](iam/README.md)
 * [VPN](client-vpn/README.md)
 * [Docker](../ansible/docker/README.md)
