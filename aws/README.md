@@ -52,14 +52,21 @@ buildctl.sh --provider aws --module alb-tls --action apply --terraform --ansible
 
 AWS has limits on how many certificates you can deploy in a given year.  You could run this each time you build your environment but would eventually hit your quota and uploading the generated cert would fail.  One option is to work with AWS to increase your quota and add alb-tls to buildctl.json so it runs with each apply / destroy of your environment.  The other option is to run alb-tls yearly.  By default we use the later in our default configuration.
 
-# Module Specific Documentation
+# Modules
 
 * [Settings](settings/README.md)
 * [Security](security/README.md)
 * [IAM](iam/README.md)
 * [VPN](client-vpn/README.md)
+* [EKS with Fargate](eks-fargate/README.md)
+* [EKS with Managed Node Groups](eks-node-groups/README.md)
 * [Docker](../ansible/docker/README.md)
+* [Users](../ansible/users/README.md)
 * [MSK](msk/README.md)
+
+# Automation
+
+* [Schema Deployment](../ansible/schemas/README.md)
 
 # References 
 
