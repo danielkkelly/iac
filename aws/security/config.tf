@@ -23,8 +23,12 @@ resource "aws_iam_role_policy_attachment" "config_role_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSConfigRole"
 }
 
+resource "random_id" "random_s3_index" {
+  byte_length = 4
+}
+
 resource "aws_s3_bucket" "config_s3_bucket" {
-  bucket        = "platform-config-${var.env}"
+  bucket        = "platform-config-${var.env}-${random_id.random_s3_index.hex}"
   acl           = "private"
   force_destroy = true
 
@@ -108,6 +112,19 @@ resource "aws_config_configuration_recorder" "config_recorder" {
     all_supported                 = true
     include_global_resource_types = true
   }
+}
+
+module "default_sns" {
+  source = "../sns"
+
+  monthly_spend_limit    = 1
+  topic_name             = "platform-sms-topic"
+  topic_display_name     = "platform-sms-topic"
+  usage_report_s3_bucket = "platform-sms-usage-bucket-${var.env}"
+
+  subscriptions = [
+    var.sms_number
+  ]
 }
 
 # TODO: SNS (sns_topic_arn)
