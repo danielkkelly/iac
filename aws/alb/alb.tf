@@ -141,6 +141,8 @@ resource "aws_lb" "platform_lb" {
   security_groups    = [aws_security_group.lb_sg.id]
   subnets            = [for s in data.aws_subnet.public_subnet_id : s.id]
 
+  drop_invalid_header_fields = true //security best practice
+
   access_logs {
     bucket  = aws_s3_bucket.lb_s3_bucket.bucket
     prefix  = "platform-lb"
