@@ -34,3 +34,7 @@ Viewing Compliance:
 ```
 aws ssm list-compliance-summaries
 ```
+
+# References 
+
+https://aws.amazon.com/blogs/security/how-to-patch-linux-workloads-on-aws/

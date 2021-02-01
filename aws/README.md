@@ -67,7 +67,3 @@ AWS has limits on how many certificates you can deploy in a given year.  You cou
 # Automation
 
 * [Schema Deployment](../ansible/schemas/README.md)
-
-# References 
-
-https://aws.amazon.com/blogs/security/how-to-patch-linux-workloads-on-aws/
