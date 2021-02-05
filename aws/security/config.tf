@@ -127,11 +127,10 @@ module "default_sns" {
   ]
 }
 
-# TODO: SNS (sns_topic_arn)
 resource "aws_config_delivery_channel" "config_delivery_channel" {
   name           = "platform-config-delivery-channel"
   s3_bucket_name = aws_s3_bucket.config_s3_bucket.bucket
-
+  sns_topic_arn = module.default_sns.topic_arn
   depends_on = [aws_config_configuration_recorder.config_recorder]
 }
 
