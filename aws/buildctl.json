@@ -127,6 +127,20 @@
             "target": ["rds-mysql", "lb-docker"],
             "terraform": true,
             "ansible": false
+        },
+        {
+            "module": "compliance",
+            "action": "apply",
+            "target": ["cloudtrail", "security"],
+            "terraform": true,
+            "ansible": false
+        },
+        {
+            "module": "compliance",
+            "action": "destroy",
+            "target": ["security", "cloudtrail"],
+            "terraform": true,
+            "ansible": false
         }
     ],
     "resources" : [
