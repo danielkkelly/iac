@@ -121,7 +121,9 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   preferred_backup_window = var.preferred_backup_window
   skip_final_snapshot     = true
 
-  storage_encrypted = true
+  # Security best practices
+  storage_encrypted                   = true
+  iam_database_authentication_enabled = true
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
@@ -162,17 +164,4 @@ resource "aws_route53_record" "rds_reader" {
   type    = "CNAME"
   ttl     = "300"
   records = [aws_rds_cluster.platform_rds_cluster.reader_endpoint]
-}
-
-/*
- * Output the endpoint for RDS 
- */
-output "rds_cluster_endpoint" {
-  description = "The cluster read and writ endpoint"
-  value       = aws_rds_cluster.platform_rds_cluster.endpoint
-}
-
-output "rds_cluster_endpoint_reader" {
-  description = "The cluster reader endpoint"
-  value       = aws_rds_cluster.platform_rds_cluster.reader_endpoint
 }
