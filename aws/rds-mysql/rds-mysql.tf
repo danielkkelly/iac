@@ -85,7 +85,7 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
     apply_method = "pending-reboot"
   }
 
-   parameter {
+  parameter {
     name         = "general_log"
     value        = "1"
     apply_method = "pending-reboot"
