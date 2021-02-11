@@ -59,7 +59,6 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = [var.cidr_block_subnet_pri_1,
       var.cidr_block_subnet_pri_2,
       var.cidr_block_subnet_vpn_1,
-
     ]
   }
 
