@@ -42,6 +42,10 @@ data "aws_security_group" "bastion_sg" {
   }
 }
 
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
+}
+
 resource "aws_security_group" "rds_sg" {
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-rds"
@@ -59,6 +63,7 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = [var.cidr_block_subnet_pri_1,
       var.cidr_block_subnet_pri_2,
       var.cidr_block_subnet_vpn_1,
+      "${chomp(data.http.myip.body)}/32"
     ]
   }
 
