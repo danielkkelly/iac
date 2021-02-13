@@ -1,7 +1,18 @@
-* IAM
-* mysql users - setup.sql / schemas
-* mysql terraform provider doesn't work due to connectivity: research and note
-* process for IAM auth, download cert, command line syntax, etc
+# Overview
+
+If a database user matches the policy that allows IAM authentication, then authentication
+is done with a secure token vs. regular password.  AWS geenrates the token, which is valid
+for a short time, and the token is pass on the connect string to the database to authenti-
+cate.  This also ensures that the connection uses SSL.
+
+In our setup, we create three generic users that are configured for IAM authentication. 
+We create a read only user, one that has DML priviledges, and one that has DDL.  A user
+will choose from these three.  Because the user is using IAM, we know exactly who requested
+use of the generic ID.
+
+You could get more specific about individual users in the policy but the approach above 
+keeps it relatively straight-forward.  My applications use a regular MySQL user name and 
+password and IAm authentication for developers.
 
 # IAM Policy and Group Attachment
 
@@ -101,4 +112,43 @@ And then in your ingress rules.
       var.cidr_block_subnet_vpn_1,
       "${chomp(data.http.myip.body)}/32"
     ]
+```
+
+# Connecting to the database server
+
+More on https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.Connecting.AWSCLI.html.
+
+## SSL Certificate for MySQL
+
+You will first need to download the combined (CA and intermediate cert) from AWS.  In short, the command below
+will get what you need.
+
+```
+wget https://s3.amazonaws.com/rds-downloads/rds-combined-ca-bundle.pem
+```
+
+See https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SSL.html.
+
+## Generate an authentication token
+
+TODO: does this work with our generic CNAME for the database?  If now, how to automatically get the host name
+Is region required or will it default to the specified region in the AWS config?
+
+```
+MYSQL_AUTH_TOKEN=`aws rds generate-db-auth-token \
+   --hostname rdsmysql.123456789012.us-west-2.rds.amazonaws.com \
+   --port 3306 \
+   --region us-east-1 \
+   --username`
+```
+
+## MySQL client connection
+
+TODO: hostname from CNAME possible?
+```
+mysql --host=hostName --port=3306 \
+      --ssl-ca=rds-combined-ca-bundle.pem \
+      --enable-cleartext-plugin \
+      --user=dev-ro \
+      --password=$MYSQL_AUTH_TOKEN
 ```
