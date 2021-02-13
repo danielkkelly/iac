@@ -107,7 +107,7 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   cluster_identifier = "platform-rds-cluster"
 
   engine         = "aurora-mysql"
-  engine_version = "5.7.mysql_aurora.2.07.1"
+  engine_version = "5.7.mysql_aurora.2.07.2"
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 
@@ -135,33 +135,4 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   identifier     = "platform-rds-cluster-${count.index}"
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
-}
-
-data "aws_route53_zone" "private" {
-  name         = "${var.env}.internal."
-  private_zone = true
-}
-
-resource "aws_route53_record" "rds_mysql" { # for general use
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "mysql.${data.aws_route53_zone.private.name}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = [aws_rds_cluster.platform_rds_cluster.endpoint]
-}
-
-resource "aws_route53_record" "rds_writer" {
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "db-writer.${data.aws_route53_zone.private.name}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = [aws_rds_cluster.platform_rds_cluster.endpoint]
-}
-
-resource "aws_route53_record" "rds_reader" {
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "db-reader.${data.aws_route53_zone.private.name}"
-  type    = "CNAME"
-  ttl     = "300"
-  records = [aws_rds_cluster.platform_rds_cluster.reader_endpoint]
 }
