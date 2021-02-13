@@ -72,7 +72,7 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
       "Effect": "Deny",
       "Principal": "*",
       "Action": "*",
-      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*"
+      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*",
       "Condition": {
         "Bool": {
           "aws:SecureTransport": "false"
