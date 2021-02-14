@@ -97,11 +97,28 @@ EOF
   }
 }
 
+/*
+ * Find that NAT gateway for the VPC so that we can allow traffic from it through the load 
+ * balancer.  Not strictly necessary but if you have an application that needs to hit the
+ * LB to communicate with another application then this is useful.  We'll add an ingress rule
+ * to the security group rule below.
+ */
+data "aws_nat_gateway" "ngw" {
+  vpc_id = data.aws_vpc.vpc.id
+}
+
 resource "aws_security_group" "lb_sg" {
 
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-lb"
   description = "HTTPS from world"
+
+ ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["${data.aws_nat_gateway.ngw.public_ip}/32"]
+  }
 
   ingress {
     from_port   = 80
