@@ -62,6 +62,7 @@ AWS has limits on how many certificates you can deploy in a given year.  You cou
 * [EKS with Managed Node Groups](eks-node-groups/README.md)
 * [Docker](../ansible/docker/README.md)
 * [Users](../ansible/users/README.md)
+* [RDS](rds-mysql/README.md)
 * [MSK](msk/README.md)
 
 # Automation

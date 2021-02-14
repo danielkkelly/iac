@@ -64,17 +64,12 @@ resource "aws_ssm_maintenance_window_target" "platform_mw_target" {
   }
 }
 
-// required permission set up in ../iam
-data "aws_iam_role" "ssm_maintenance_window_role" {
-  name = "platform-${ var.env }-ssm-maintenance-window-role"
-}
-
 resource "aws_ssm_maintenance_window_task" "platform_mw_task" {
   name             = "Patching"
   max_concurrency  = 500
   max_errors       = "20%"
   priority         = 1
-  service_role_arn = data.aws_iam_role.ssm_maintenance_window_role.arn
+  service_role_arn = aws_iam_role.ssm_maintenance_window_role.arn
   task_arn         = "AWS-RunPatchBaseline"
   task_type        = "RUN_COMMAND"
   window_id        = aws_ssm_maintenance_window.ssm_mw.id

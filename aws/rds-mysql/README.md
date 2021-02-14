@@ -1,18 +1,26 @@
 # Overview
 
-If a database user matches the policy that allows IAM authentication, then authentication
-is done with a secure token vs. regular password.  AWS geenrates the token, which is valid
-for a short time, and the token is pass on the connect string to the database to authenti-
-cate.  This also ensures that the connection uses SSL.
+RDS IAM authentication is done with a secure token vs. regular password.  AWS geenrates the 
+token, which is valid for a short time, and the token is passed on the connect string to the 
+database to authenticate.  This eliminates the need for passwords, passes authentication to 
+IAM to enhance loging and centralize managment, and also ensures that the connection uses SSL.
 
-In our setup, we create three generic users that are configured for IAM authentication. 
+IAM authentication requires a policy that defines the type of access that is allowed.  In our
+case, we allow IAM authentication for all users that are created (in the database) with the 
+the authentication plugin of "AWSAuthenticationPlugin".  We attach this policy to the dev 
+roles that we create earlier in the process so that IAM authentication is available to developers
+and developer admins.
+
+From a MySQL perspective, we create three generic users that are configured for IAM authentication. 
 We create a read only user, one that has DML priviledges, and one that has DDL.  A user
-will choose from these three.  Because the user is using IAM, we know exactly who requested
-use of the generic ID.
+will choose from these three to obtain the desired privileges, preferably using the user of least
+privilege for the given task.  Because the user is using IAM, we know exactly who authenticates
+despite use of the generic ID.
 
 You could get more specific about individual users in the policy but the approach above 
 keeps it relatively straight-forward.  My applications use a regular MySQL user name and 
-password and IAm authentication for developers.
+password and IAM authentication for developers.  There are some performance related concerns with
+using IAM authentication for applications.
 
 # IAM Policy and Group Attachment
 
@@ -22,7 +30,7 @@ in the IAM module.
 
 # Setting up MySQL Users
 
-## setup.sql
+## Using SQL Scripts
 
 In the schemas module, which uses ansible to set up a database server and install snapshots
 of existing schemas, you could modify setup.sql to add your users.  This is the approach 
@@ -30,20 +38,23 @@ that I've taken.  Your setup would include SQL statements like the ones below.
 
 ```
 # Generic users for RDS IAM authentication
-create user 'dev-ro' identified with AWSAuthenticationPlugin AS 'RDS';
-create user 'dev-dml' identified with AWSAuthenticationPlugin AS 'RDS';
-create user 'dev-ddl' identified with AWSAuthenticationPlugin AS 'RDS';
+create user 'dev-ro'@'%' identified with AWSAuthenticationPlugin AS 'RDS';
+create user 'dev-dml'@'%' identified with AWSAuthenticationPlugin AS 'RDS';
+create user 'dev-ddl'@'%' identified with AWSAuthenticationPlugin AS 'RDS';
 
 grant select on *.* TO 'dev-ro'@'%';
 grant delete, insert, select, update, create temporary tables on *.* to 'dev-dml'@'%';
-grant all privileges on *.* to 'dev-ddl'@'%';
+grant delete, insert, select, update, create temporary tables, create view, show view, alter, drop, index, process on *.* to 'dev-ddl'@'%';
 ```
 
-## Terraform
+## Using Terraform
 
 In our case the database server is on private subnets.  Access is required for Terraform
 to connect with its MySQL provider.  If you have access to your RDS server you could use
-Terraform to create users, as shown below.
+Terraform to create users, as shown below.  NOTE: you will need to update and test the 
+work below.  I favor and use the prior approach using a SQL script.  I've included this 
+section because I spent time researching it and it could be helpful for those who better
+fit this use case.
 
 ```
 provider "mysql" {
@@ -91,7 +102,7 @@ resource "mysql_grant" "dev_ddl_mysql_grant" {
   user       = mysql_user.dev_ddl_mysql_user.user
   host       = mysql_user.dev_ddl_mysql_user.host
   database   = "*"
-  privileges = ["ALL"]
+  privileges = [...]
 }
 ```
 
@@ -116,6 +127,13 @@ And then in your ingress rules.
 
 # Connecting to the database server
 
+Connecting to the database server using IAM authentication is fairly straight-forward.
+The first step is making sure that you have an SSL certificate for your MySQL client.  In
+My work I'm assuming you're using the MySQL CLI.  Other solutions, like IntelliJ, VS Code,
+SQL Workbench, etc, could be different.  Perhaps as I roll this out to my team I'll gain
+some more experience with the above tools and update this section.  For now, assume the 
+MySQL CLI.
+
 More on https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.IAMDBAuth.Connecting.AWSCLI.html.
 
 ## SSL Certificate for MySQL
@@ -131,24 +149,41 @@ See https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/UsingWithRDS.SS
 
 ## Generate an authentication token
 
-TODO: does this work with our generic CNAME for the database?  If now, how to automatically get the host name
-Is region required or will it default to the specified region in the AWS config?
+The command below will generate an RDS authentication token.  Note that you could specify defaults but that 
+isn't stricly necessary.  If your region is specified in your AWS config, for example, no need to supply it.
 
 ```
-MYSQL_AUTH_TOKEN=`aws rds generate-db-auth-token \
-   --hostname rdsmysql.123456789012.us-west-2.rds.amazonaws.com \
-   --port 3306 \
-   --region us-east-1 \
-   --username`
+MYSQL_AUTH_TOKEN=`aws rds generate-db-auth-token --hostname $(print-rds-endpoint.sh) --port 3306  --username=dev-ro`
 ```
+
+We capture the token in the MSQL_AUTH_TOKEN environment variable so that it's easy to pass it along to the 
+MySQL client and the token won't show in the shell's history.
 
 ## MySQL client connection
 
-TODO: hostname from CNAME possible?
+The two common scenarios used for testing our congigurations are to connect from a VM within our VPC, like
+the bastion server, or to connect using SSH forwarding.  The command below will work from the bastion server.
+
 ```
-mysql --host=hostName --port=3306 \
-      --ssl-ca=rds-combined-ca-bundle.pem \
-      --enable-cleartext-plugin \
-      --user=dev-ro \
-      --password=$MYSQL_AUTH_TOKEN
+mysql --host=db-writer.dev.internal --port=3306 --ssl-ca=rds-combined-ca-bundle.pem  --user=dev-ro --password=$MYSQL_AUTH_TOKEN
 ```
+
+The more common scenario is to connect via port forwarding through the bastion host from your local machine.
+The command below will take care of that for you.  Note that your command could differ slightly if you use 
+a different OS, etc.  Mac shown below.
+
+```
+mysql --host 127.0.0.1 \
+  --port=13306 \
+  --ssl-ca=rds-combined-ca-bundle.pem \
+  --user=dev-ro \
+  --password=$MYSQL_AUTH_TOKEN \
+  --enable-cleartext-plugin
+```
+
+## MySQL Client Variations
+
+We install the mysql commandline tools on the bastion host (../../ansible/schemas/README.md).  Note that
+--enable-cleartext-plugin doesn't seem to be an option for that installation.  However, omitting that
+from the command line arguments doesn't have an effect.  That said, on my local machine omitting that 
+option is an issue.

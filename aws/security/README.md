@@ -4,7 +4,15 @@
 
 This module enables security features, such as Security Hub and Config.  The goal 
 of this module is to provide an example of how to go about gaining conformance to
-specific standards.  
+specific standards.
+
+# Conformance
+
+At this time the AWS modules in this project strive to gain a high compliance 
+score for the followign standards:
+
+* AWS Foundational Security Best Practices
+* CIS AWS Foundations Benchmark
 
 # Security Standards
 

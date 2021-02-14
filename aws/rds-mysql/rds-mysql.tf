@@ -42,10 +42,6 @@ data "aws_security_group" "bastion_sg" {
   }
 }
 
-data "http" "myip" {
-  url = "http://ipv4.icanhazip.com"
-}
-
 resource "aws_security_group" "rds_sg" {
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-rds"
@@ -63,7 +59,6 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = [var.cidr_block_subnet_pri_1,
       var.cidr_block_subnet_pri_2,
       var.cidr_block_subnet_vpn_1,
-      "${chomp(data.http.myip.body)}/32"
     ]
   }
 
@@ -140,4 +135,7 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   identifier     = "platform-rds-cluster-${count.index}"
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
+
+  monitoring_interval  = var.enhanced_monitoring_interval
+  monitoring_role_arn  = aws_iam_role.rds_enhanced_monitoring_iam_role.arn
 }

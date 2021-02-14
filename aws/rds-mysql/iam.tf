@@ -1,4 +1,33 @@
 /*
+ * Roles, policy, and policy attachment for 
+ */
+
+resource "aws_iam_role" "rds_enhanced_monitoring_iam_role" {
+  name_prefix        = "platform-rds-enhanced-monitoring"
+  assume_role_policy = data.aws_iam_policy_document.rds_enhanced_monitoring_policy_document.json
+}
+
+data "aws_iam_policy_document" "rds_enhanced_monitoring_policy_document" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    effect = "Allow"
+
+    principals {
+      type        = "Service"
+      identifiers = ["monitoring.rds.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "rds_enhanced_monitoring_policy_attachment" {
+  role       = aws_iam_role.rds_enhanced_monitoring_iam_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
+/*
  * This policy will allow access to only the database cluster we create (by providing
  * the resource ID) and for any user that has IAM authentication enabled.  We will 
  * create a developer user with the appropriate grants for development activity that

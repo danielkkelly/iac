@@ -37,6 +37,11 @@ variable "backup_retention_period" {
   default = 14
 }
 
+variable "enhanced_monitoring_interval" {
+  description = "Monitoring inteval for ehnanced monitoring"
+  default = 60
+}
+
 # Variables that help allow private network access to the RDS server
 variable "cidr_block_subnet_pri_1" {
 }
