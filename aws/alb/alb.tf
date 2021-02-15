@@ -113,7 +113,7 @@ resource "aws_security_group" "lb_sg" {
   name        = "platform-lb"
   description = "HTTPS from world"
 
- ingress {
+  ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"

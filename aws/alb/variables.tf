@@ -29,3 +29,51 @@ variable "cidr_block_subnet_rds_1" {}
 variable "cidr_block_subnet_rds_2" {}
 variable "cidr_block_subnet_vpn_1" {}
 
+# Web application firewall managed rules
+variable "managed_rules" {
+  type = list(object({
+    name            = string
+    priority        = number
+    override_action = string
+    excluded_rules  = list(string)
+  }))
+  description = "List of Managed WAF rules."
+  default = [
+    {
+      name            = "AWSManagedRulesCommonRuleSet",
+      priority        = 10
+      override_action = "none"
+      excluded_rules  = []
+    },
+    {
+      name            = "AWSManagedRulesAmazonIpReputationList",
+      priority        = 20
+      override_action = "none"
+      excluded_rules  = []
+    },
+    {
+      name            = "AWSManagedRulesKnownBadInputsRuleSet",
+      priority        = 30
+      override_action = "none"
+      excluded_rules  = []
+    },
+    {
+      name            = "AWSManagedRulesSQLiRuleSet",
+      priority        = 40
+      override_action = "none"
+      excluded_rules  = []
+    },
+    {
+      name            = "AWSManagedRulesLinuxRuleSet",
+      priority        = 50
+      override_action = "none"
+      excluded_rules  = []
+    },
+    {
+      name            = "AWSManagedRulesUnixRuleSet",
+      priority        = 60
+      override_action = "none"
+      excluded_rules  = []
+    }
+  ]
+}
