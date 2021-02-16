@@ -1,3 +1,7 @@
+# Overview
+
+![Alt text](k8-rds.png?raw=true "K8 with RDS")
+
 # Setup
 
 1. Build the cluster using terraform
