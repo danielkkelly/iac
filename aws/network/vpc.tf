@@ -9,7 +9,6 @@ resource "aws_vpc" "vpc" {
   }
 }
 
-# TODO: filter
 resource "aws_flow_log" "vpc_flow_log" {
   iam_role_arn    = aws_iam_role.vpc_flow_log_iam_role.arn
   log_destination = aws_cloudwatch_log_group.vpc_flow_log_log_group.arn
@@ -18,11 +17,11 @@ resource "aws_flow_log" "vpc_flow_log" {
 }
 
 resource "aws_cloudwatch_log_group" "vpc_flow_log_log_group" {
-  name = "platform-vpc-flow-log"
+  name = "${var.env}-vpc-flow-log"
 }
 
 resource "aws_iam_role" "vpc_flow_log_iam_role" {
-  name = "platform-vpc-flow-log"
+  name = "${var.env}-vpc-flow-log-role"
 
   assume_role_policy = <<EOF
 {
@@ -42,7 +41,7 @@ EOF
 }
 
 resource "aws_iam_role_policy" "vpc_flow_log_iam_role_policy" {
-  name = "example"
+  name = "${var.env}-vpc-flow-log-policy"
   role = aws_iam_role.vpc_flow_log_iam_role.id
 
   policy = <<EOF
