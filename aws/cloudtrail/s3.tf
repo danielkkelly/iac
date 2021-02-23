@@ -6,7 +6,6 @@ module "default_s3_bucket" {
 
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
   bucket = module.default_s3_bucket.id
-
   policy = <<POLICY
 {
     "Version": "2012-10-17",
