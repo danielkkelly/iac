@@ -1,5 +1,5 @@
 module "default_s3_bucket" {
-  source = "../s3-bucket"
+  source = "../secure-s3-bucket"
   name   = "cloudtrail"
   env    = var.env
 }
