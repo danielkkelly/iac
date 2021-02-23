@@ -30,11 +30,15 @@ data "aws_subnet" "public_subnet_id" {
  * the region-specific load balancer account.  More inforomation available in the docs.
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/enable-access-logs.html
  */
-resource "aws_s3_bucket" "lb_s3_bucket" {
-  bucket        = "platform-lb-bucket-${var.env}"
-  force_destroy = true
-  acl           = "private"
-  policy        = <<EOF
+module "lb_s3_bucket" {
+  source = "../secure-s3-bucket"
+  name   = "lb-bucket"
+  env    = var.env
+}
+
+resource "aws_s3_bucket_policy" "alb_bucket_policy" {
+  bucket = module.lb_s3_bucket.id
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -44,7 +48,7 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
         "AWS": "arn:aws:iam::${var.alb_account[var.region]}:root"
       },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*"
+      "Resource": "${module.lb_s3_bucket.arn}/*"
     },
     {
       "Effect": "Allow",
@@ -52,7 +56,7 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
         "Service": "delivery.logs.amazonaws.com"
       },
       "Action": "s3:PutObject",
-      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*",
+      "Resource": "${module.lb_s3_bucket.arn}/*",
       "Condition": {
         "StringEquals": {
           "s3:x-amz-acl": "bucket-owner-full-control"
@@ -65,14 +69,14 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
         "Service": "delivery.logs.amazonaws.com"
       },
       "Action": "s3:GetBucketAcl",
-      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}"
+      "Resource": "${module.lb_s3_bucket.arn}"
     },
     {
       "Sid": "Require SSL",
       "Effect": "Deny",
       "Principal": "*",
       "Action": "*",
-      "Resource": "arn:aws:s3:::platform-lb-bucket-${var.env}/*",
+      "Resource": "${module.lb_s3_bucket.arn}/*",
       "Condition": {
         "Bool": {
           "aws:SecureTransport": "false"
@@ -82,19 +86,6 @@ resource "aws_s3_bucket" "lb_s3_bucket" {
   ]
 }
 EOF
-
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
-  }
-
-  tags = {
-    Name        = "platform-lb-bucket"
-    Environment = var.env
-  }
 }
 
 /*
@@ -161,8 +152,7 @@ resource "aws_lb" "platform_lb" {
   drop_invalid_header_fields = true //security best practice
 
   access_logs {
-    bucket  = aws_s3_bucket.lb_s3_bucket.bucket
-    prefix  = "platform-lb"
+    bucket  = module.lb_s3_bucket.bucket
     enabled = true
   }
 
