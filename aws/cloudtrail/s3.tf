@@ -46,3 +46,15 @@ resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
 }
 POLICY
 }
+
+# Needs to be here due to dependency on the policy, otherwise could modularize
+resource "aws_s3_bucket_public_access_block" "s3_bucket_pab" {
+  bucket = module.alb_s3_bucket.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+
+  depends_on = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
+}
