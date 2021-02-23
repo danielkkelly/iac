@@ -58,13 +58,13 @@ resource "aws_security_group" "bastion_sg" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                  = module.default_ami.id
-  instance_type        = "t2.nano"
-  key_name             = var.key_pair_name
-  subnet_id            = data.aws_subnet.subnet_bastion.id
-  security_groups      = [aws_security_group.bastion_sg.id]
-  private_ip           = local.private_ip
-  iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
+  ami                    = module.default_ami.id
+  instance_type          = "t2.nano"
+  key_name               = var.key_pair_name
+  subnet_id              = data.aws_subnet.subnet_bastion.id
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+  private_ip             = local.private_ip
+  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   metadata_options {
     http_endpoint = "enabled"

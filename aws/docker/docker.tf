@@ -77,15 +77,15 @@ resource "aws_security_group_rule" "egress_sgr" {
 }
 
 resource "aws_instance" "docker" {
-  ami                  = module.default_ami.id
-  instance_type        = var.instance_type
-  key_name             = var.key_pair_name
-  subnet_id            = data.aws_subnet.subnet_docker.id
-  security_groups      = [aws_security_group.docker_sg.id]
-  private_ip           = local.private_ip
-  iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
+  ami                    = module.default_ami.id
+  instance_type          = var.instance_type
+  key_name               = var.key_pair_name
+  subnet_id              = data.aws_subnet.subnet_docker.id
+  vpc_security_group_ids = [aws_security_group.docker_sg.id]
+  private_ip             = local.private_ip
+  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
- metadata_options {
+  metadata_options {
     http_endpoint = "enabled"
     http_tokens   = "required"
   }

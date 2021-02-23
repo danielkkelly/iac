@@ -27,7 +27,7 @@ data "aws_subnet" "subnet_syslog" {
 }
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${ var.env }-ec2-ssm-profile"
+  name = "platform-${var.env}-ec2-ssm-profile"
 }
 
 data "aws_security_group" "bastion_sg" {
@@ -70,10 +70,10 @@ resource "aws_security_group" "syslog_sg" {
   }
 
   egress {
-    from_port         = 0
-    to_port           = 0
-    protocol          = "-1"
-    cidr_blocks       = ["0.0.0.0/0"]
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   tags = {
@@ -83,13 +83,13 @@ resource "aws_security_group" "syslog_sg" {
 }
 
 resource "aws_instance" "syslog" {
-  ami                  = module.default_ami.id
-  instance_type        = "t2.micro"
-  key_name             = var.key_pair_name
-  subnet_id            = data.aws_subnet.subnet_syslog.id
-  security_groups      = [aws_security_group.syslog_sg.id]
-  private_ip           = local.private_ip
-  iam_instance_profile = data.aws_iam_instance_profile.ec2_ssm_profile.name
+  ami                    = module.default_ami.id
+  instance_type          = "t2.micro"
+  key_name               = var.key_pair_name
+  subnet_id              = data.aws_subnet.subnet_syslog.id
+  vpc_security_group_ids = [aws_security_group.syslog_sg.id]
+  private_ip             = local.private_ip
+  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
 
   metadata_options {
     http_endpoint = "enabled"
