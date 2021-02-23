@@ -11,7 +11,7 @@ resource "aws_wafv2_rule_group" "waf_geo_rule_group" {
     priority = 1
 
     action {
-      block{}
+      block {}
     }
 
     statement {
@@ -48,7 +48,7 @@ resource "aws_wafv2_web_acl" "platform_lb_waf_web_acl" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "sample"
+    metric_name                = "platform-lb-waf"
     sampled_requests_enabled   = true
   }
 
@@ -97,7 +97,13 @@ resource "aws_wafv2_web_acl" "platform_lb_waf_web_acl" {
     priority = 1
 
     override_action {
-      block {}
+      none {}
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name                = "out-of-country-rule"
+      sampled_requests_enabled   = true
     }
 
     statement {
@@ -105,6 +111,7 @@ resource "aws_wafv2_web_acl" "platform_lb_waf_web_acl" {
         arn = aws_wafv2_rule_group.waf_geo_rule_group.arn
       }
     }
+  }
 
   tags = {
     Environment = var.env
