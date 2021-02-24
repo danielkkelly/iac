@@ -38,7 +38,7 @@ resource "aws_iam_policy" "dev_policy" {
         "Resource": "*",
         "Condition": {
           "StringEquals": {
-            "ec2:ResourceTag/HostType": "bastion"
+            "ssm:resourceTag/HostType": "bastion"
           }
         }
     },
@@ -48,7 +48,7 @@ resource "aws_iam_policy" "dev_policy" {
             "ssm:TerminateSession"
         ],
         "Resource": [
-            "arn:aws:ssm:*:*:session/&{aws:username}-*"
+            "arn:aws:ssm:*:*:session/$${aws:username}-*"
         ]
     }
   ]
