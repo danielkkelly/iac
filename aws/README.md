@@ -17,8 +17,9 @@ the same thing (e.g. brew if using a Mac)
 # SSH Config
 
 You have two options for SSH with AWS.  The first is to use a public bastion host.
-The second is to use System Manager to create sessions to your hosts.  The simplest
-configuration to use Session Manager is to update the line below in your SSH config.
+The second is to use Session Manager to create sessions to your hosts.  The short of 
+it is that you should use session manager.  This is our default for AWS and you'll 
+modify the configuration in [General Setup](../README.md) as show below:
 
 ```
 Host dev-bastion
@@ -33,17 +34,9 @@ host dev-bastion
    ProxyCommand sh -c "aws ssm start-session --profile dev --target `print-ec2.sh --env dev --hostType bastion` --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ```
 
-Same for test, etc.
+Same for test, etc.  
 
-You should use the system manager approach for AWS.  If you decide you want to use a pulbic 
-bastion host then you'll need to modify the HCL for the AWS bastion host by uncommenting the 
-lines that create the public EIP and modify the network to put the bastion host on a public 
-subnet instead of a private subnet. 
-
-The above change should be all that is required.  Because we use the bastion host as 
-our jump host in either scenario, the rest of the SSH Config specified in [General Setup](../README.md)
-remains accurate.  However, you could use session manager to go directly to those hosts
-if you like as well.
+More information in [Bastion](bastion/README.md)
 
 # Create a KeyPair in whatever region(s) you will use
 

@@ -1,6 +1,6 @@
 # Overview
 
-![Alt text](k8-rds.png?raw=true "K8 with RDS")
+![Alt text](img/k8-rds.png?raw=true "K8 with RDS")
 
 # Setup
 
