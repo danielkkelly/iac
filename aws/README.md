@@ -3,7 +3,47 @@
 # AWS Requirements
 
 * Install aws cli (v2)
+* Install the aws session manager plugin
 * Configure aws (~/.aws/credentials and config)
+
+## Installing
+
+I follow the download and install instructions that AWS provides.  This approach creates
+directories under /usr/local and then creates symlinks to the appropriate binaries in 
+/usr/local/bin.  It's easy to understand what is going on and how to roll back the install.
+The instructions are a bit more generic.  That said you could use package managers to do
+the same thing (e.g. brew if using a Mac)
+
+# SSH Config
+
+You have two options for SSH with AWS.  The first is to use a public bastion host.
+The second is to use System Manager to create sessions to your hosts.  The simplest
+configuration to use Session Manager is to update the line below in your SSH config.
+
+```
+Host dev-bastion
+   ProxyCommand nc `print-ip.sh` %p
+
+```
+
+becomes
+
+```
+host dev-bastion
+   ProxyCommand sh -c "aws ssm start-session --target `print-ec2.sh --env dev --hostType bastion` --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+```
+
+Same for test, etc.
+
+You should use the system manager approach for AWS.  If you decide you want to use a pulbic 
+bastion host then you'll need to modify the HCL for the AWS bastion host by uncommenting the 
+lines that create the public EIP and modify the network to put the bastion host on a public 
+subnet instead of a private subnet. 
+
+The above change should be all that is required.  Because we use the bastion host as 
+our jump host in either scenario, the rest of the SSH Config specified in [General Setup](../README.md)
+remains accurate.  However, you could use session manager to go directly to those hosts
+if you like as well.
 
 # Create a KeyPair in whatever region(s) you will use
 

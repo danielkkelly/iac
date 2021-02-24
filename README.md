@@ -33,6 +33,8 @@ Other packages that are required for scripts include
 * bash 4+
 * jq
 
+See the [AWS](aws/README.md) and [GCP](gcp/README.md) documents for provider specific setup.
+
 # Environment Configuration
 
 * Add IAC_HOME and point it to where you cloned this repo
@@ -85,9 +87,17 @@ host_key_checking 	= False
 
 # SSH Config
 
+The configuration below shows the configuration needed when using a traditional basion
+host, which resides on a public network and has a public IP.  If you use AWS then you
+have the option to use System Manager to access non-public hosts in a variety of ways.  
+See [AWS](aws/README.md#ssh-config) for more information.  It's  a one line change and
+you can eliminate a public IP and reduce your attack surface.
+
 ```
 Host dev-bastion
    ProxyCommand nc `print-ip.sh` %p
+   LocalForward 19990 docker.dev.internal:9990
+   LocalForward 13306 db-writer.dev.internal:3306
 
 Host dev-syslog
    HostName syslog.dev.internal
@@ -99,6 +109,8 @@ Host dev-docker
 
 Host test-bastion
    ProxyCommand nc `print-ip.sh --env test` %p
+   LocalForward 29990 docker.dev.internal:9990
+   LocalForward 23306 db-writer.dev.internal:3306
 
 Host test-syslog
    HostName syslog.test.internal

@@ -37,7 +37,8 @@ will share data with Security Hub.
 
 Another benefit of enabling this level of security is that it allows for ongoing
 monitoring of resources.  It allows us to attach an SNS resource that notifies
-a topic of issues found.
+a topic of issues found.  This protects against configuration drift and reduces
+risks and effort associated with traditional periodic audit.
 
 # Implementation
 
