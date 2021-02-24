@@ -36,7 +36,7 @@ host dev-bastion
 
 Same for test, etc.  
 
-More information in [Bastion](bastion/README.md)
+More information in [Bastion](bastion/README.md).
 
 # Create a KeyPair in whatever region(s) you will use
 

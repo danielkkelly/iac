@@ -89,9 +89,10 @@ host_key_checking 	= False
 
 The configuration below shows the configuration needed when using a traditional basion
 host, which resides on a public network and has a public IP.  If you use AWS then you
-have the option to use System Manager to access non-public hosts in a variety of ways.  
+have the option to use Session Manager to access non-public hosts in a variety of ways.  
 See [AWS](aws/README.md#ssh-config) for more information.  It's  a one line change and
-you can eliminate a public IP and reduce your attack surface.
+you can eliminate a public IP and reduce your attack surface.  Our HCL is set up by 
+default to support Session Manager for AWS.
 
 ```
 Host dev-bastion

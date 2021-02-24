@@ -1,6 +1,6 @@
 # Overview 
 
-![Alt text](img/proxied-ssh.png?raw=true "Proxied SSH"
+![Alt text](img/proxied-ssh.png?raw=true "Proxied SSH")
 
 You should use the system manager approach for AWS.  If you decide you want to use a pulbic 
 bastion host then you'll need to modify the HCL for the AWS bastion host by uncommenting the 
