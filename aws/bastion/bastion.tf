@@ -17,14 +17,40 @@ data "aws_vpc" "vpc" {
   }
 }
 
+/* 
+ * The AWS bastion server really acts as a dev server that resides on a private network
+ * vs. the traditional bastion server, which is on a public network and is given access
+ * to VMs on private networks.  Comment out the EIP below if you'd like to go the 
+ * traditional route.
+ */
 data "aws_subnet" "subnet_bastion" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
-    Type    = "public"
+    Type    = "private"
     Bastion = "1"
   }
 }
+
+/*
+resource "aws_eip" "bastion_eip" {
+  vpc                       = true
+  instance                  = aws_instance.bastion.id
+  associate_with_private_ip = local.private_ip
+
+  tags = {
+    Name        = "platform-bastion"
+    Environment = var.env
+  }
+}
+*/
+
+data "aws_route53_zone" "private" {
+  name         = "${var.env}.internal."
+  private_zone = true
+}
+
+
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
   name = "platform-${var.env}-ec2-ssm-profile"
@@ -83,32 +109,12 @@ resource "aws_instance" "bastion" {
   }
 }
 
-resource "aws_eip" "bastion_eip" {
-  vpc                       = true
-  instance                  = aws_instance.bastion.id
-  associate_with_private_ip = local.private_ip
-
-  tags = {
-    Name        = "platform-bastion"
-    Environment = var.env
-  }
-}
-
-data "aws_route53_zone" "private" {
-  name         = "${var.env}.internal."
-  private_zone = true
-}
-
 resource "aws_route53_record" "bastion" {
   zone_id = data.aws_route53_zone.private.zone_id
   name    = "bastion.${data.aws_route53_zone.private.name}"
   type    = "A"
   ttl     = "300"
   records = [local.private_ip]
-}
-
-output "bastion_public_ip" {
-  value = aws_eip.bastion_eip.public_ip
 }
 
 output "bastion_instance_id" {
