@@ -9,7 +9,7 @@ provider "aws" {
 resource "aws_iam_policy" "dev_policy" {
   name        = "${var.env}-dev"
   path        = "/"
-  description = "EC2, ECR, EKS permissions"
+  description = "EC2, ECR, EKS, session manager permissions"
 
   policy = <<EOF
 {
@@ -24,18 +24,22 @@ resource "aws_iam_policy" "dev_policy" {
         "eks:DescribeCluster",
         "ssm:DescribeSessions",
         "ssm:GetConnectionStatus",
-        "ssm:DescribeInstances",
+        "ssm:DescribeInstanceInformation",
         "ssm:DescribeInstanceProperties"
       ],
       "Effect": "Allow",
       "Resource": "*"
     },
     {
+        "Sid": "SessionManagerStartSession",
         "Effect": "Allow",
         "Action": [
             "ssm:StartSession"
         ],
-        "Resource": "*",
+        "Resource": [
+          "arn:aws:ec2:*:*:instance/*",
+          "arn:aws:ssm:*::document/AWS-StartSSHSession"
+        ],
         "Condition": {
           "StringEquals": {
             "ssm:resourceTag/HostType": "bastion"
@@ -43,9 +47,16 @@ resource "aws_iam_policy" "dev_policy" {
         }
     },
     {
+      "Sid": "SessionManagerPortForward",
+      "Effect": "Allow",
+      "Action": "ssm:StartSession",
+      "Resource": "arn:aws:ssm:*::document/AWS-StartSSHSession"
+    },
+    {
         "Effect": "Allow",
         "Action": [
-            "ssm:TerminateSession"
+            "ssm:TerminateSession",
+            "ssm:ResumeSession"
         ],
         "Resource": [
             "arn:aws:ssm:*:*:session/$${aws:username}-*"
