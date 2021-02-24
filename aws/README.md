@@ -30,7 +30,7 @@ becomes
 
 ```
 host dev-bastion
-   ProxyCommand sh -c "aws ssm start-session --target `print-ec2.sh --env dev --hostType bastion` --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
+   ProxyCommand sh -c "aws ssm start-session --profile dev --target `print-ec2.sh --env dev --hostType bastion` --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ```
 
 Same for test, etc.
@@ -90,7 +90,12 @@ If you set up the ALB then you will need to run alb-tls first, like below.
 buildctl.sh --provider aws --module alb-tls --action apply --terraform --ansible --auto-approve --env dev
 ```
 
-AWS has limits on how many certificates you can deploy in a given year.  You could run this each time you build your environment but would eventually hit your quota and uploading the generated cert would fail.  One option is to work with AWS to increase your quota and add alb-tls to buildctl.json so it runs with each apply / destroy of your environment.  The other option is to run alb-tls yearly.  By default we use the later in our default configuration.
+AWS has limits on how many certificates you can deploy in a given year.  You could 
+run this each time you build your environment but would eventually hit your quota 
+and uploading the generated cert would fail.  One option is to work with AWS to increase 
+your quota and add alb-tls to buildctl.json so it runs with each apply / destroy of your 
+environment.  The other option is to run alb-tls yearly.  By default we use the later 
+in our default configuration.
 
 # Modules
 

@@ -18,12 +18,38 @@ resource "aws_iam_policy" "dev_policy" {
     {
       "Action": [
         "ec2:Describe*",
+        "ec2:DescribeInstances",
         "ecr:*",
         "eks:ListClusters",
-        "eks:DescribeCluster"
+        "eks:DescribeCluster",
+        "ssm:DescribeSessions",
+        "ssm:GetConnectionStatus",
+        "ssm:DescribeInstances",
+        "ssm:DescribeInstanceProperties"
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ssm:StartSession"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringEquals": {
+            "ec2:ResourceTag/HostType": "bastion"
+          }
+        }
+    },
+    {
+        "Effect": "Allow",
+        "Action": [
+            "ssm:TerminateSession"
+        ],
+        "Resource": [
+            "arn:aws:ssm:*:*:session/&{aws:username}-*"
+        ]
     }
   ]
 }
