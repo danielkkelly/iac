@@ -9,7 +9,8 @@ resource "aws_network_acl" "rds" {
 locals {
     pri_subnet_cidr_blocks = {
         30 = var.cidr_block_subnet_pri_1, 
-        31 = var.cidr_block_subnet_pri_2
+        31 = var.cidr_block_subnet_pri_2,
+        32 = var.cidr_block_subnet_vpn_1
     } 
 }
 
