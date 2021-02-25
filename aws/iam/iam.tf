@@ -3,6 +3,29 @@ provider "aws" {
   profile = var.env
 }
 
+resource "aws_iam_policy" "net_policy" {
+  name        = "${var.env}-net"
+  path        = "/"
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Deny",
+        "Action": "*",
+        "Resource": "*",
+        "Condition": {
+            "NotIpAddress": {
+                "aws:SourceIp": [
+                  "${var.networks}"
+                ]
+            },
+            "Bool": {"aws:ViaAWSService": "false"}
+        }
+    }
+}
+EOF
+}
+
 # The following resources create a policy and group acess for developers who have
 # API access.  It also creates users with AWS access 
 
@@ -76,6 +99,11 @@ resource "aws_iam_group_policy_attachment" "dev_policy_attachment" {
   policy_arn = aws_iam_policy.dev_policy.arn
 }
 
+resource "aws_iam_group_policy_attachment" "dev_net_policy_attachment" {
+  group      = aws_iam_group.dev_group.name
+  policy_arn = aws_iam_policy.net_policy.arn
+}
+
 resource "aws_iam_group" "dev_admin_group" {
   name = "${var.env}-dev-admin"
 }
@@ -83,6 +111,11 @@ resource "aws_iam_group" "dev_admin_group" {
 resource "aws_iam_group_policy_attachment" "dev_admin_policy_attachment" {
   group      = aws_iam_group.dev_admin_group.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
+resource "aws_iam_group_policy_attachment" "dev_admin_net_policy_attachment" {
+  group      = aws_iam_group.dev_admin_group.name
+  policy_arn = aws_iam_policy.net_policy.arn
 }
 
 resource "aws_iam_user" "user" {

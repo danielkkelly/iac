@@ -8,3 +8,8 @@ variable users_groups {
       dan = ["dev"]
     }
 }
+
+variable "networks" {
+  type    = string
+  default = "0.0.0.0/0"
+}
