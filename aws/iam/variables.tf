@@ -10,6 +10,7 @@ variable users_groups {
 }
 
 variable "networks" {
+  desciption = "Specifies one or more allowable source IP ranges for AWS API use, defaults to all"
   type    = string
-  default = "0.0.0.0/0"
+  default = "\"0.0.0.0/0\""
 }

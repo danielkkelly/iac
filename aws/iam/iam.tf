@@ -16,7 +16,7 @@ resource "aws_iam_policy" "net_policy" {
         "Condition": {
             "NotIpAddress": {
                 "aws:SourceIp": [
-                  "${var.networks}"
+                  ${var.networks}
                 ]
             },
             "Bool": {"aws:ViaAWSService": "false"}

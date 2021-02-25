@@ -4,6 +4,13 @@ This module updates the identify and access management configuration to set up r
 policies to support System Manager related operations, such as automatic patching, and 
 policies, groups, and users for developers and developer admins.
 
+# AWS API Restriction by IP Ranges
+
+The variable "networks" allows you to specify an IP range or ranges that AWS will require
+as your source IP range for use of its API.  This allows us to restrict use of the API as
+well as ingress to the bastion server by developers when they are not on the correct 
+network.  The default allows access from any network.
+
 # User Management
 
 This module has a variable called "user_groups" in variables.tf that you'll update to 
