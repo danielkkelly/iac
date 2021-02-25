@@ -1,16 +1,19 @@
+# Environment
 variable "region" {}
 variable "env" {}
 variable "key_pair_name" {}
 variable "iac_home" {}
 
+# Users and groups
 variable users_groups {
   default = {
       dan = ["dev"]
     }
 }
 
+# Networks
 variable "networks" {
-  desciption = "Specifies one or more allowable source IP ranges for AWS API use, defaults to all"
+  desciption = "Source IP ranges for AWS API use"
   type    = string
   default = "\"0.0.0.0/0\""
 }

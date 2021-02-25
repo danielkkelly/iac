@@ -50,8 +50,6 @@ data "aws_route53_zone" "private" {
   private_zone = true
 }
 
-
-
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
   name = "platform-${var.env}-ec2-ssm-profile"
 }
