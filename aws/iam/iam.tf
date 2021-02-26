@@ -3,6 +3,9 @@ provider "aws" {
   profile = var.env
 }
 
+# The following resources create a policy and group acess for developers who have
+# API access.  It also creates users with AWS access 
+
 resource "aws_iam_policy" "net_policy" {
   name        = "${var.env}-net"
   path        = "/"
@@ -25,9 +28,6 @@ resource "aws_iam_policy" "net_policy" {
 }
 EOF
 }
-
-# The following resources create a policy and group acess for developers who have
-# API access.  It also creates users with AWS access 
 
 resource "aws_iam_policy" "dev_policy" {
   name        = "${var.env}-dev"
@@ -90,6 +90,9 @@ resource "aws_iam_policy" "dev_policy" {
 EOF
 }
 
+# The following resources create a dev and dev admin group and attach the policies
+# created above to them
+
 resource "aws_iam_group" "dev_group" {
   name = "${var.env}-dev"
 }
@@ -130,6 +133,9 @@ resource "aws_iam_access_key" "user_access_key" {
   pgp_key    = file("${var.iac_home}/keys/${each.key}-gpg.pub")
   depends_on = [aws_iam_user.user]
 }
+
+# The following lines loop through the users and groups in var.users_groups to 
+# create them in IAM.
 
 resource "aws_iam_user_group_membership" "dev_ugm" {
   for_each = var.users_groups
