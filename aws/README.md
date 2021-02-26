@@ -34,6 +34,13 @@ host dev-bastion
    ProxyCommand sh -c "aws ssm start-session --profile dev --target `print-ec2.sh --env dev --hostType bastion` --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ```
 
+and even more concise, if you use the script I provided, is
+
+```
+host dev-bastion
+   ProxyCommand sh -c "start-ssm-session.sh --env dev --port %p"
+```
+
 Same for test, etc.  
 
 More information in [Bastion](bastion/README.md).
