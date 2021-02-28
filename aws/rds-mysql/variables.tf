@@ -1,14 +1,8 @@
 #
-# AWS Region
+# Environment
 #
-variable "region" {
-}
-
-#
-# Specifies the environment
-#
-variable "env" {
-}
+variable "region" {}
+variable "env" {}
 
 # Cluster
 
@@ -18,6 +12,10 @@ variable "rds_instance_count" {
 
 variable "rds_instance_class" {
   default = "db.t2.medium"
+}
+
+variable "rds_deletion_protection" {
+  default = "false"
 }
 
 # Database
@@ -39,7 +37,7 @@ variable "backup_retention_period" {
 
 variable "enhanced_monitoring_interval" {
   description = "Monitoring inteval for ehnanced monitoring"
-  default = 60
+  default     = 60
 }
 
 # Variables that help allow private network access to the RDS server

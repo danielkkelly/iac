@@ -124,6 +124,7 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   # Security best practices
   storage_encrypted                   = true
   iam_database_authentication_enabled = true
+  deletion_protection                 = var.rds_deletion_protection
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
@@ -136,6 +137,6 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
 
-  monitoring_interval  = var.enhanced_monitoring_interval
-  monitoring_role_arn  = aws_iam_role.rds_enhanced_monitoring_iam_role.arn
+  monitoring_interval = var.enhanced_monitoring_interval
+  monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring_iam_role.arn
 }
