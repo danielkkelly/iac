@@ -3,12 +3,43 @@ provider "aws" {
   profile = var.env
 }
 
+# The following resources create a role for AWS support access to allow authorized 
+# users to manage AWS support incidents.  This satisfies the iam-policy-in-use
+# AWS config rule.
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role" "aws_support_role" {
+  name               = "${var.env}-aws-support-role"
+  path               = "/"
+  assume_role_policy = <<EOF
+  {
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::${data.aws_caller_identify.current.account_id}:root"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {}
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "aws_support_role_policy_attachment" {
+  role       = aws_iam_role.aws_support_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
+}
+
 # The following resources create a policy and group acess for developers who have
 # API access.  It also creates users with AWS access 
 
 resource "aws_iam_policy" "net_policy" {
-  name        = "${var.env}-net"
-  path        = "/"
+  name   = "${var.env}-net"
+  path   = "/"
   policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -141,11 +172,11 @@ resource "aws_iam_user_group_membership" "dev_ugm" {
   for_each = var.users_groups
   user     = "${each.key}.${var.env}"
   groups = [
-    for group in each.value: "${var.env}-${group}"
+    for group in each.value : "${var.env}-${group}"
   ]
   depends_on = [
-                aws_iam_user.user, 
-                aws_iam_group.dev_group, 
-                aws_iam_group.dev_admin_group
-               ]
+    aws_iam_user.user,
+    aws_iam_group.dev_group,
+    aws_iam_group.dev_admin_group
+  ]
 }
