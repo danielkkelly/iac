@@ -12,6 +12,10 @@ variable "alb_account" {
   }
 }
 
+variable "alb_deletion_protection" {
+  default = false
+}
+
 variable "cidr_blocks_ingress" {
   default = ["0.0.0.0/0"]
 }
