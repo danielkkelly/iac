@@ -13,6 +13,7 @@ resource "aws_subnet" "subnet_pub_1" {
     Name                                            = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment                                     = var.env
     Type                                            = "public"
+    Bastion                                         = "1" # works in conjunction with aws/bastion is_public variable
     Kubernetes                                      = "1"
     "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
     "kubernetes.io/role/elb"                        = "1"
@@ -58,7 +59,7 @@ resource "aws_subnet" "subnet_pri_2" {
     Name                                            = "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment                                     = var.env
     Type                                            = "private"
-    Bastion                                         = "1"
+    Bastion                                         = "1" # works in conjunction with aws/bastion is_public variable
     Docker                                          = "1"
     MSK                                             = "1"
     Kubernetes                                      = "1"

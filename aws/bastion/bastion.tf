@@ -27,13 +27,13 @@ data "aws_subnet" "subnet_bastion" {
   vpc_id = data.aws_vpc.vpc.id
 
   tags = {
-    Type    = "private"
+    Type    = var.is_public ? "public" : "private"
     Bastion = "1"
   }
 }
 
-/*
 resource "aws_eip" "bastion_eip" {
+  count                     = var.is_public ? 1 : 0
   vpc                       = true
   instance                  = aws_instance.bastion.id
   associate_with_private_ip = local.private_ip
@@ -43,7 +43,6 @@ resource "aws_eip" "bastion_eip" {
     Environment = var.env
   }
 }
-*/
 
 data "aws_route53_zone" "private" {
   name         = "${var.env}.internal."
