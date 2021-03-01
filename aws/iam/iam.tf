@@ -13,7 +13,7 @@ resource "aws_iam_role" "aws_support_role" {
   name               = "${var.env}-aws-support-role"
   path               = "/"
   assume_role_policy = <<EOF
-  {
+{
   "Version": "2012-10-17",
   "Statement": [
     {
