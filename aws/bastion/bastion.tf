@@ -32,6 +32,7 @@ data "aws_subnet" "subnet_bastion" {
   }
 }
 
+/* Only created if is_public is set to true in variables.tf, otherwise no EIP created */
 resource "aws_eip" "bastion_eip" {
   count                     = var.is_public ? 1 : 0
   vpc                       = true
