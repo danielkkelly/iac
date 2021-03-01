@@ -50,7 +50,6 @@ resource "aws_iam_role_policy" "vpc_flow_log_iam_role_policy" {
   "Statement": [
     {
       "Action": [
-        "logs:CreateLogGroup",
         "logs:CreateLogStream",
         "logs:PutLogEvents",
         "logs:DescribeLogGroups",

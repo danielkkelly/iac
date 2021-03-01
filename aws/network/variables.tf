@@ -18,17 +18,17 @@ variable "cidr_block_subnet_pri_2" {}
 #
 # RDS
 #
-variable cidr_block_subnet_rds_1 {}
-variable cidr_block_subnet_rds_2 {}
+variable "cidr_block_subnet_rds_1" {}
+variable "cidr_block_subnet_rds_2" {}
 
 #
 # VPN
 #
-variable cidr_block_subnet_vpn_1 {}
+variable "cidr_block_subnet_vpn_1" {}
 
 #
 # EKS
 #
-variable eks_cluster_name {
+variable "eks_cluster_name" {
   default = "platform-eks"
 }
