@@ -3,15 +3,22 @@ provider "aws" {
   profile = var.env
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_cloudtrail" "cloudtrail" {
-  name                          = "platform-cloudtrail"
-  s3_bucket_name                = module.default_s3_bucket.bucket
+  name           = "platform-cloudtrail"
+  s3_bucket_name = module.cloudtrail_s3_bucket.bucket
+
   include_global_service_events = true
   is_multi_region_trail         = true
-  enable_logging                = true
-  enable_log_file_validation    = true
-  cloud_watch_logs_group_arn    = "${aws_cloudwatch_log_group.cloudtrail_log_group.arn}:*" # CloudTrail requires the Log Stream wildcard
-  cloud_watch_logs_role_arn     = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
+
+  enable_logging             = true
+  enable_log_file_validation = true
+
+  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail_log_group.arn}:*" # CloudTrail requires the Log Stream wildcard
+  cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
+
+  kms_key_id = aws_kms_key.cloudtrail_kms_key.arn
 }
 
 module "cloudtrail_api_alarms" {

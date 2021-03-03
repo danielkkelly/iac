@@ -3,8 +3,6 @@ resource "aws_cloudwatch_log_group" "cloudtrail_log_group" {
   retention_in_days = 90
 }
 
-data "aws_caller_identity" "current" {}
-
 data "aws_iam_policy_document" "log_policy" {
   statement {
     effect  = "Allow"
