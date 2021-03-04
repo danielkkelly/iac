@@ -1,3 +1,8 @@
+variable "env" {
+  description = "The name of the enviornment (e.g. dev, test, prod)"
+  type        = string
+}
+
 variable "default_sender_id" {
   description = "A custom ID, such as your business brand, displayed as the sender on the receiving device. Support for sender IDs varies by country."
   type        = string
