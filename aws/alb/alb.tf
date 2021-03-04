@@ -86,7 +86,7 @@ resource "aws_lb" "platform_lb" {
   security_groups    = [aws_security_group.lb_sg.id]
   subnets            = [for s in data.aws_subnet.public_subnet_id : s.id]
 
-enable_deletion_protection = var.alb_deletion_protection
+  enable_deletion_protection = var.alb_deletion_protection
 
   drop_invalid_header_fields = true //security best practice
 
