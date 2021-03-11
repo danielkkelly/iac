@@ -33,25 +33,10 @@ resource "aws_config_configuration_recorder" "config_recorder" {
   }
 }
 
-module "default_sns" {
-  source = "../sns"
-
-  monthly_spend_limit    = 1
-  topic_name             = "platform-sms-topic"
-  topic_display_name     = "platform-sms-topic"
-  usage_report_s3_bucket = "sms-usage"
-
-  env = var.env
-
-  subscriptions = [
-    var.sms_number
-  ]
-}
-
 resource "aws_config_delivery_channel" "config_delivery_channel" {
   name           = "platform-config-delivery-channel"
   s3_bucket_name = module.config_s3_bucket.bucket
-  sns_topic_arn  = module.default_sns.topic_arn
+  sns_topic_arn  = aws_sns_topic.config_sns_topic.arn
   depends_on     = [aws_config_configuration_recorder.config_recorder]
 }
 

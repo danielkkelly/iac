@@ -22,6 +22,25 @@ resource "aws_cloudtrail" "cloudtrail" {
 }
 
 module "cloudtrail_api_alarms" {
+  name           = "cloudtrail-alarms"
   source         = "git::https://github.com/cloudposse/terraform-aws-cloudtrail-cloudwatch-alarms.git"
   log_group_name = aws_cloudwatch_log_group.cloudtrail_log_group.name
+
+  kms_master_key_id = aws_kms_key.cloudtrail_kms_key.id
+
+  sns_policy_enabled = false
+}
+
+module "sns_subscription" {
+  count  = var.sms_enabled ? 1 : 0
+  source = "../sns-subscription"
+
+  topic_arn = module.cloudtrail_api_alarms.sns_topic_arn
+
+  subscriptions = [
+    {
+      protocol = "sms"
+      endpoint = var.sms_number
+    }
+  ]
 }
