@@ -119,6 +119,20 @@ data "aws_iam_policy_document" "cloudtrail_key_policy" {
     ]
     resources = ["*"]
   }
+
+  # Cloudwatch to publish to SNS for metric alarms 
+  statement {
+    sid = "Allow CloudWatch to send notifications to the encrypted SNS topic"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudwatch.amazonaws.com"]
+    }
+    actions = [
+      "kms:GenerateDataKey",
+      "kms:Decrypt"
+    ]
+    resources = ["*"]
+  }  
 }
 
 resource "aws_kms_key" "cloudtrail_kms_key" {
