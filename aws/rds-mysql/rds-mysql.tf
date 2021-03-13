@@ -74,33 +74,32 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
 
   parameter {
     name         = "lower_case_table_names"
-    value        = "1"
+    value        = "1" 
     apply_method = "pending-reboot"
   }
 
-  parameter {
-    name         = "log_bin_trust_function_creators"
-    value        = "1"
-    apply_method = "pending-reboot"
-  }
+   dynamic "parameter" {
+    for_each = var.parameters
+    content {
+      name         = parameter.value["name"]
+      value        = parameter.value["value"]
+      apply_method = parameter.value["apply_method"]
+    }
+   }
+}
 
-  parameter {
-    name         = "general_log"
-    value        = "1"
-    apply_method = "pending-reboot"
-  }
+resource "aws_db_parameter_group" "platform_rds_cluster_instance_pg" {
+  name   = "platform-rds"
+  family = "aurora-mysql5.7"
 
-  parameter {
-    name         = "slow_query_log"
-    value        = "1"
-    apply_method = "pending-reboot"
-  }
-
-  parameter {
-    name         = "log_output"
-    value        = "FILE"
-    apply_method = "pending-reboot"
-  }
+   dynamic "parameter" {
+    for_each = var.parameters
+    content {
+      name         = parameter.value["name"]
+      value        = parameter.value["value"]
+      apply_method = parameter.value["apply_method"]
+    }
+   }
 }
 
 resource "aws_rds_cluster" "platform_rds_cluster" {
@@ -136,6 +135,8 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
   identifier     = "platform-rds-cluster-${count.index}"
   count          = var.rds_instance_count
   instance_class = var.rds_instance_class
+
+  db_parameter_group_name = aws_db_parameter_group.platform_rds_cluster_instance_pg.name
 
   monitoring_interval = var.enhanced_monitoring_interval
   monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring_iam_role.arn

@@ -37,6 +37,38 @@ variable "enhanced_monitoring_interval" {
   default     = 60
 }
 
+# Cluster and DB parameters
+variable parameters {
+  description = "List of database parameters"
+  type        = list(object({
+      name = string
+      value = string
+      apply_method = string
+  }))
+  default = [
+    {
+      name         = "log_bin_trust_function_creators"
+      value        = "1"
+      apply_method = "pending-reboot"
+    },
+    {
+      name         = "general_log"
+      value        = "1"
+      apply_method = "pending-reboot"
+    },
+    {
+      name         = "slow_query_log"
+      value        = "1"
+      apply_method = "pending-reboot"
+    },
+    {
+      name         = "log_output"
+      value        = "FILE"
+      apply_method = "pending-reboot"
+    }
+  ]
+}
+
 # Variables that help allow private network access to the RDS server
 variable "cidr_block_subnet_pri_1" {}
 variable "cidr_block_subnet_pri_2" {}
