@@ -40,12 +40,16 @@ See the [AWS](aws/README.md) and [GCP](gcp/README.md) documents for provider spe
 * Add IAC_HOME and point it to where you cloned this repo
 * Add $IAC_HOME/[script & aws/script && gcp script]  to your path
 * Make IAC_HOME available to Terraform
+* SMS number is for alarms
 
 ## Example
 ```
 export IAC_HOME=~/projects/iac
 export PATH=$PATH:$IAC_HOME/script:$IAC_HOME/aws/script:$IAC_HOME/gcp/script
 export TF_VAR_iac_home=$IAC_HOME
+
+# IAC SMS
+export TF_VAR_sms_number="+15555555555"
 ```
 
 # Ansible
