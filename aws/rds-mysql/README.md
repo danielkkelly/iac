@@ -187,3 +187,15 @@ We install the mysql commandline tools on the bastion host (../../ansible/schema
 --enable-cleartext-plugin doesn't seem to be an option for that installation.  However, omitting that
 from the command line arguments doesn't have an effect.  That said, on my local machine omitting that 
 option is an issue.
+
+# Log Files
+
+Log files are stored on disk vs. table.  This is more performant and allows AWS to automatically rotate
+logs on our behalf vs. performing that task manually.  Logs are easily retrieved by doing the following:
+
+TODO: get instance identifier automatically.  Other file examples.
+
+
+```
+aws rds download-db-log-file-portion --db-instance-identifier <identifier> --log-file-name slowquery/mysql-slowquery.log --output text > file.txt
+```
