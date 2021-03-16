@@ -193,9 +193,32 @@ option is an issue.
 Log files are stored on disk vs. table.  This is more performant and allows AWS to automatically rotate
 logs on our behalf vs. performing that task manually.  Logs are easily retrieved by doing the following:
 
-TODO: get instance identifier automatically.  Other file examples.
+```
+aws rds describe-db-log-files --db-instance-identifier platform-rds-cluster-0
+```
 
+This results in a list of files available.
 
 ```
-aws rds download-db-log-file-portion --db-instance-identifier <identifier> --log-file-name slowquery/mysql-slowquery.log --output text > file.txt
+
+{
+    "DescribeDBLogFiles": [
+        {
+            "LogFileName": "error/mysql-error-running.log",
+            "LastWritten": 1615930200000,
+            "Size": 38492
+        },
+...
+
 ```
+aws rds download-db-log-file-portion --db-instance-identifier platform-rds-cluster-0 \
+	--log-file-name error/mysql-error-running.log \
+	--output text > mysql-error.log
+```
+
+Or for the slow query log.
+
+```
+aws rds download-db-log-file-portion --db-instance-identifier platform-rds-cluster-0 \
+	--log-file-name slowquery/mysql-slowquery.log \
+	--output text > mysql-slowquery.log
