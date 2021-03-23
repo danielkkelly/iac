@@ -124,6 +124,7 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   storage_encrypted                   = true
   iam_database_authentication_enabled = true
   deletion_protection                 = var.rds_deletion_protection
+  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {
