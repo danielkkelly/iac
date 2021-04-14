@@ -103,7 +103,7 @@ resource "aws_db_parameter_group" "platform_rds_cluster_instance_pg" {
 }
 
 resource "aws_rds_cluster" "platform_rds_cluster" {
-  cluster_identifier = "platform-rds-cluster"
+  cluster_identifier = var.rds_cluster_identifier
 
   engine         = "aurora-mysql"
   engine_version = "5.7.mysql_aurora.2.07.2"
@@ -125,6 +125,13 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   iam_database_authentication_enabled = true
   deletion_protection                 = var.rds_deletion_protection
   enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
+  
+  depends_on = [
+    aws_cloudwatch_log_group.audit,
+    aws_cloudwatch_log_group.error,
+    aws_cloudwatch_log_group.general,
+    aws_cloudwatch_log_group.slowquery
+  ]
 }
 
 resource "aws_rds_cluster_instance" "cluster_instances" {

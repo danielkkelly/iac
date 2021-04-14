@@ -3,6 +3,11 @@ variable "region" {}
 variable "env" {}
 
 # Cluster
+variable "rds_cluster_identifier" {
+  description = "Name of the cluster"
+  default = "platform-rds-cluster"
+}
+
 variable "rds_instance_count" {
   description = "Number of cluster instances, use two or more for most professional environments"
   default = 1
@@ -67,6 +72,11 @@ variable parameters {
       apply_method = "pending-reboot"
     }
   ]
+}
+
+# Cloudwatch
+variable "cloudwatch_retention_in_days" {
+  default = 365
 }
 
 # Variables that help allow private network access to the RDS server
