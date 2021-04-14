@@ -2,7 +2,18 @@
 
 Sets up CloudTrail and forwards CloudTrail logs to CloudWatch.  Adds CloudWatch
 metrics and alarms requires for CIS AWS Foundations benchmark.  Sets up SNS topic
-to receive alarms.
+to receive alarms.  Note: you must have a subscription on the Cloudtrail Breach 
+topic before you are compliant with the CIS 3.x log metric requirements.
+
+# E-mail Subscriptions
+
+Terraform can't do e-mail subscriptions because the workflow requires that the 
+owner of the address confirms the subscription.  This is a manual step that 
+you will need to complete.  Note: old subscriptions could stick around but aren't
+associated with the current topic created with Terraform.  So make sure that you
+have a new e-mail subscription created for the current topic if you go this route.
+You will need to do this each time you build your infrastructure.
+
 
 # SNS Subscriptions
 
