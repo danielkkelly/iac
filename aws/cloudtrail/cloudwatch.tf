@@ -1,6 +1,6 @@
 resource "aws_cloudwatch_log_group" "cloudtrail_log_group" {
   name              = "cloudtrail"
-  retention_in_days = 90
+  retention_in_days = var.cloudwatch_retention_in_days
 }
 
 data "aws_iam_policy_document" "log_policy" {

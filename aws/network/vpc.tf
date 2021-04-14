@@ -18,12 +18,12 @@ resource "aws_flow_log" "vpc_flow_log" {
 
 resource "aws_cloudwatch_log_group" "vpc_flow_log_log_group" {
   name = "${var.env}-vpc-flow-log"
+  retention_in_days = var.cloudwatch_retention_in_days
 }
 
-resource "aws_iam_role" "vpc_flow_log_iam_role" {
-  name = "${var.env}-vpc-flow-log-role"
-
-  assume_role_policy = <<EOF
+resource "aws_iam_policy" "vpc_flow_log_iam_policy" {
+  name = "platform-${var.env}-vpc-flow-log-policy"
+  policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -38,6 +38,11 @@ resource "aws_iam_role" "vpc_flow_log_iam_role" {
   ]
 }
 EOF
+}
+
+resource "aws_iam_role" "vpc_flow_log_iam_role" {
+  name = "platfomr-${var.env}-vpc-flow-log-role"
+  assume_role_policy = aws_iam_policy.vpc_flow_log_iam_policy
 }
 
 resource "aws_iam_role_policy" "vpc_flow_log_iam_role_policy" {
