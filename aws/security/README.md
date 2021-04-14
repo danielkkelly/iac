@@ -14,6 +14,11 @@ score for the followign standards:
 * AWS Foundational Security Best Practices
 * CIS AWS Foundations Benchmark
 
+# Default VPC
+
+You should delete your account's default VPC.  This will prevent security related
+controls from failing checks.
+
 # Security Standards
 
 AWS provies subscriptions to security standards.  When these execute they will 
