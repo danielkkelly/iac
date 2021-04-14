@@ -1,4 +1,4 @@
-resource "aws_s3_account_public_access_block" "example" {
+resource "aws_s3_account_public_access_block" "s3_public_access_block_by_default" {
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
