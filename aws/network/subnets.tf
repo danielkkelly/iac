@@ -15,7 +15,6 @@ resource "aws_subnet" "subnet_pub_1" {
     Type                                            = "public"
     Bastion                                         = "1" # works in conjunction with aws/bastion is_public variable
     Kubernetes                                      = "1"
-    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
     "kubernetes.io/role/elb"                        = "1"
   }
 }
@@ -30,7 +29,6 @@ resource "aws_subnet" "subnet_pub_2" {
     Environment                                     = var.env
     Type                                            = "public"
     Kubernetes                                      = "1"
-    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared",
     "kubernetes.io/role/elb"                        = "1"
   }
 }
@@ -46,7 +44,6 @@ resource "aws_subnet" "subnet_pri_1" {
     Syslog                                          = "1"
     MSK                                             = "1"
     Kubernetes                                      = "1"
-    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"               = "1"
   }
 }
@@ -63,7 +60,6 @@ resource "aws_subnet" "subnet_pri_2" {
     Docker                                          = "1"
     MSK                                             = "1"
     Kubernetes                                      = "1"
-    "kubernetes.io/cluster/${var.eks_cluster_name}" = "shared"
     "kubernetes.io/role/internal-elb"               = "1"
   }
 }
