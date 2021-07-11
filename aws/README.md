@@ -48,7 +48,8 @@ More information in [Bastion](bastion/README.md).
 # Create a KeyPair in whatever region(s) you will use
 
 AWS uses a key pair to default the default SSH keys for a newly created EC2 instance.  You'll need to 
-create a key pair and pull it down for logging into the instance and use with Ansible.
+create a key pair and pull it down for logging into the instance and use with Ansible.  See EC2 /
+Network & Security / Key Pairs.  If you already have a key pair you can import its public key.
 
 # AWS Configuration
 
@@ -84,18 +85,7 @@ region=us-east-2
 
 # Prerequisites
 
-If you set up the ALB then you will need to run alb-tls first, like below.
-
-```
-buildctl.sh --provider aws --module alb-tls --action apply --terraform --ansible --auto-approve --env dev
-```
-
-AWS has limits on how many certificates you can deploy in a given year.  You could 
-run this each time you build your environment but would eventually hit your quota 
-and uploading the generated cert would fail.  One option is to work with AWS to increase 
-your quota and add alb-tls to buildctl.json so it runs with each apply / destroy of your 
-environment.  The other option is to run alb-tls yearly.  By default we use the later 
-in our default configuration.
+* [TLS for the Load Balancer](alb/README.md#TLS)
 
 # Modules
 
@@ -103,6 +93,7 @@ in our default configuration.
 * [Security](security/README.md)
 * [IAM](iam/README.md)
 * [VPN](client-vpn/README.md)
+* [Application Load Balancer](alb/README.md)
 * [EKS with Fargate](eks-fargate/README.md)
 * [EKS with Managed Node Groups](eks-node-groups/README.md)
 * [Docker](../ansible/docker/README.md)
