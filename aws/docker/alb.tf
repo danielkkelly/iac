@@ -8,7 +8,7 @@ data "aws_lb_listener" "lb_listener_https" {
 }
 
 /* 
- * Create a target group.  This is where we define groups where listeners will forward traffice
+ * Create a target group.  This is where we define groups where listeners will forward traffic
  * based on their rules.  This is also where health checks are specified.
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
  */
