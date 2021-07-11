@@ -37,7 +37,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
   load_config_file       = false
-  version                = "~> 1.11"
 }
 
 module "eks" {
@@ -45,6 +44,9 @@ module "eks" {
   cluster_name = var.eks_cluster_name
   cluster_version = var.eks_cluster_version
   subnets      = [for s in data.aws_subnet.subnet_id : s.id]
+  
+  #workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+  enable_irsa = true  #what does this do?  does it eliminate iam.tf?
 
   tags = {
     Environment = var.env
