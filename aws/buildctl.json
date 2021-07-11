@@ -97,7 +97,21 @@
             "target": ["ecr", "alb", "base-bastion"], 
             "terraform": true,
             "ansible": false
-        },                                                       
+        },
+        {
+            "module": "lb-eks",
+            "action": "apply",
+            "target": ["base-bastion", "alb", "eks-fargate"], 
+            "terraform": true,
+            "ansible": false
+        }, 
+        {
+            "module": "lb-eks",
+            "action": "destroy",
+            "target": ["eks-fargate", "alb", "base-bastion"], 
+            "terraform": true,
+            "ansible": false
+        },                                                                          
         {
             "module": "lb-docker",
             "action": "apply",
