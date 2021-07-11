@@ -9,7 +9,7 @@ variable "key_pair_name" {}
 # Host
 #
 variable "instance_type" {
-  default = "t2.large"
+  default = "t2.xlarge"
 }
 
 variable "volume_size" {
