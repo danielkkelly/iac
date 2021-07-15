@@ -36,7 +36,6 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
   token                  = data.aws_eks_cluster_auth.cluster.token
-  load_config_file       = false
 }
 
 module "eks" {
@@ -57,6 +56,18 @@ module "eks" {
   fargate_profiles = {
     platform = {
       namespace = "default"
+
+      selectors = [
+        {
+          namespace = "kube-system"
+          labels = {
+            k8s-app = "kube-dns"
+          }
+        },
+        {
+          namespace = "default"
+        }
+      ]
 
       tags = {
         Environment = var.env
