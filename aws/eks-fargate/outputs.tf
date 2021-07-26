@@ -27,3 +27,8 @@ output "cluster_name" {
   description = "Kubernetes Cluster Name"
   value       = var.eks_cluster_name
 }
+
+output "aws_lbc_role_arn" {
+  description = "AWS Load Balancer Controller Role ARN"
+  value       = aws_iam_role.lbc_iam_role.arn
+}

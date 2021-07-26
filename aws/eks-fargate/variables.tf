@@ -11,7 +11,7 @@ variable "eks_cluster_name" {
 }
 
 variable "eks_cluster_version" {
-  default = "1.18"
+  default = "1.20"
 }
 
 # Variables that are passed to the eks module

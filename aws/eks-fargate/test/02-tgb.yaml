@@ -1,0 +1,9 @@
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: my-tgb
+spec:
+  serviceRef:
+    name: my-service 
+    port: 8080
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-2:464267695814:targetgroup/platform-pod/9ae09376945e1fb6

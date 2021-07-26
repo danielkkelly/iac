@@ -44,8 +44,8 @@ module "eks" {
   cluster_version = var.eks_cluster_version
   subnets      = [for s in data.aws_subnet.subnet_id : s.id]
   
-  #workers_additional_policies = [aws_iam_policy.worker_policy.arn]
-  enable_irsa = true  #what does this do?  does it eliminate iam.tf?
+  # Creates the OIDC provider
+  enable_irsa = true
 
   tags = {
     Environment = var.env
@@ -55,23 +55,35 @@ module "eks" {
 
   fargate_profiles = {
     platform = {
-      namespace = "default"
-
       selectors = [
         {
           namespace = "kube-system"
-          labels = {
-            k8s-app = "kube-dns"
-          }
         },
         {
           namespace = "default"
+        },
+        {
+          namespace = "cert-manager"
         }
       ]
 
       tags = {
         Environment = var.env
       }
+    }
+  }
+}
+
+resource "kubernetes_service_account" "lbc_service_account" {
+  metadata {
+    name = "aws-load-balancer-controller"
+    namespace = "kube-system"
+    labels = {
+      "app.kubernetes.io/component" = "controller"
+      "app.kubernetes.io/name" = "aws-load-balancer-controller"
+    }
+    annotations = {
+      "eks.amazonaws.com/role-arn" = "${aws_iam_role.lbc_iam_role.arn}"
     }
   }
 }
