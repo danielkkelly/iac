@@ -2,7 +2,7 @@ variable "region" {}
 variable "env" {}
 
 /*
- * This is the Elastic Load Balancing Account ID for the region (us-east-2).  Update
+ * This is the Elastic Load Balancing Account ID for the regions us-east-[1,2].  Update
  * it for your region
  */
 variable "alb_account" {
