@@ -1,6 +1,4 @@
 # https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/main/docs/install/iam_policy.json
-
-# TODO update resource below, this could use a role and then the role arn gets associated with a ClusterRole per
 # https://medium.com/devops-dudes/running-the-latest-aws-load-balancer-controller-in-your-aws-eks-cluster-9d59cdc1db98
 
 resource "aws_iam_policy" "lbc_iam_policy" {

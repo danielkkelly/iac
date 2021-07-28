@@ -5,5 +5,5 @@ metadata:
 spec:
   serviceRef:
     name: my-service 
-    port: 8080
-  targetGroupARN: arn:aws:elasticloadbalancing:us-east-2:464267695814:targetgroup/platform-pod/9ae09376945e1fb6
+    port: 80
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-2:464267695814:targetgroup/platform-pod/bed626f088834b67

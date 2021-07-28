@@ -59,8 +59,14 @@ helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller \
   --set region=us-east-2 \
-  --set vpcId=myVpcId \
+  --set vpcId=`tfctl.sh --provider aws --module network --action output --env test |  sed -n "s/^vpc_id = //p" | sed 's/"//g'` \
   -n kube-system
+```
+
+### View the logs
+
+```
+kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 ```
 
 # Test using nginx
@@ -79,7 +85,7 @@ kubectl apply -f test/02-tgb.yaml
 ## Connect
 
 ```
-kubectl port-forward service/my-service 8080:80  -n default
+kubectl port-forward service/my-service 8080:8080  -n default
 ```
 
 ## Remove 
