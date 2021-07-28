@@ -46,6 +46,9 @@ module "eks" {
   
   # Creates the OIDC provider
   enable_irsa = true
+ 
+  # We use the AWS command line to update kubeconfig based on cluster name
+  write_kubeconfig = false
 
   tags = {
     Environment = var.env
