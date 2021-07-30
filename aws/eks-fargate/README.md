@@ -104,3 +104,17 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/late
 # Dashboard
 
 https://docs.aws.amazon.com/eks/latest/userguide/dashboard-tutorial.html
+
+# SSH Port Forwarding with Pods
+
+This is possible, if desired.  Make sure the bastion host has access to the pods.  You 
+could allow through EKS primary security group.  For an example of this, see how the 
+load balancer is set up for access to pods in alb.tf.
+
+Once you have access set up for the ports you want:
+
+```
+ssh test-bastion -L 9991:10.2.2.156:9990
+```
+
+In this example we access the Wildfly managment console from localhost:9991.  
