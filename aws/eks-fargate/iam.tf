@@ -238,10 +238,10 @@ data "aws_iam_policy_document" "eks_oidc_assume_role" {
 }
 
 resource "aws_iam_role" "lbc_iam_role" {
-  name        = "AmazonEKSLoadBalancerControllerRole"
-  description = "Permissions required by the Kubernetes AWS Load Balancer controller to do its job."
+  name                  = "AmazonEKSLoadBalancerControllerRole"
+  description           = "Permissions required by the Kubernetes AWS Load Balancer controller to do its job."
   force_detach_policies = true
-  assume_role_policy = data.aws_iam_policy_document.eks_oidc_assume_role.json
+  assume_role_policy    = data.aws_iam_policy_document.eks_oidc_assume_role.json
 }
 
 resource "aws_iam_role_policy_attachment" "lbc_iam_role_policy_attachment" {

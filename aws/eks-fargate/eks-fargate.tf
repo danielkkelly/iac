@@ -39,14 +39,14 @@ provider "kubernetes" {
 }
 
 module "eks" {
-  source       = "terraform-aws-modules/eks/aws"
-  cluster_name = var.eks_cluster_name
+  source          = "terraform-aws-modules/eks/aws"
+  cluster_name    = var.eks_cluster_name
   cluster_version = var.eks_cluster_version
-  subnets      = [for s in data.aws_subnet.subnet_id : s.id]
-  
+  subnets         = [for s in data.aws_subnet.subnet_id : s.id]
+
   # Creates the OIDC provider
   enable_irsa = true
- 
+
   # We use the AWS command line to update kubeconfig based on cluster name
   write_kubeconfig = false
 
@@ -79,11 +79,11 @@ module "eks" {
 
 resource "kubernetes_service_account" "lbc_service_account" {
   metadata {
-    name = "aws-load-balancer-controller"
+    name      = "aws-load-balancer-controller"
     namespace = "kube-system"
     labels = {
       "app.kubernetes.io/component" = "controller"
-      "app.kubernetes.io/name" = "aws-load-balancer-controller"
+      "app.kubernetes.io/name"      = "aws-load-balancer-controller"
     }
     annotations = {
       "eks.amazonaws.com/role-arn" = "${aws_iam_role.lbc_iam_role.arn}"
