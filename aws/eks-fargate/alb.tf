@@ -13,11 +13,11 @@ data "aws_lb_listener" "lb_listener_https" {
  * https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-target-groups.html
  */
 resource "aws_lb_target_group" "platform_pod_lb_tg" {
-  name     = "platform-pod"
-  port     = 80
-  protocol = "HTTP"
+  name        = "platform-pod"
+  port        = var.alb_target_port
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id   = data.aws_vpc.vpc.id
+  vpc_id      = data.aws_vpc.vpc.id
 }
 
 resource "aws_lb_listener_rule" "pod_listener_rule" {
@@ -47,8 +47,8 @@ data "aws_security_group" "lb_sg" {
 
 resource "aws_security_group_rule" "lb_http_sgr" {
   type                     = "ingress"
-  from_port                = 80
-  to_port                  = 80
+  from_port                = var.alb_target_port
+  to_port                  = var.alb_target_port
   protocol                 = "tcp"
   source_security_group_id = data.aws_security_group.lb_sg.id
   security_group_id        = module.eks.cluster_primary_security_group_id
