@@ -138,7 +138,7 @@
         {
             "module": "lb-apps",
             "action": "destroy",
-            "target": ["rds-mysql", "lb-docker"],
+            "target": ["rds-mysql", "lb-eks"],
             "terraform": true,
             "ansible": false
         },
