@@ -4,12 +4,13 @@
 
 # Setup
 
-1. Build the cluster using terraform
-2. Install kubectl (https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
-3. run "aws eks --region us-east-1 update-kubeconfig --name platform-eks" 
-4. Patch Core DNS
-4. Install the AWS Load Balancer Controller
-5. Install nginx to test load balancing
+1. Set the alb_target_port in variables.tf - please ensure it is set to 80 for the example below
+2. Build the cluster using terraform
+3. Install kubectl (https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html)
+4. run "aws eks --region us-east-1 update-kubeconfig --name platform-eks" 
+5. Patch Core DNS
+6. Install the AWS Load Balancer Controller
+7. Install your application to test load balancing 
 
 ## OIDC
 
@@ -70,6 +71,8 @@ kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 ```
 
 # Test using nginx
+
+Make sure to set the alb_target_port to 80 in variables.tf.
 
 ## Create a service
 
