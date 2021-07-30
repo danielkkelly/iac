@@ -94,21 +94,21 @@
         {
             "module": "lb-container",
             "action": "destroy",
-            "target": ["ecr", "alb", "base-bastion"], 
+            "target": ["alb", "base-bastion"],
             "terraform": true,
             "ansible": false
         },
         {
             "module": "lb-eks",
             "action": "apply",
-            "target": ["base", "alb", "eks-fargate"], 
+            "target": ["lb-container", "eks-fargate"], 
             "terraform": true,
             "ansible": false
         }, 
         {
             "module": "lb-eks",
             "action": "destroy",
-            "target": ["eks-fargate", "alb", "base"], 
+            "target": ["eks-fargate", "lb-container"], 
             "terraform": true,
             "ansible": false
         },                                                                          
@@ -130,7 +130,7 @@
         {
             "module": "lb-apps",
             "action": "apply",
-            "target": ["lb-docker", "rds-mysql", "schemas"], 
+            "target": ["lb-eks", "rds-mysql", "schemas"], 
             "terraform": true,
             "ansible": true,
             "playbook": "playbook.yaml"
