@@ -41,6 +41,10 @@ resource "aws_security_group" "lb_sg" {
   name        = "platform-lb"
   description = "HTTPS from world"
 
+  /* Allow services running on subnets aassociated with the NAT gatway to make inbound 
+   * requests through the load balancer.  This isn't strictly required and not always
+   * efficient but it is convenient
+   */
   ingress {
     from_port   = 443
     to_port     = 443
@@ -48,26 +52,28 @@ resource "aws_security_group" "lb_sg" {
     cidr_blocks = ["${data.aws_nat_gateway.ngw.public_ip}/32"]
   }
 
-  ingress {
+  ingress { # HTTP
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = var.cidr_blocks_ingress
   }
 
-  ingress {
+  ingress { # HTTPS
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = var.cidr_blocks_ingress
   }
 
-  egress {
-    from_port = 8080
-    to_port   = 8080
-    protocol  = "tcp"
-    cidr_blocks = [var.cidr_block_subnet_pri_1,
-    var.cidr_block_subnet_pri_2]
+  dynamic "egress" {
+    for_each = var.egress_ports
+    content {
+      from_port = egress.value
+      to_port   = egress.value
+      protocol  = "tcp"
+      cidr_blocks = [var.cidr_block_subnet_pri_1, var.cidr_block_subnet_pri_2]
+    }
   }
 
   tags = {

@@ -20,6 +20,11 @@ variable "cidr_blocks_ingress" {
   default = ["0.0.0.0/0"]
 }
 
+variable "egress_ports" {
+  type = list
+  default = [80, 8080, 443, 8443]
+}
+
 # Variables for app subnets, to which we'll allow egress
 variable "cidr_block_subnet_pri_1" {}
 variable "cidr_block_subnet_pri_2" {}
