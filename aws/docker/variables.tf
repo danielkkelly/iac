@@ -28,6 +28,11 @@ variable "host_number" {
   default = "40"
 }
 
+variable "alb_target_port" {
+  description = "The container port that will serve up your application"
+  default = 80
+}
+
 # Variables that help allow private network access to the RDS server
 variable "cidr_block_subnet_vpn_1" {}
 
