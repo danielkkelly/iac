@@ -88,7 +88,7 @@ kubectl apply -f test/02-tgb.yaml
 ## Connect
 
 ```
-kubectl port-forward service/my-service 8080:8080  -n default
+kubectl port-forward service/my-service 80:80  -n default
 ```
 
 ## Remove 
