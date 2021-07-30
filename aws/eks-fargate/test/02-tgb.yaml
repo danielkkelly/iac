@@ -6,4 +6,4 @@ spec:
   serviceRef:
     name: my-service 
     port: 80
-  targetGroupARN: arn:aws:elasticloadbalancing:us-east-2:464267695814:targetgroup/platform-pod/bed626f088834b67
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-2:464267695814:targetgroup/platform-pod/ed03ab984f4c05fa
