@@ -101,14 +101,14 @@
         {
             "module": "lb-eks",
             "action": "apply",
-            "target": ["lb-container", "eks-fargate"], 
+            "target": ["lb-container", "eks"], 
             "terraform": true,
             "ansible": false
         }, 
         {
             "module": "lb-eks",
             "action": "destroy",
-            "target": ["eks-fargate", "lb-container"], 
+            "target": ["eks", "lb-container"], 
             "terraform": true,
             "ansible": false
         },                                                                          
