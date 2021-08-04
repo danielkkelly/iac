@@ -1,0 +1,31 @@
+- name: 'Configure the EKS cluster'
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: 'Update kubeconfig'
+      shell: "aws eks --region `tfctl.sh --provider aws --module network --action output --qualifier region --env {{ env }}` update-kubeconfig --name platform-eks"
+    
+    - name: 'Patch CoreDNS deployment, which is required to run on Fargate'
+      shell: "kubectl patch deployment coredns \
+                  -n kube-system \
+                  --type json \
+                  -p='[{\"op\": \"remove\", \"path\": \"/spec/template/metadata/annotations/eks.amazonaws.com~1compute-type\"}]'"
+
+    - name: 'Add Helm repo for EKS'
+      shell: helm repo add eks https://aws.github.io/eks-charts
+
+    - name: 'Add custom resource definitions for the AWS Load Balancer Controller'
+      shell: kubectl apply -k "github.com/aws/eks-charts/stable/aws-load-balancer-controller/crds?ref=master"
+    
+    - name: 'Update the Helm repo'
+      shell: helm repo update
+
+    - name: 'Install the AWS Load Balancer Controller via Helm'
+      tags: albc
+      shell: helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
+              --set clusterName=platform-eks \
+              --set serviceAccount.create=false \
+              --set serviceAccount.name=aws-load-balancer-controller \
+              --set region=`tfctl.sh --provider aws --module network --action output --qualifier region --env {{ env }}` \
+              --set vpcId=`tfctl.sh --provider aws --module network --action output --qualifier vpc_id --env {{ env }}` \
+              -n kube-system

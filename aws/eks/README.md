@@ -2,6 +2,14 @@
 
 ![Alt text](img/k8-rds.png?raw=true "K8 with RDS")
 
+# Prerequisites
+
+You must have the following installed:
+
+* kubctl
+* Helm
+
+
 # Setup
 
 1. Set the alb_target_port in variables.tf - please ensure it is set to 80 for the example below
@@ -59,8 +67,8 @@ helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
   --set clusterName=platform-eks \
   --set serviceAccount.create=false \
   --set serviceAccount.name=aws-load-balancer-controller \
-  --set region=us-east-2 \
-  --set vpcId=`tfctl.sh --provider aws --module network --action output --env test |  sed -n "s/^vpc_id = //p" | sed 's/"//g'` \
+  --set region=`tfctl.sh --provider aws --module network --action output --qualifier region --env test` \
+  --set vpcId=`tfctl.sh --provider aws --module network --action output --qualifier vpc_id --env test` \
   -n kube-system
 ```
 
@@ -111,6 +119,8 @@ This is possible, if desired.  Make sure the bastion host has access to the pods
 could allow through EKS primary security group.  For an example of this, see how the 
 load balancer is set up for access to pods in alb.tf.
 
+TODO: how to get targets for a target group?
+ 
 Once you have access set up for the ports you want:
 
 ```
