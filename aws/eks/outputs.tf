@@ -8,11 +8,6 @@ output "cluster_primary_security_group_id" {
   value       = module.eks.cluster_primary_security_group_id
 }
 
-output "region" {
-  description = "AWS region"
-  value       = var.region
-}
-
 output "cluster_name" {
   description = "Kubernetes Cluster Name"
   value       = var.eks_cluster_name
