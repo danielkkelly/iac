@@ -1,5 +1,3 @@
-# TODO: tag nodes for patching, validate access to RDS
-
 provider "aws" {
   region  = var.region
   profile = var.env
