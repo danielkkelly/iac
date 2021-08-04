@@ -69,7 +69,7 @@ resource "aws_route_table" "rt_pri" {
 
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.platform_ngw.id
+    nat_gateway_id = aws_nat_gateway.platform_ngw.id
   }
 
   tags = {
