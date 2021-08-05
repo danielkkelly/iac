@@ -32,7 +32,7 @@ resource "aws_alb_target_group_attachment" "docker_tga" {
 
 resource "aws_lb_listener_rule" "docker_listener_rule" {
   listener_arn = data.aws_lb_listener.lb_listener_https.arn
-  priority     = 10
+  priority     = 20
 
   action {
     type             = "forward"
