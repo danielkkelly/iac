@@ -33,6 +33,7 @@ data "aws_subnet" "public_subnet_id" {
  */
 data "aws_nat_gateway" "ngw" {
   vpc_id = data.aws_vpc.vpc.id
+  state  = "available"
 }
 
 resource "aws_security_group" "lb_sg" {
