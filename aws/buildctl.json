@@ -103,7 +103,7 @@
             "action": "apply",
             "target": ["lb-container", "eks"], 
             "terraform": true,
-            "ansible": false
+            "ansible": true
         }, 
         {
             "module": "lb-eks",
