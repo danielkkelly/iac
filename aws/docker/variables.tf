@@ -30,7 +30,7 @@ variable "host_number" {
 
 variable "alb_target_port" {
   description = "The container port that will serve up your application"
-  default = 80
+  default = 8080
 }
 
 # Variables that help allow private network access to the RDS server
