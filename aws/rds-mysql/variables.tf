@@ -5,12 +5,12 @@ variable "env" {}
 # Cluster
 variable "rds_cluster_identifier" {
   description = "Name of the cluster"
-  default = "platform-rds-cluster"
+  default     = "platform-rds-cluster"
 }
 
 variable "rds_instance_count" {
   description = "Number of cluster instances, use two or more for most professional environments"
-  default = 1
+  default     = 1
 }
 
 variable "rds_instance_class" {
@@ -37,20 +37,30 @@ variable "backup_retention_period" {
   default = 14
 }
 
+variable "backtrack_window_seconds" {
+  default = 43200 # 12 hours
+}
+
 variable "enhanced_monitoring_interval" {
   description = "Monitoring inteval for ehnanced monitoring"
   default     = 60
 }
 
 # Cluster and DB parameters
-variable parameters {
+# https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html#AuroraMySQL.Reference.ParameterGroups
+variable "instance_parameters" {
   description = "List of database parameters"
-  type        = list(object({
-      name = string
-      value = string
-      apply_method = string
+  type = list(object({
+    name         = string
+    value        = string
+    apply_method = string
   }))
   default = [
+    {
+      name         = "max_allowed_packet"
+      value        = "64MB"
+      apply_method = "pending-reboot"
+    },
     {
       name         = "log_bin_trust_function_creators"
       value        = "1"
@@ -72,6 +82,10 @@ variable parameters {
       apply_method = "pending-reboot"
     }
   ]
+}
+
+variable "max_allowed_packet" {
+  default = "64MB"
 }
 
 # Cloudwatch
