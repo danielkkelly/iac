@@ -105,6 +105,10 @@ kubectl port-forward service/my-service 80:80  -n default
 kubectl delete namespaces default
 ```
 
+# Logging
+
+https://aws.amazon.com/blogs/containers/fluent-bit-for-amazon-eks-on-aws-fargate-is-here/
+
 # Metrics Server
 
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
