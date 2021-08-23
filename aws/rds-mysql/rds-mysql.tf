@@ -74,32 +74,23 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
 
   parameter {
     name         = "lower_case_table_names"
-    value        = "1" 
+    value        = "1"
     apply_method = "pending-reboot"
   }
-
-   dynamic "parameter" {
-    for_each = var.parameters
-    content {
-      name         = parameter.value["name"]
-      value        = parameter.value["value"]
-      apply_method = parameter.value["apply_method"]
-    }
-   }
 }
 
 resource "aws_db_parameter_group" "platform_rds_cluster_instance_pg" {
   name   = "platform-rds"
   family = "aurora-mysql5.7"
 
-   dynamic "parameter" {
-    for_each = var.parameters
+  dynamic "parameter" {
+    for_each = var.instance_parameters
     content {
       name         = parameter.value["name"]
       value        = parameter.value["value"]
       apply_method = parameter.value["apply_method"]
     }
-   }
+  }
 }
 
 resource "aws_rds_cluster" "platform_rds_cluster" {
@@ -119,13 +110,14 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
   skip_final_snapshot     = true
+  backtrack_window        = var.backtrack_window
 
   # Security best practices
   storage_encrypted                   = true
   iam_database_authentication_enabled = true
   deletion_protection                 = var.rds_deletion_protection
-  enabled_cloudwatch_logs_exports = ["audit", "error", "general", "slowquery"]
-  
+  enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
+
   depends_on = [
     aws_cloudwatch_log_group.audit,
     aws_cloudwatch_log_group.error,
