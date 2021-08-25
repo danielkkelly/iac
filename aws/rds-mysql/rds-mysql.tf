@@ -69,22 +69,33 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
-  name   = "platform-rds"
-  family = "aurora-mysql5.7"
+  name        = "platform-rds-cluster"
+  description = "Cluster parameter group"
+  family      = "aurora-mysql5.7"
 
   parameter {
     name         = "lower_case_table_names"
     value        = "1"
     apply_method = "pending-reboot"
   }
+
+    dynamic "parameter" {
+    for_each = var.parameters
+    content {
+      name         = parameter.value["name"]
+      value        = parameter.value["value"]
+      apply_method = parameter.value["apply_method"]
+    }
+  }
 }
 
 resource "aws_db_parameter_group" "platform_rds_cluster_instance_pg" {
-  name   = "platform-rds"
-  family = "aurora-mysql5.7"
+  name        = "platform-rds-instance"
+  description = "Instances parameter group"
+  family      = "aurora-mysql5.7"
 
   dynamic "parameter" {
-    for_each = var.instance_parameters
+    for_each = var.parameters
     content {
       name         = parameter.value["name"]
       value        = parameter.value["value"]
@@ -97,7 +108,7 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   cluster_identifier = var.rds_cluster_identifier
 
   engine         = "aurora-mysql"
-  engine_version = "5.7.mysql_aurora.2.07.2"
+  engine_version = "5.7.mysql_aurora.2.07.5"
 
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 
@@ -110,7 +121,7 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
   skip_final_snapshot     = true
-  backtrack_window        = var.backtrack_window
+  backtrack_window        = var.backtrack_window_seconds
 
   # Security best practices
   storage_encrypted                   = true

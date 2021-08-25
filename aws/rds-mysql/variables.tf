@@ -48,7 +48,7 @@ variable "enhanced_monitoring_interval" {
 
 # Cluster and DB parameters
 # https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html#AuroraMySQL.Reference.ParameterGroups
-variable "instance_parameters" {
+variable "parameters" {
   description = "List of database parameters"
   type = list(object({
     name         = string
@@ -58,7 +58,7 @@ variable "instance_parameters" {
   default = [
     {
       name         = "max_allowed_packet"
-      value        = "64MB"
+      value        = "67108864" # 64M
       apply_method = "pending-reboot"
     },
     {
