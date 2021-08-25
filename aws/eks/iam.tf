@@ -1,6 +1,8 @@
-# https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/main/docs/install/iam_policy.json
-# https://medium.com/devops-dudes/running-the-latest-aws-load-balancer-controller-in-your-aws-eks-cluster-9d59cdc1db98
-
+/* 
+ * AWS Load Balancer Controller
+ * https://raw.githubusercontent.com/kubernetes-sigs/aws-alb-ingress-controller/main/docs/install/iam_policy.json
+ * https://medium.com/devops-dudes/running-the-latest-aws-load-balancer-controller-in-your-aws-eks-cluster-9d59cdc1db98
+ */
 resource "aws_iam_policy" "lbc_iam_policy" {
   name   = "AWSLoadBalancerControllerIAMPolicy"
   policy = <<POLICY
@@ -247,4 +249,37 @@ resource "aws_iam_role" "lbc_iam_role" {
 resource "aws_iam_role_policy_attachment" "lbc_iam_role_policy_attachment" {
   policy_arn = aws_iam_policy.lbc_iam_policy.arn
   role       = aws_iam_role.lbc_iam_role.name
+}
+
+/*
+ * Farget Logging
+ * Requires additional policy added to the Farget pod execution role per the configuration
+ * from https://docs.aws.amazon.com/eks/latest/userguide/fargate-logging.html
+ */
+ data "aws_iam_policy_document" "fargate_logging_policy" {
+  statement {
+    sid = "1"
+
+    actions = [
+      "logs:CreateLogStream",
+      "logs:CreateLogGroup",
+      "logs:DescribeLogStreams",
+      "logs:PutLogEvents",
+    ]
+
+    resources = [
+      "*",
+    ]
+  }
+}
+
+resource "aws_iam_policy" "fargate_logging_policy" {
+  name   = "eks-fargate-logging-policy"
+  path   = "/"
+  policy = data.aws_iam_policy_document.fargate_logging_policy.json
+}
+
+resource "aws_iam_role_policy_attachment" "fargate_logging_iam_role_policy_attachment" {
+  role       = module.eks.fargate_iam_role_name
+  policy_arn = aws_iam_policy.fargate_logging_policy.arn
 }

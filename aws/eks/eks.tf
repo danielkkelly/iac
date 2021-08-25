@@ -109,3 +109,35 @@ resource "kubernetes_service_account" "lbc_service_account" {
     }
   }
 }
+
+/* 
+ * Fargate Logging
+ */
+ resource "kubernetes_namespace" "aws_observability" {
+  metadata {
+    annotations = {
+      name = "aws-observability"
+    }
+    labels = {
+      aws-observability = "enabled"
+    }
+    name = "aws-observability"
+  }
+}
+
+resource "kubernetes_config_map" "aws_logging_config_map" {
+  metadata {
+    name      = "aws-logging"
+    namespace = "aws-observability"
+  }
+
+  data = {
+    "output.conf" = templatefile("${path.module}/logging/output.conf.tpl",
+      {
+        region  = var.region
+      }
+    )
+    "parsers.conf" = file("${path.module}/logging/parsers.conf")
+    "filters.conf" = file("${path.module}/logging/filters.conf")
+  }
+}
