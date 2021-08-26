@@ -118,12 +118,16 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   master_username = var.master_username
   master_password = var.master_password
 
+  # Backups and backtracking
   backup_retention_period = var.backup_retention_period
   preferred_backup_window = var.preferred_backup_window
-  skip_final_snapshot     = true
   backtrack_window        = var.backtrack_window_seconds
 
-  # Security best practices
+  # Snapshots
+  copy_tags_to_snapshot   = true
+  skip_final_snapshot     = true
+
+  # Additional security best practices
   storage_encrypted                   = true
   iam_database_authentication_enabled = true
   deletion_protection                 = var.rds_deletion_protection
