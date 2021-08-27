@@ -10,12 +10,12 @@ resource "aws_subnet" "subnet_pub_1" {
   availability_zone       = data.aws_availability_zones.available.names[0]
   map_public_ip_on_launch = "true"
   tags = {
-    Name                                            = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment                                     = var.env
-    Type                                            = "public"
-    Bastion                                         = "1" # works in conjunction with aws/bastion is_public variable
-    Kubernetes                                      = "1"
-    "kubernetes.io/role/elb"                        = "1"
+    Name                     = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment              = var.env
+    Type                     = "public"
+    Bastion                  = "1" # works in conjunction with aws/bastion is_public variable
+    Kubernetes               = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
@@ -25,11 +25,11 @@ resource "aws_subnet" "subnet_pub_2" {
   availability_zone       = data.aws_availability_zones.available.names[1]
   map_public_ip_on_launch = "true"
   tags = {
-    Name                                            = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment                                     = var.env
-    Type                                            = "public"
-    Kubernetes                                      = "1"
-    "kubernetes.io/role/elb"                        = "1"
+    Name                     = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
+    Environment              = var.env
+    Type                     = "public"
+    Kubernetes               = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
@@ -38,13 +38,13 @@ resource "aws_subnet" "subnet_pri_1" {
   cidr_block        = var.cidr_block_subnet_pri_1
   availability_zone = data.aws_availability_zones.available.names[0]
   tags = {
-    Name                                            = "subnet-pri-1-${data.aws_availability_zones.available.zone_ids[0]}"
-    Environment                                     = var.env
-    Type                                            = "private"
-    Syslog                                          = "1"
-    MSK                                             = "1"
-    Kubernetes                                      = "1"
-    "kubernetes.io/role/internal-elb"               = "1"
+    Name                              = "subnet-pri-1-${data.aws_availability_zones.available.zone_ids[0]}"
+    Environment                       = var.env
+    Type                              = "private"
+    Syslog                            = "1"
+    MSK                               = "1"
+    Kubernetes                        = "1"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 }
 
@@ -53,14 +53,14 @@ resource "aws_subnet" "subnet_pri_2" {
   cidr_block        = var.cidr_block_subnet_pri_2
   availability_zone = data.aws_availability_zones.available.names[1]
   tags = {
-    Name                                            = "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
-    Environment                                     = var.env
-    Type                                            = "private"
-    Bastion                                         = "1" # works in conjunction with aws/bastion is_public variable
-    Docker                                          = "1"
-    MSK                                             = "1"
-    Kubernetes                                      = "1"
-    "kubernetes.io/role/internal-elb"               = "1"
+    Name                              = "subnet-pri-2-${data.aws_availability_zones.available.zone_ids[1]}"
+    Environment                       = var.env
+    Type                              = "private"
+    Bastion                           = "1" # works in conjunction with aws/bastion is_public variable
+    Docker                            = "1"
+    MSK                               = "1"
+    Kubernetes                        = "1"
+    "kubernetes.io/role/internal-elb" = "1"
   }
 }
 

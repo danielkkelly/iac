@@ -21,8 +21,3 @@ variable "cidr_block_subnet_vpn_1" {}
 variable "eks_cluster_name" {
   default = "platform-eks"
 }
-
-# Cloudwatch
-variable "cloudwatch_retention_in_days" {
-  default = 365
-}

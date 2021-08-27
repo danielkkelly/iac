@@ -11,14 +11,15 @@ resource "aws_vpc" "vpc" {
 
 resource "aws_flow_log" "vpc_flow_log" {
   iam_role_arn    = aws_iam_role.vpc_flow_log_iam_role.arn
-  log_destination = aws_cloudwatch_log_group.vpc_flow_log_log_group.arn
+  log_destination = module.vpc_flow_log_lg.arn
   traffic_type    = "REJECT"
   vpc_id          = aws_vpc.vpc.id
 }
 
-resource "aws_cloudwatch_log_group" "vpc_flow_log_log_group" {
-  name = "${var.env}-vpc-flow-log"
-  retention_in_days = var.cloudwatch_retention_in_days
+module "vpc_flow_log_lg" {
+  source = "../cloudwatch-log-group"
+  env    = var.env
+  name   = "vpc-flow-log"
 }
 
 data "aws_iam_policy_document" "vpc_flow_log_iam_policy_document" {
@@ -26,14 +27,14 @@ data "aws_iam_policy_document" "vpc_flow_log_iam_policy_document" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "Service"
+      type        = "Service"
       identifiers = ["vpc-flow-logs.amazonaws.com"]
     }
   }
 }
 
 resource "aws_iam_role" "vpc_flow_log_iam_role" {
-  name = "platfomr-${var.env}-vpc-flow-log-role"
+  name               = "platfomr-${var.env}-vpc-flow-log-role"
   assume_role_policy = data.aws_iam_policy_document.vpc_flow_log_iam_policy_document.json
 }
 
