@@ -107,7 +107,31 @@ kubectl delete namespaces default
 
 # Logging
 
-https://aws.amazon.com/blogs/containers/fluent-bit-for-amazon-eks-on-aws-fargate-is-here/
+Logging follows https://aws.amazon.com/blogs/containers/fluent-bit-for-amazon-eks-on-aws-fargate-is-here/.
+Formatting will differ from the example to reduce the noise and offload more of the log formatting to 
+the application itself.
+
+Logs are sent to CloudWatch.  Log groups are created separately to allow for setting of retention period.
+
+## Tailing Logs
+
+```
+aws logs tail platform --follow --profile test
+```
+
+## Getting Log Events by Start and / or End Time
+
+See https://awscli.amazonaws.com/v2/documentation/api/latest/reference/logs/get-log-events.html.
+Simple example below.
+
+```
+aws logs get-log-events --log-group-name platform \
+                        --start-time `date -d 2021-08-25T14:50:00Z +%s`000 \
+                        --end-time   `date -d 2021-08-26T14:50:00Z +%s`000 \
+                        --profile test
+```
+
+
 
 # Metrics Server
 
