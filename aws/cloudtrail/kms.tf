@@ -132,7 +132,7 @@ data "aws_iam_policy_document" "cloudtrail_key_policy" {
       "kms:Decrypt"
     ]
     resources = ["*"]
-  }  
+  }
 }
 
 resource "aws_kms_key" "cloudtrail_kms_key" {

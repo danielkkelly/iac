@@ -15,16 +15,26 @@ resource "aws_cloudtrail" "cloudtrail" {
   enable_logging             = true
   enable_log_file_validation = true
 
-  cloud_watch_logs_group_arn = "${aws_cloudwatch_log_group.cloudtrail_log_group.arn}:*" # CloudTrail requires the Log Stream wildcard
+  cloud_watch_logs_group_arn = "${module.cloudtrail_lg.arn}:*" # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
 
   kms_key_id = aws_kms_key.cloudtrail_kms_key.arn
+
+    event_selector {
+    read_write_type           = "All"
+    include_management_events = true
+
+    data_resource {
+      type   = "AWS::S3::Object"
+      values = ["arn:aws:s3:::"]
+    }
+  }
 }
 
 module "cloudtrail_api_alarms" {
   name           = "cloudtrail-alarms"
   source         = "git::https://github.com/cloudposse/terraform-aws-cloudtrail-cloudwatch-alarms.git"
-  log_group_name = aws_cloudwatch_log_group.cloudtrail_log_group.name
+  log_group_name = module.cloudtrail_lg.name
 
   kms_master_key_id = aws_kms_key.cloudtrail_kms_key.id
 

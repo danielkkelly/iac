@@ -113,7 +113,13 @@ resource "kubernetes_service_account" "lbc_service_account" {
 /* 
  * Fargate Logging
  */
- resource "kubernetes_namespace" "aws_observability" {
+module "cloudwatch_log_group" {
+  source = "../cloudwatch-log-group"
+  env    = var.env
+  name   = "eks"
+}
+
+resource "kubernetes_namespace" "aws_observability" {
   metadata {
     annotations = {
       name = "aws-observability"
@@ -134,7 +140,8 @@ resource "kubernetes_config_map" "aws_logging_config_map" {
   data = {
     "output.conf" = templatefile("${path.module}/logging/output.conf.tpl",
       {
-        region  = var.region
+        region = var.region
+        env    = var.env
       }
     )
     "parsers.conf" = file("${path.module}/logging/parsers.conf")

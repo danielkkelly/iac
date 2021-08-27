@@ -256,7 +256,7 @@ resource "aws_iam_role_policy_attachment" "lbc_iam_role_policy_attachment" {
  * Requires additional policy added to the Farget pod execution role per the configuration
  * from https://docs.aws.amazon.com/eks/latest/userguide/fargate-logging.html
  */
- data "aws_iam_policy_document" "fargate_logging_policy" {
+data "aws_iam_policy_document" "fargate_logging_policy" {
   statement {
     sid = "1"
 

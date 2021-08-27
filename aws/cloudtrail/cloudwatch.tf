@@ -1,6 +1,7 @@
-resource "aws_cloudwatch_log_group" "cloudtrail_log_group" {
-  name              = "cloudtrail"
-  retention_in_days = var.cloudwatch_retention_in_days
+module "cloudtrail_lg" {
+  source = "../cloudwatch-log-group"
+  env    = var.env
+  name   = "cloudtrail"
 }
 
 data "aws_iam_policy_document" "log_policy" {
@@ -8,7 +9,7 @@ data "aws_iam_policy_document" "log_policy" {
     effect  = "Allow"
     actions = ["logs:CreateLogStream", "logs:PutLogEvents"]
     resources = [
-      "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:${aws_cloudwatch_log_group.cloudtrail_log_group.name}:log-stream:*"
+      "arn:aws:logs:${var.region}:${data.aws_caller_identity.current.account_id}:log-group:${module.cloudtrail_lg.name}:log-stream:*"
     ]
   }
 }

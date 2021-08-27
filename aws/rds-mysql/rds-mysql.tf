@@ -79,7 +79,7 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
     apply_method = "pending-reboot"
   }
 
-    dynamic "parameter" {
+  dynamic "parameter" {
     for_each = var.parameters
     content {
       name         = parameter.value["name"]
@@ -124,8 +124,8 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   backtrack_window        = var.backtrack_window_seconds
 
   # Snapshots
-  copy_tags_to_snapshot   = true
-  skip_final_snapshot     = true
+  copy_tags_to_snapshot = true
+  skip_final_snapshot   = true
 
   # Additional security best practices
   storage_encrypted                   = true
@@ -134,10 +134,10 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
 
   depends_on = [
-    aws_cloudwatch_log_group.audit,
-    aws_cloudwatch_log_group.error,
-    aws_cloudwatch_log_group.general,
-    aws_cloudwatch_log_group.slowquery
+    module.cluster_audit_lg,
+    module.cluster_error_lg,
+    module.cluster_general_lg,
+    module.cluster_slowquery_lg
   ]
 }
 
