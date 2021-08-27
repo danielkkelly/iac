@@ -3,10 +3,11 @@ provider "aws" {
   profile = var.env
 }
 
-# The following resources create a role for AWS support access to allow authorized 
-# users to manage AWS support incidents.  This satisfies the iam-policy-in-use
-# AWS config rule.
-
+/*
+ * The following resources create a role for AWS support access to allow authorized 
+ * users to manage AWS support incidents.  This satisfies the iam-policy-in-use
+ * AWS config rule.
+ */
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "aws_support_role" {
@@ -34,9 +35,10 @@ resource "aws_iam_role_policy_attachment" "aws_support_role_policy_attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AWSSupportAccess"
 }
 
-# The following resources create a policy and group acess for developers who have
-# API access.  It also creates users with AWS access 
-
+/*
+ * The following resources create a policy and group acess for developers who have
+ * API access.  It also creates users with AWS access 
+ */
 resource "aws_iam_policy" "net_policy" {
   name   = "${var.env}-net"
   path   = "/"
@@ -60,6 +62,9 @@ resource "aws_iam_policy" "net_policy" {
 EOF
 }
 
+/* 
+ * Policy for the average development user.
+ */
 resource "aws_iam_policy" "dev_policy" {
   name        = "${var.env}-dev"
   path        = "/"
@@ -121,9 +126,11 @@ resource "aws_iam_policy" "dev_policy" {
 EOF
 }
 
-# The following resources create a dev and dev admin group and attach the policies
-# created above to them
-
+/*
+ * The following resources create a dev and dev admin group and attach the policies
+ * created above to them.  First create the dev group with teh associated policy
+ * attachments.
+ */
 resource "aws_iam_group" "dev_group" {
   name = "${var.env}-dev"
 }
@@ -138,17 +145,29 @@ resource "aws_iam_group_policy_attachment" "dev_net_policy_attachment" {
   policy_arn = aws_iam_policy.net_policy.arn
 }
 
+/*
+ * Create the dev-admin group and policy attachment.  Only create the group
+ * if there are actually users in dev-admin.  Otherwise we have a group without
+ * users which trips iam-group-has-users-check.
+ */
+locals {
+  has_dev_admin = contains(flatten(values(var.users_groups)), "dev-admin")
+}
+
 resource "aws_iam_group" "dev_admin_group" {
-  name = "${var.env}-dev-admin"
+  count = local.has_dev_admin ? 1 : 0
+  name  = "${var.env}-dev-admin"
 }
 
 resource "aws_iam_group_policy_attachment" "dev_admin_policy_attachment" {
-  group      = aws_iam_group.dev_admin_group.name
+  count      = local.has_dev_admin ? 1 : 0
+  group      = aws_iam_group.dev_admin_group[0].name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_iam_group_policy_attachment" "dev_admin_net_policy_attachment" {
-  group      = aws_iam_group.dev_admin_group.name
+  count      = local.has_dev_admin ? 1 : 0
+  group      = aws_iam_group.dev_admin_group[0].name
   policy_arn = aws_iam_policy.net_policy.arn
 }
 
@@ -165,9 +184,10 @@ resource "aws_iam_access_key" "user_access_key" {
   depends_on = [aws_iam_user.user]
 }
 
-# The following lines loop through the users and groups in var.users_groups to 
-# create them in IAM.
-
+/* 
+ * The following lines loop through the users and groups in var.users_groups to 
+ * create them in IAM.
+ */
 resource "aws_iam_user_group_membership" "dev_ugm" {
   for_each = var.users_groups
   user     = "${each.key}.${var.env}"
