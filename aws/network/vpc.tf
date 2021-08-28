@@ -9,6 +9,20 @@ resource "aws_vpc" "vpc" {
   }
 }
 
+/*
+ * This removes the inbound and outbound rules from the default security group,
+ * improving overall security in the process and conforming with CIS.4.3.  This
+ * is a special resource, per Terraform.  Terraform doesn't create the security
+ * group, it simply adopts it and ensures that the inbound and outbound rules 
+ * conform to our configuration (no rules in this case).
+ */
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.vpc.id
+}
+
+/* 
+ * Create a VPC flow log.  Satisfies CIS.2.9.
+ */
 resource "aws_flow_log" "vpc_flow_log" {
   iam_role_arn    = aws_iam_role.vpc_flow_log_iam_role.arn
   log_destination = module.vpc_flow_log_lg.arn

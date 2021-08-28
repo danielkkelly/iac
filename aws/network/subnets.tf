@@ -8,7 +8,7 @@ resource "aws_subnet" "subnet_pub_1" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.cidr_block_subnet_pub_1
   availability_zone       = data.aws_availability_zones.available.names[0]
-  map_public_ip_on_launch = "true"
+  map_public_ip_on_launch = "false"
   tags = {
     Name                     = "subnet-pub-1-${data.aws_availability_zones.available.zone_ids[0]}"
     Environment              = var.env
@@ -23,7 +23,7 @@ resource "aws_subnet" "subnet_pub_2" {
   vpc_id                  = aws_vpc.vpc.id
   cidr_block              = var.cidr_block_subnet_pub_2
   availability_zone       = data.aws_availability_zones.available.names[1]
-  map_public_ip_on_launch = "true"
+  map_public_ip_on_launch = "false"
   tags = {
     Name                     = "subnet-pub-2-${data.aws_availability_zones.available.zone_ids[1]}"
     Environment              = var.env
