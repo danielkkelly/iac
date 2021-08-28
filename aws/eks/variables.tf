@@ -19,11 +19,6 @@ variable "alb_target_port" {
   default     = 8080
 }
 
-# Cloudwatch
-variable "cloudwatch_retention_in_days" {
-  default = 365
-}
-
 # Variables that are passed to the eks module
 variable "cidr_block_subnet_pri_1" {}
 variable "cidr_block_subnet_pri_2" {}
