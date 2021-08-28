@@ -1,5 +1,5 @@
 locals {
-  base_bucket_name = "platform-${var.name}-${var.env}-${random_id.random_s3_index.hex}"
+  base_bucket_name = "platform-${var.env}-${var.name}-${random_id.random_s3_index.hex}"
 }
 
 /* 
@@ -30,6 +30,7 @@ resource "aws_s3_bucket" "s3_bucket" {
   // AU-2, AU-3, AU-9, AU-11
   logging {
     target_bucket = aws_s3_bucket.s3_logging_bucket.id
+    target_prefix = var.name
   }
 
   // AU-9, CP-6
@@ -42,6 +43,10 @@ resource "aws_s3_bucket" "s3_bucket" {
         sse_algorithm = "AES256"
       }
     }
+  }
+
+  object_lock_configuration {
+    object_lock_enabled = "Enabled"
   }
 
   // SI-12
@@ -69,6 +74,11 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
     enabled = var.versioning_enabled
   }
 
+ logging {
+    target_bucket = "${local.base_bucket_name}-logging"
+    target_prefix = "${var.name}-logging"
+  }
+
   // SC-13, SC-28
   server_side_encryption_configuration {
     rule {
@@ -76,6 +86,10 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
         sse_algorithm = "AES256"
       }
     }
+  }
+
+  object_lock_configuration {
+    object_lock_enabled = "Enabled"
   }
 
   // SI-12
