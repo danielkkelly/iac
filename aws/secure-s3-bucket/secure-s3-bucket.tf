@@ -45,6 +45,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
   }
 
+  // AU.3.049
   object_lock_configuration {
     object_lock_enabled = "Enabled"
   }
@@ -88,6 +89,7 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
     }
   }
 
+  // AU.3.049
   object_lock_configuration {
     object_lock_enabled = "Enabled"
   }
