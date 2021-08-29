@@ -104,6 +104,7 @@ resource "aws_instance" "bastion" {
     HostType      = "bastion"
     Environment   = var.env
     "Patch Group" = var.env
+    Backup        = "1"
   }
 }
 
