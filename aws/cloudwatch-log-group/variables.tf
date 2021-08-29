@@ -7,6 +7,8 @@ variable "namespace" {
   default     = "platform"
 }
 
+variable "region" {}
+
 variable "env" {
   default = "dev"
 }

@@ -1,5 +1,6 @@
 module "cloudtrail_lg" {
   source = "../cloudwatch-log-group"
+  region = var.region
   env    = var.env
   name   = "cloudtrail"
 }

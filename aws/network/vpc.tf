@@ -32,6 +32,7 @@ resource "aws_flow_log" "vpc_flow_log" {
 
 module "vpc_flow_log_lg" {
   source = "../cloudwatch-log-group"
+  region = var.region
   env    = var.env
   name   = "vpc-flow-log"
 }
