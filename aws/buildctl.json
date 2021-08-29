@@ -11,14 +11,14 @@
         {
             "module": "base",
             "action": "apply",
-            "target": ["local", "network", "iam", "ssm", "settings"],
+            "target": ["local", "cloudwatch", "network", "iam", "ssm", "settings"],
             "terraform": true,
             "ansible": false
         },
         {
             "module": "base",
             "action": "destroy",
-            "target": ["settings", "ssm", "iam", "network"],
+            "target": ["settings", "ssm", "iam", "network", "cloudwatch"],
             "terraform": true,
             "ansible": false
         }, 
