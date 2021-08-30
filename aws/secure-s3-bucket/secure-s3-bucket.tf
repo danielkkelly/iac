@@ -109,6 +109,29 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
   }
 }
 
+resource "aws_s3_bucket_policy" "logging_bucket_policy" {
+  bucket = aws_s3_bucket.s3_logging_bucket.id
+  policy = <<POLICY
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "Require SSL",
+            "Effect": "Deny",
+            "Principal": "*",
+            "Action": "*",
+            "Resource": "${aws_s3_bucket.s3_logging_bucket.arn}/*",
+            "Condition": {
+                "Bool": {
+                "aws:SecureTransport": "false"
+                }
+            }
+        }
+    ]
+}
+POLICY
+}
+
 resource "aws_s3_bucket_public_access_block" "s3_logging_bucket_pab" {
   bucket = aws_s3_bucket.s3_logging_bucket.id
 
@@ -116,4 +139,6 @@ resource "aws_s3_bucket_public_access_block" "s3_logging_bucket_pab" {
   block_public_policy     = true
   ignore_public_acls      = true
   restrict_public_buckets = true
+
+  depends_on = [aws_s3_bucket_policy.logging_bucket_policy]
 }
