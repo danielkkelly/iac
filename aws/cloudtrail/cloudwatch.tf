@@ -5,7 +5,7 @@ module "cloudtrail_lg" {
   name   = "cloudtrail"
 }
 
-data "aws_iam_policy_document" "log_policy" {
+data "aws_iam_policy_document" "log_policy_document" {
   statement {
     effect  = "Allow"
     actions = ["logs:CreateLogStream", "logs:PutLogEvents"]
@@ -15,7 +15,12 @@ data "aws_iam_policy_document" "log_policy" {
   }
 }
 
-data "aws_iam_policy_document" "assume_policy" {
+resource "aws_iam_policy" "log_policy" {
+  name   = "platform-${var.env}-cloudtrail-cloudwatch-log-policy"
+  policy = data.aws_iam_policy_document.log_policy_document.json
+}
+
+data "aws_iam_policy_document" "assume_role_policy" {
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRole"]
@@ -28,12 +33,11 @@ data "aws_iam_policy_document" "assume_policy" {
 }
 
 resource "aws_iam_role" "cloudtrail_cloudwatch_events_role" {
-  name               = "platform-cloudtrail-cloudwatch-events-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_policy.json
+  name               = "platform-${var.env}-cloudtrail-cloudwatch-events-role"
+  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-resource "aws_iam_role_policy" "policy" {
-  name   = "platform-cloudtrail-cloudwatch-events-role-policy"
-  policy = data.aws_iam_policy_document.log_policy.json
-  role   = aws_iam_role.cloudtrail_cloudwatch_events_role.id
+resource "aws_iam_role_policy_attachment" "events_role_policy_attachment" {
+  role       = aws_iam_role.cloudtrail_cloudwatch_events_role.id
+  policy_arn = aws_iam_policy.log_policy.arn
 }

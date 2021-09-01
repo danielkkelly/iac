@@ -20,7 +20,7 @@ resource "aws_cloudtrail" "cloudtrail" {
 
   kms_key_id = aws_kms_key.cloudtrail_kms_key.arn
 
-    event_selector {
+  event_selector {
     read_write_type           = "All"
     include_management_events = true
 

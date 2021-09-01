@@ -9,7 +9,7 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
-data "aws_iam_policy_document" "delivery_status_role_inline_policy" {
+data "aws_iam_policy_document" "delivery_status_policy_document" {
   statement {
     resources = ["*"]
     actions = [
@@ -20,6 +20,11 @@ data "aws_iam_policy_document" "delivery_status_role_inline_policy" {
       "logs:PutRetentionPolicy",
     ]
   }
+}
+
+resource "aws_iam_policy" "delivery_status_policy" {
+  name   = "platform-${var.env}-sns-cloudwatch-logs-policy"
+  policy = data.aws_iam_policy_document.delivery_status_policy_document.json
 }
 
 data "aws_iam_policy_document" "publish" {
@@ -38,12 +43,11 @@ resource "aws_iam_policy" "publish" {
 
 resource "aws_iam_role" "delivery_status_role" {
   description        = "Allow AWS to publish SMS delivery status logs"
-  name               = var.role_name
+  name               = "platform-${var.env}-sns-cloudwatch-logs-role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
 
-resource "aws_iam_role_policy" "delivery_status_role_inline_policy" {
-  name   = "${aws_iam_role.delivery_status_role.name}InlinePolicy"
-  role   = aws_iam_role.delivery_status_role.id
-  policy = data.aws_iam_policy_document.delivery_status_role_inline_policy.json
+resource "aws_iam_role_policy_attachment" "delivery_status_role_policy_attachment" {
+  role       = aws_iam_role.delivery_status_role.id
+  policy_arn = aws_iam_policy.delivery_status_policy.arn
 }

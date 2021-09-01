@@ -49,14 +49,12 @@ data "aws_iam_policy_document" "vpc_flow_log_iam_policy_document" {
 }
 
 resource "aws_iam_role" "vpc_flow_log_iam_role" {
-  name               = "platfomr-${var.env}-vpc-flow-log-role"
+  name               = "platform-${var.env}-vpc-flow-log-role"
   assume_role_policy = data.aws_iam_policy_document.vpc_flow_log_iam_policy_document.json
 }
 
-resource "aws_iam_role_policy" "vpc_flow_log_iam_role_policy" {
-  name = "${var.env}-vpc-flow-log-policy"
-  role = aws_iam_role.vpc_flow_log_iam_role.id
-
+resource "aws_iam_policy" "vpc_flow_log_iam_policy" {
+  name   = "platform-${var.env}-vpc-flow-log-policy"
   policy = <<EOF
 {
   "Version": "2012-10-17",
@@ -73,5 +71,10 @@ resource "aws_iam_role_policy" "vpc_flow_log_iam_role_policy" {
     }
   ]
 }
-EOF
+EOF 
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_flow_log_iam_role_policy_attachment" {
+  role       = aws_iam_role.vpc_flow_log_iam_role.id
+  policy_arn = aws_iam_policy.vpc_flow_log_iam_policy.arn
 }
