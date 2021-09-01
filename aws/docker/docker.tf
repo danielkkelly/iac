@@ -93,6 +93,10 @@ resource "aws_instance" "docker" {
   root_block_device {
     volume_size = var.volume_size
     encrypted   = true
+
+    tags = {
+      Backup = "1"
+    }
   }
 
   tags = {
@@ -100,6 +104,7 @@ resource "aws_instance" "docker" {
     HostType      = "docker"
     Environment   = var.env
     "Patch Group" = var.env
+    Backup        = "1"
   }
 }
 

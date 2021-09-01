@@ -99,6 +99,10 @@ resource "aws_instance" "syslog" {
   root_block_device {
     volume_size = var.volume_size
     encrypted   = true
+
+    tags = {
+      Backup = "1"
+    }
   }
 
   tags = {
@@ -106,6 +110,7 @@ resource "aws_instance" "syslog" {
     HostType      = "syslog"
     Environment   = var.env
     "Patch Group" = var.env
+    Backup        = "1"
   }
 }
 

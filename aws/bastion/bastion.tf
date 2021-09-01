@@ -97,6 +97,10 @@ resource "aws_instance" "bastion" {
 
   root_block_device {
     encrypted = true
+
+    tags = {
+      Backup = "1"
+    }
   }
 
   tags = {
