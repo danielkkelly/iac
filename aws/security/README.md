@@ -13,6 +13,7 @@ score for the followign standards:
 
 * AWS Foundational Security Best Practices
 * CIS AWS Foundations Benchmark
+* CMMC Level 3
 
 # Default VPC
 
