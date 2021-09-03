@@ -1,5 +1,5 @@
 resource "aws_iam_role" "config_role" {
-  name = "platform-config-role"
+  name = "platform-${var.env}-config-role"
 
   assume_role_policy = <<POLICY
 {
@@ -24,7 +24,7 @@ resource "aws_iam_role_policy_attachment" "config_role_policy_attachment" {
 }
 
 resource "aws_config_configuration_recorder" "config_recorder" {
-  name     = "platform-config-recorder"
+  name     = "platform-${var.env}-config-recorder"
   role_arn = aws_iam_role.config_role.arn
 
   recording_group {
@@ -34,7 +34,7 @@ resource "aws_config_configuration_recorder" "config_recorder" {
 }
 
 resource "aws_config_delivery_channel" "config_delivery_channel" {
-  name           = "platform-config-delivery-channel"
+  name           = "platform-${var.env}-config-delivery-channel"
   s3_bucket_name = module.config_s3_bucket.bucket
   sns_topic_arn  = aws_sns_topic.config_sns_topic.arn
   depends_on     = [aws_config_configuration_recorder.config_recorder]

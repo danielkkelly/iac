@@ -30,9 +30,3 @@ variable "policy_path" {
   type        = string
   default     = "/"
 }
-
-variable "role_name" {
-  description = "The IAM role that allows Amazon SNS to write logs for SMS deliveries in CloudWatch Logs."
-  type        = string
-  default     = "platform-sns-cloudwatch-logs"
-}
