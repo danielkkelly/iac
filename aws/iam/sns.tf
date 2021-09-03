@@ -35,8 +35,7 @@ data "aws_iam_policy_document" "publish" {
 }
 
 resource "aws_iam_policy" "publish" {
-  name        = var.policy_name
-  path        = var.policy_path
+  name        = "platform-${var.env}-sms-publish-policy"
   description = "Allow publishing to Group SMS SNS Topic"
   policy      = data.aws_iam_policy_document.publish.json
 }
