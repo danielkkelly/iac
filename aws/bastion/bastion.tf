@@ -3,9 +3,11 @@ provider "aws" {
   profile = var.env
 }
 
+/*
 module "default_ami" {
   source = "../ami"
-}
+}*/
+
 
 locals {
   private_ip = cidrhost(data.aws_subnet.subnet_bastion.cidr_block, var.host_number)
@@ -36,7 +38,7 @@ data "aws_subnet" "subnet_bastion" {
 resource "aws_eip" "bastion_eip" {
   count                     = var.is_public ? 1 : 0
   vpc                       = true
-  instance                  = aws_instance.bastion.id
+  instance                  = module.bastion_instance.instance_id
   associate_with_private_ip = local.private_ip
 
   tags = {
@@ -45,6 +47,7 @@ resource "aws_eip" "bastion_eip" {
   }
 }
 
+/*
 data "aws_route53_zone" "private" {
   name         = "${var.env}.internal."
   private_zone = true
@@ -52,7 +55,7 @@ data "aws_route53_zone" "private" {
 
 data "aws_iam_instance_profile" "ec2_ssm_profile" {
   name = "platform-${var.env}-ec2-ssm-profile"
-}
+}*/
 
 resource "aws_security_group" "bastion_sg" {
 
@@ -80,7 +83,7 @@ resource "aws_security_group" "bastion_sg" {
     Environment = var.env
   }
 }
-
+/*
 resource "aws_instance" "bastion" {
   ami                    = module.default_ami.id
   instance_type          = "t2.nano"
@@ -118,8 +121,20 @@ resource "aws_route53_record" "bastion" {
   type    = "A"
   ttl     = "300"
   records = [local.private_ip]
+}*/
+
+module "bastion_instance" {
+  source                 = "../ec2-instance"
+  env                    = var.env
+  key_pair_name          = var.key_pair_name
+  host_type              = "bastion"
+  instance_type          = "t2.nano"
+  private_ip             = local.private_ip
+  subnet_id              = data.aws_subnet.subnet_bastion.id
+  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
+
 }
 
 output "bastion_instance_id" {
-  value = aws_instance.bastion.id
+  value = module.bastion_instance.instance_id
 }
