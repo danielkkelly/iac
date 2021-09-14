@@ -10,7 +10,7 @@ variable "rds_cluster_identifier" {
 
 variable "rds_instance_count" {
   description = "Number of cluster instances, use two or more for most professional environments"
-  default     = 1
+  default     = 2
 }
 
 variable "rds_instance_class" {

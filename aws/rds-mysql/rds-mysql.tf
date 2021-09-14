@@ -155,4 +155,8 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
 
   monitoring_interval = var.enhanced_monitoring_interval
   monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring_iam_role.arn
+
+  tags = {
+    Backup = "1"
+  }
 }
