@@ -3,12 +3,6 @@ provider "aws" {
   profile = var.env
 }
 
-/*
-module "default_ami" {
-  source = "../ami"
-}*/
-
-
 locals {
   private_ip = cidrhost(data.aws_subnet.subnet_bastion.cidr_block, var.host_number)
 }
@@ -47,16 +41,6 @@ resource "aws_eip" "bastion_eip" {
   }
 }
 
-/*
-data "aws_route53_zone" "private" {
-  name         = "${var.env}.internal."
-  private_zone = true
-}
-
-data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${var.env}-ec2-ssm-profile"
-}*/
-
 resource "aws_security_group" "bastion_sg" {
 
   vpc_id      = data.aws_vpc.vpc.id
@@ -83,45 +67,6 @@ resource "aws_security_group" "bastion_sg" {
     Environment = var.env
   }
 }
-/*
-resource "aws_instance" "bastion" {
-  ami                    = module.default_ami.id
-  instance_type          = "t2.nano"
-  key_name               = var.key_pair_name
-  subnet_id              = data.aws_subnet.subnet_bastion.id
-  vpc_security_group_ids = [aws_security_group.bastion_sg.id]
-  private_ip             = local.private_ip
-  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
-
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
-
-  root_block_device {
-    encrypted = true
-
-    tags = {
-      Backup = "1"
-    }
-  }
-
-  tags = {
-    Name          = "platform-bastion"
-    HostType      = "bastion"
-    Environment   = var.env
-    "Patch Group" = var.env
-    Backup        = "1"
-  }
-}
-
-resource "aws_route53_record" "bastion" {
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "bastion.${data.aws_route53_zone.private.name}"
-  type    = "A"
-  ttl     = "300"
-  records = [local.private_ip]
-}*/
 
 module "bastion_instance" {
   source                 = "../ec2-instance"
