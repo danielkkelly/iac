@@ -2,7 +2,13 @@ locals {
   log_path = "/aws/rds/cluster/${var.rds_cluster_identifier}"
 }
 
-//TODO: RDSOSMetrics also requires retention and encryption
+module "cluster_os_metrics_lg" {
+  source           = "../cloudwatch-log-group"
+  use_default_name = false
+  env              = var.env
+  region           = var.region
+  name             = "RDSOSMetrics"
+}
 
 module "cluster_audit_lg" {
   source           = "../cloudwatch-log-group"
