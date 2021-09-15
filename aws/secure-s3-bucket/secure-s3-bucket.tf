@@ -52,11 +52,11 @@ resource "aws_s3_bucket" "s3_bucket" {
   }*/
 
   // SI-12
-  lifecycle_rule { 
+  lifecycle_rule {
     enabled = true
 
     transition {
-      days = 90
+      days          = 90
       storage_class = "GLACIER"
     }
 

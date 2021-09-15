@@ -8,7 +8,7 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
     enabled = var.versioning_enabled
   }
 
- logging {
+  logging {
     target_bucket = "${local.base_bucket_name}-logging"
     target_prefix = "${var.name}-logging"
   }
@@ -28,11 +28,11 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
   }
 
   // SI-12
-  lifecycle_rule { 
+  lifecycle_rule {
     enabled = true
 
     transition {
-      days = 90
+      days          = 90
       storage_class = "GLACIER"
     }
 

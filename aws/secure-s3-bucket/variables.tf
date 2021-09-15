@@ -14,7 +14,7 @@ variable "versioning_enabled" {
   default     = true
 }
 
-variable replication_region {
+variable "replication_region" {
   description = "The destination region for bucket replication"
-  default  = "us-west-1"
+  default     = "us-west-1"
 }
