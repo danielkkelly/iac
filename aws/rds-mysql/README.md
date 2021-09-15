@@ -32,7 +32,8 @@ in the IAM module.
 
 For security purposes we avoid using the standard MySQL port of 3306.  Instead our default is 8809.
 Update variables.tf and the mysql_port variable to change the default port.  Make sure any network
-ACLs (network/nacl.tf) and security groups are also updated accordingly.
+ACLs (network/nacl.tf) and security groups are also updated accordingly.  Also update automation - 
+i.e. ansible/schemas.
 
 # Setting up MySQL Users
 

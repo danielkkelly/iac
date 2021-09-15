@@ -3,10 +3,6 @@ provider "aws" {
   profile = var.env
 }
 
-module "default_ami" {
-  source = "../ami"
-}
-
 locals {
   private_ip = cidrhost(data.aws_subnet.subnet_docker.cidr_block, var.host_number)
 }
@@ -24,10 +20,6 @@ data "aws_subnet" "subnet_docker" {
     Type   = "private"
     Docker = "1"
   }
-}
-
-data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${var.env}-ec2-ssm-profile"
 }
 
 data "aws_security_group" "bastion_sg" {
@@ -76,47 +68,14 @@ resource "aws_security_group_rule" "egress_sgr" {
   security_group_id = aws_security_group.docker_sg.id
 }
 
-resource "aws_instance" "docker" {
-  ami                    = module.default_ami.id
+module "docker_instance" {
+  source                 = "../ec2-instance"
+  env                    = var.env
+  key_pair_name          = var.key_pair_name
+  host_type              = "docker"
   instance_type          = var.instance_type
-  key_name               = var.key_pair_name
+  volume_size            = var.volume_size
+  private_ip             = local.private_ip
   subnet_id              = data.aws_subnet.subnet_docker.id
   vpc_security_group_ids = [aws_security_group.docker_sg.id]
-  private_ip             = local.private_ip
-  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
-
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
-
-  root_block_device {
-    volume_size = var.volume_size
-    encrypted   = true
-
-    tags = {
-      Backup = "1"
-    }
-  }
-
-  tags = {
-    Name          = "platform-docker"
-    HostType      = "docker"
-    Environment   = var.env
-    "Patch Group" = var.env
-    Backup        = "1"
-  }
-}
-
-data "aws_route53_zone" "private" {
-  name         = "${var.env}.internal."
-  private_zone = true
-}
-
-resource "aws_route53_record" "docker" {
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "docker.${data.aws_route53_zone.private.name}"
-  type    = "A"
-  ttl     = "300"
-  records = [local.private_ip]
 }

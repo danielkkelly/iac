@@ -3,10 +3,6 @@ provider "aws" {
   profile = var.env
 }
 
-module "default_ami" {
-  source = "../ami"
-}
-
 locals {
   private_ip = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host_number)
 }
@@ -24,10 +20,6 @@ data "aws_subnet" "subnet_syslog" {
     Type   = "private"
     Syslog = "1"
   }
-}
-
-data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${var.env}-ec2-ssm-profile"
 }
 
 data "aws_security_group" "bastion_sg" {
@@ -82,47 +74,14 @@ resource "aws_security_group" "syslog_sg" {
   }
 }
 
-resource "aws_instance" "syslog" {
-  ami                    = module.default_ami.id
-  instance_type          = "t2.micro"
-  key_name               = var.key_pair_name
+module "syslog_instance" {
+  source                 = "../ec2-instance"
+  env                    = var.env
+  key_pair_name          = var.key_pair_name
+  host_type              = "syslog"
+  instance_type          = var.instance_type
+  volume_size            = var.volume_size
+  private_ip             = local.private_ip
   subnet_id              = data.aws_subnet.subnet_syslog.id
   vpc_security_group_ids = [aws_security_group.syslog_sg.id]
-  private_ip             = local.private_ip
-  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
-
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
-
-  root_block_device {
-    volume_size = var.volume_size
-    encrypted   = true
-
-    tags = {
-      Backup = "1"
-    }
-  }
-
-  tags = {
-    Name          = "platform-syslog"
-    HostType      = "syslog"
-    Environment   = var.env
-    "Patch Group" = var.env
-    Backup        = "1"
-  }
-}
-
-data "aws_route53_zone" "private" {
-  name         = "${var.env}.internal."
-  private_zone = true
-}
-
-resource "aws_route53_record" "syslog" {
-  zone_id = data.aws_route53_zone.private.zone_id
-  name    = "syslog.${data.aws_route53_zone.private.name}"
-  type    = "A"
-  ttl     = "300"
-  records = [local.private_ip]
 }

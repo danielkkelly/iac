@@ -26,7 +26,7 @@ resource "aws_lb_target_group" "platform_docker_lb_tg" {
 
 resource "aws_alb_target_group_attachment" "docker_tga" {
   target_group_arn = aws_lb_target_group.platform_docker_lb_tg.arn
-  target_id        = aws_instance.docker.id
+  target_id        = module.docker_instance.instance_id
   port             = var.alb_target_port
 }
 
