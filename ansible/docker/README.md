@@ -107,3 +107,16 @@ docker run -d --restart always --network host 12345678910.dkr.ecr.us-east-2.amaz
 The command above uses host networking.  This allows the instance to reuse some of the 
 networking capability of the host OS (e.g. /etc/hosts).  You could customize the options
 to whatever works for you.
+
+# Viewing Container Logs
+
+Container logs are stored on the docker host in /var/log/docker.  Get the latest
+container name by using `docker ps` and look at the "names" column to the right.
+Now tail the log for that container (e.g. /var/log/docker/keen_kapitsa.log).  Or
+just tail -f /var/log/docker/*.log.
+
+# Syslog
+
+Logs are also shipped to the central syslog server where they appear under 
+/var/log/loghost by IP of the sending VM.  This provides centralization and 
+another layer of security.
