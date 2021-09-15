@@ -11,11 +11,3 @@ variable "is_public" {
 variable "host_number" { # .10 on whatever network is designated
   default = "10"
 }
-
-/* 
- * Because we use SSM for ingress the ingress should come only from one of our 
- * not-routable networks.
- */
-variable "cidr_blocks_ingress" {
-  default = ["10.0.0.0/8"]
-}
