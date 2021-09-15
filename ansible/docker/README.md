@@ -61,3 +61,49 @@ Commercial support is available at
 </body>
 </html>
 ```
+
+# Running a container from the ECR
+
+AWS has an Elastic Container Registry (ECR) where custom docker images are 
+stored privately.  Putting the container into a repo is outside of the scope
+of this document.  Docker explains how this is done.
+
+From the docker host, you'll need to authenticate with docker, pull the 
+desired image, and then create a container from that image.  The steps below
+show how that is done.
+
+## Obtaining ECR Credentials
+
+```
+aws ecr get-login-password --profile <env>
+```
+
+## Findign the name of the repo
+
+```
+tfctl.sh --provider aws --module ecr --env <env> --action output
+```
+
+This will produce the ecr_repository_url you need below.
+
+## Authenticate Docker
+
+```
+docker login -u AWS -p <generated above when obtaining ECR creds> 12345678910.dkr.ecr.us-east-2.amazonaws.com
+```
+
+## Pull the latest images from your repo
+
+```
+docker pull 12345678910.dkr.ecr.us-east-2.amazonaws.com/platform:latest
+```
+
+## Run a container based on the image
+
+```
+docker run -d --restart always --network host 12345678910.dkr.ecr.us-east-2.amazonaws.com/platform:latest
+```
+
+The command above uses host networking.  This allows the instance to reuse some of the 
+networking capability of the host OS (e.g. /etc/hosts).  You could customize the options
+to whatever works for you.
