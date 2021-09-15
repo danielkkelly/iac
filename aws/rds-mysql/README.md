@@ -28,6 +28,12 @@ To use RDS IAM authentication requires a policy for the accounts that will authe
 using IAM.  We set up the policy and attach it to our dev and dev-admin groups created
 in the IAM module.
 
+# Non-standard Port
+
+For security purposes we avoid using the standard MySQL port of 3306.  Instead our default is 8809.
+Update variables.tf and the mysql_port variable to change the default port.  Make sure any network
+ACLs (network/nacl.tf) and security groups are also updated accordingly.
+
 # Setting up MySQL Users
 
 ## Using SQL Scripts
@@ -153,7 +159,7 @@ The command below will generate an RDS authentication token.  Note that you coul
 isn't stricly necessary.  If your region is specified in your AWS config, for example, no need to supply it.
 
 ```
-MYSQL_AUTH_TOKEN=`aws rds generate-db-auth-token --hostname $(print-rds-endpoint.sh) --port 3306  --username=dev-ro`
+MYSQL_AUTH_TOKEN=`aws rds generate-db-auth-token --hostname $(print-rds-endpoint.sh) --port 8809  --username=dev-ro`
 ```
 
 We capture the token in the MSQL_AUTH_TOKEN environment variable so that it's easy to pass it along to the 
@@ -165,7 +171,7 @@ The two common scenarios used for testing our congigurations are to connect from
 the bastion server, or to connect using SSH forwarding.  The command below will work from the bastion server.
 
 ```
-mysql --host=db-writer.dev.internal --port=3306 --ssl-ca=rds-combined-ca-bundle.pem  --user=dev-ro --password=$MYSQL_AUTH_TOKEN
+mysql --host=db-writer.dev.internal --port=8809 --ssl-ca=rds-combined-ca-bundle.pem  --user=dev-ro --password=$MYSQL_AUTH_TOKEN
 ```
 
 The more common scenario is to connect via port forwarding through the bastion host from your local machine.
@@ -174,7 +180,7 @@ a different OS, etc.  Mac shown below.
 
 ```
 mysql --host 127.0.0.1 \
-  --port=13306 \
+  --port=18809 \
   --ssl-ca=rds-combined-ca-bundle.pem \
   --user=dev-ro \
   --password=$MYSQL_AUTH_TOKEN \

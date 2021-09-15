@@ -21,3 +21,7 @@ variable "cidr_block_subnet_vpn_1" {}
 variable "eks_cluster_name" {
   default = "platform-eks"
 }
+
+variable "mysql_port" {
+  default = 8809
+}

@@ -88,6 +88,10 @@ variable "max_allowed_packet" {
   default = "64MB"
 }
 
+variable "mysql_port" {
+  default = "8809"
+}
+
 # Variables that help allow private network access to the RDS server
 variable "cidr_block_subnet_pri_1" {}
 variable "cidr_block_subnet_pri_2" {}

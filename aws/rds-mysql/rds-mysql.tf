@@ -48,8 +48,8 @@ resource "aws_security_group" "rds_sg" {
   description = "MySQL from private networks and vpn"
 
   ingress {
-    from_port = 3306
-    to_port   = 3306
+    from_port = var.mysql_port
+    to_port   = var.mysql_port
     protocol  = "tcp"
 
     // open only to the bastion server on the public subnets 
@@ -132,6 +132,9 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   iam_database_authentication_enabled = true
   deletion_protection                 = var.rds_deletion_protection
   enabled_cloudwatch_logs_exports     = ["audit", "error", "general", "slowquery"]
+
+  # Port should be non-standard
+  port = var.mysql_port
 
   depends_on = [
     module.cluster_audit_lg,

@@ -22,8 +22,8 @@ resource "aws_network_acl_rule" "rds_pri_ingress" {
   protocol       = "tcp"
   rule_action    = "allow"
   cidr_block     = each.value
-  from_port      = 3306
-  to_port        = 3306
+  from_port      = var.mysql_port
+  to_port        = var.mysql_port
 }
 
 resource "aws_network_acl_rule" "rds_egress" {
