@@ -71,8 +71,9 @@ resource "aws_iam_role_policy_attachment" "replication" {
 }
 
 resource "aws_s3_bucket" "replication_bucket" {
-  provider = aws.replication-region
-  bucket = "${local.base_bucket_name}-replication"
+  provider      = aws.replication-region
+  bucket        = "${local.base_bucket_name}-replication"
+  force_destroy = true
 
   versioning {
     enabled = true
@@ -83,7 +84,7 @@ resource "aws_s3_bucket" "replication_bucket" {
     object_lock_enabled = "Enabled"
   }
 
-   // SC-13, SC-28
+  // SC-13, SC-28
   server_side_encryption_configuration {
     rule {
       apply_server_side_encryption_by_default {
@@ -95,8 +96,8 @@ resource "aws_s3_bucket" "replication_bucket" {
 
 resource "aws_s3_bucket_policy" "replication_bucket_policy" {
   provider = aws.replication-region
-  bucket = aws_s3_bucket.replication_bucket.id
-  policy = <<POLICY
+  bucket   = aws_s3_bucket.replication_bucket.id
+  policy   = <<POLICY
 {
     "Version": "2012-10-17",
     "Statement": [
@@ -119,7 +120,7 @@ POLICY
 
 resource "aws_s3_bucket_public_access_block" "s3_replication_bucket_pab" {
   provider = aws.replication-region
-  bucket = aws_s3_bucket.replication_bucket.id
+  bucket   = aws_s3_bucket.replication_bucket.id
 
   block_public_acls       = true
   block_public_policy     = true
