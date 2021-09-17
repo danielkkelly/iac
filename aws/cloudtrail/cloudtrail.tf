@@ -29,6 +29,8 @@ resource "aws_cloudtrail" "cloudtrail" {
       values = ["arn:aws:s3:::"]
     }
   }
+
+  depends_on = [aws_s3_bucket_policy.cloudtrail_bucket_policy]
 }
 
 module "cloudtrail_api_alarms" {
