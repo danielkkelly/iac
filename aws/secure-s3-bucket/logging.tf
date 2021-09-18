@@ -1,5 +1,11 @@
+module "s3_logging_bucket_replica" {
+  source              = "../secure-s3-replica"
+  bucket_name         = local.bucket_name_logging
+  object_lock_enabled = var.object_lock_enabled
+}
+
 resource "aws_s3_bucket" "s3_logging_bucket" {
-  bucket        = "${local.base_bucket_name}-logging"
+  bucket        = local.bucket_name_logging
   acl           = "log-delivery-write"
   force_destroy = true
 
@@ -9,7 +15,7 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
   }
 
   logging {
-    target_bucket = "${local.base_bucket_name}-logging"
+    target_bucket = local.bucket_name_logging
     target_prefix = "${var.name}-logging"
   }
 
@@ -23,8 +29,12 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
   }
 
   // AU.3.049
-  object_lock_configuration {
-    object_lock_enabled = "Enabled"
+  dynamic "object_lock_configuration" {
+    for_each = var.object_lock_enabled == false ? toset([]) : toset([1])
+
+    content {
+      object_lock_enabled = "Enabled"
+    }
   }
 
   // SI-12
@@ -38,6 +48,20 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
 
     expiration {
       days = 365
+    }
+  }
+
+  // AU-9, CP-6
+  replication_configuration {
+    role = module.s3_bucket_replica.replication_role_arn
+
+    rules {
+      status = "Enabled"
+
+      destination {
+        bucket        = module.s3_logging_bucket_replica.arn
+        storage_class = "GLACIER"
+      }
     }
   }
 }

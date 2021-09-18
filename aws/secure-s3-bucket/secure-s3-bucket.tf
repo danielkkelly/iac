@@ -1,5 +1,6 @@
 locals {
-  base_bucket_name = "platform-${var.env}-${var.name}-${random_id.random_s3_index.hex}"
+  bucket_name         = "platform-${var.env}-${var.name}-${random_id.random_s3_index.hex}"
+  bucket_name_logging = "${local.bucket_name}-logging"
 }
 
 /* 
@@ -11,6 +12,12 @@ resource "random_id" "random_s3_index" {
   byte_length = 4
 }
 
+module "s3_bucket_replica" {
+  source              = "../secure-s3-replica"
+  bucket_name         = local.bucket_name
+  object_lock_enabled = var.object_lock_enabled
+}
+
 /* 
  * Shows the FedRAMP controls associated with the configuration.  Note that the
  * AC-3, AC-4, AC-5, AC-6, AC-14 compliance is enforeced in policy.  These 
@@ -18,7 +25,7 @@ resource "random_id" "random_s3_index" {
  * in all cases.  Audited via Security Hub and AWS Config CMMC L3 conformance pack.
  */
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket        = local.base_bucket_name
+  bucket        = local.bucket_name
   acl           = "private"
   force_destroy = true
 
@@ -33,9 +40,6 @@ resource "aws_s3_bucket" "s3_bucket" {
     target_prefix = var.name
   }
 
-  // AU-9, CP-6
-  // replication_configuration {}
-
   // SC-13, SC-28
   server_side_encryption_configuration {
     rule {
@@ -46,10 +50,13 @@ resource "aws_s3_bucket" "s3_bucket" {
   }
 
   // AU.3.049
-  /*
-  object_lock_configuration {
-    object_lock_enabled = "Enabled"
-  }*/
+  dynamic "object_lock_configuration" {
+    for_each = var.object_lock_enabled == false ? toset([]) : toset([1])
+
+    content {
+      object_lock_enabled = "Enabled"
+    }
+  }
 
   // SI-12
   lifecycle_rule {
@@ -65,14 +72,15 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
   }
 
+  // AU-9, CP-6
   replication_configuration {
-    role = aws_iam_role.replication.arn
+    role = module.s3_bucket_replica.replication_role_arn
 
     rules {
       status = "Enabled"
 
       destination {
-        bucket        = aws_s3_bucket.replication_bucket.arn
+        bucket        = module.s3_bucket_replica.arn
         storage_class = "GLACIER"
       }
     }
