@@ -56,9 +56,9 @@ resource "aws_kms_key" "config_sns_kms_key" {
  * SNS topic
  */
 data "aws_iam_policy_document" "sns_topic_policy" {
-statement {
+  statement {
     sid = "Allow source owner various operations"
-    
+
     actions = [
       "SNS:Subscribe",
       "SNS:SetTopicAttributes",
@@ -101,7 +101,7 @@ resource "aws_sns_topic" "config_sns_topic" {
 }
 
 resource "aws_sns_topic_policy" "config_sns_topic_policy" {
-  arn    = aws_sns_topic.config_sns_topic.arn
+  arn = aws_sns_topic.config_sns_topic.arn
 
   policy = data.aws_iam_policy_document.sns_topic_policy.json
 }
