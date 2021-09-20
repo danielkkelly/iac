@@ -1,5 +1,5 @@
 data "aws_iam_role" "delivery_status_role" {
-  name = "platform-sns-cloudwatch-logs"
+  name = "platform-${var.env}-sns-cloudwatch-logs-role"
 }
 
 resource "aws_sns_sms_preferences" "sms_preferences" {

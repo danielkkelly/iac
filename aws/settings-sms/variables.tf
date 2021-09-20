@@ -1,6 +1,6 @@
 
 # Environment
-variable env {}
+variable "env" {}
 
 # SNS SMS
 variable "default_sender_id" {
