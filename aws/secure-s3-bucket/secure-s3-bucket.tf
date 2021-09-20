@@ -77,6 +77,7 @@ resource "aws_s3_bucket" "s3_bucket" {
     role = module.s3_bucket_replica.replication_role_arn
 
     rules {
+      id     = local.bucket_name
       status = "Enabled"
 
       destination {
