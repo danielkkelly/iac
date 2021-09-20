@@ -28,7 +28,36 @@ data "aws_iam_policy_document" "delivery_status_bucket_policy" {
       identifiers = ["sns.amazonaws.com"]
     }
   }
-  # TODO Needs SSL
+
+  statement {
+    sid       = "AllowListBucket"
+    actions   = ["s3:ListBucket"]
+    resources = [module.delivery_status_s3_bucket.arn]
+
+    principals {
+      type        = "Service"
+      identifiers = ["sns.amazonaws.com"]
+    }
+  }
+
+  statement {
+    sid    = "Require SSL"
+    effect = "Deny"
+
+    actions   = ["*"]
+    resources = ["${module.delivery_status_s3_bucket.arn}/*"]
+    
+    condition {
+      test     = "Bool"
+      variable = "aws:SecureTransport"
+      values   = ["false"]
+    }
+    
+    principals {
+      type        = "*"
+      identifiers = ["*"]
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "delivery_status_bucket_policy" {
