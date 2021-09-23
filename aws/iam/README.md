@@ -104,3 +104,76 @@ terraform output --json | jq -r '.user_key_id.value[] | select(.user=="dan.test"
     | base64 --decode \
     | gpg --decrypt --quiet
 ```
+
+# Users, Groups, Policies, and Roles
+
+Users have minimal priviledges.  They are able to manage credentials and MFA.  The basic
+policies for this are attached to a group that is named after the user.  These policies
+are user-specific, allowing access only to the user's own resources.
+
+For other actions that a developer or developer admin would require, we create roles and
+use role-base authentication, requiring MFA.
+
+## Example user "dan"
+
+The configuration below shows how roles are assumed.  The user is set up with his own 
+stanza in the credentials file.  Then, a profile is created in ~/.aws/config for the
+environment.  This configuration shows the rule the user will assume and also points 
+to the user's MFA device (see below on how to configure MFA).  
+
+Valid roles are:
+
+* platform-test-dev-role
+* platform-test-dev-admin-role
+
+### AWS Credentials
+
+[dan.test]
+aws_access_key_id=A..M
+aws_secret_access_key=R..Q
+
+### AWS Config
+
+[profile test]
+region = us-east-2
+source_profile = dan.test
+role_arn       = arn:aws:iam::12345678910:role/platform-test-dev-role
+mfa_serial     = arn:aws:iam::12345678910:mfa/dan.test
+
+# Adding Virtual MFA via the AWS CLI
+
+This section talks about how to set up MFA from the AWS CLI.  The create command below 
+generates a QR Code.  Use that with your virtual MFA app.  Then make the enable call to
+enable the device for the user.  That command requires two generated access codes from
+the virtual MFA device.
+
+## Create a Virual MFA Device
+
+```
+aws iam create-virtual-mfa-device --virtual-mfa-device-name dan.test --outfile ./qrcode.png --bootstrap-method QRCodePNG --profile dan.test
+```
+
+This returns something like:
+
+```
+{
+    "VirtualMFADevice": {
+        "SerialNumber": "arn:aws:iam::12345678910:mfa/dan.test"
+    }
+}
+```
+## Enable the Device
+
+```
+aws iam enable-mfa-device \
+    --profile dan.test \
+    --user-name dan.test \
+    --serial-number arn:aws:iam::12345678910:mfa/dan.test" \
+    --authentication-code1 123456 \
+    --authentication-code2 789012
+```
+# AWS Vault (experimenting)
+
+```
+brew install aws-vault
+```
