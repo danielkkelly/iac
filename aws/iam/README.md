@@ -194,3 +194,5 @@ After MFA is enabled, you will need to do the following:
 ```
 aws-vault exec dan.test --no-session -- aws iam list-users
 ```
+
+See https://github.com/99designs/aws-vault/issues/260 for details.
