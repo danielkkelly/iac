@@ -177,3 +177,20 @@ aws iam enable-mfa-device \
 ```
 brew install aws-vault
 ```
+
+## IAM and MFA
+
+When you make calls related to IAM, AWS is not going to authorized the call if you have
+an account that is MFA enabled but hasn't passed MFA tokens.  In this particular case 
+the command below should work before MFA is enabled but not after.
+
+```
+aws iam list-users --profile dan.test
+```
+
+
+After MFA is enabled, you will need to do the following:
+
+```
+aws-vault exec dan.test --no-session -- aws iam list-users
+```
