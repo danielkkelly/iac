@@ -4,13 +4,6 @@ This module updates the identify and access management configuration to set up r
 policies to support System Manager related operations, such as automatic patching, and 
 policies, groups, and users for developers and developer admins.
 
-# AWS API Restriction by IP Ranges
-
-The variable "networks" allows you to specify an IP range or ranges that AWS will require
-as your source IP range for use of its API.  This allows us to restrict use of the API as
-well as ingress to the bastion server by developers when they are not on the correct 
-network.  The default allows access from any network.
-
 # User Management
 
 This module has a variable called "user_groups" in variables.tf that you'll update to 
@@ -105,40 +98,57 @@ terraform output --json | jq -r '.user_key_id.value[] | select(.user=="dan.test"
     | gpg --decrypt --quiet
 ```
 
-# Users, Groups, Policies, and Roles
+# Policies
+
+Policies are required to configure role-based authentication (RBAC) and to require MFA, etc.
+
+## Users and Groups
 
 Users have minimal priviledges.  They are able to manage credentials and MFA.  The basic
 policies for this are attached to a group that is named after the user.  These policies
 are user-specific, allowing access only to the user's own resources.
 
+After the user configures MFA for his account he is able to assume the roles allow by the
+policies attached to his group.
+
+## RBAC and MFA
+
 For other actions that a developer or developer admin would require, we create roles and
-use role-base authentication, requiring MFA.
-
-## Example user "dan"
-
-The configuration below shows how roles are assumed.  The user is set up with his own 
-stanza in the credentials file.  Then, a profile is created in ~/.aws/config for the
-environment.  This configuration shows the rule the user will assume and also points 
-to the user's MFA device (see below on how to configure MFA).  
+use role-base authentication, requiring MFA.  Setting up MFA is explained in more detail
+below.
 
 Valid roles are:
 
 * platform-test-dev-role
 * platform-test-dev-admin-role
 
-### AWS Credentials
+### Example user "dan"
+
+The configuration below shows how roles are assumed.  The user is set up with his own 
+stanza in the credentials file.  Then, a profile is created in ~/.aws/config for the
+environment.  This configuration shows the rule the user will assume and also points 
+to the user's MFA device (see below on how to configure MFA).  
+
+#### AWS Credentials
 
 [dan.test]
 aws_access_key_id=A..M
 aws_secret_access_key=R..Q
 
-### AWS Config
+#### AWS Config
 
 [profile test]
-region = us-east-2
+region         = us-east-2
 source_profile = dan.test
 role_arn       = arn:aws:iam::12345678910:role/platform-test-dev-role
 mfa_serial     = arn:aws:iam::12345678910:mfa/dan.test
+
+## AWS CLI / API Restriction by IP Ranges
+
+The variable "networks" allows you to specify an IP range or ranges that AWS will require
+as your source IP range for use of its API.  This allows us to restrict use of the API as
+well as ingress to the bastion server by developers when they are not on the correct 
+network.  The default allows access from any network.
 
 # Adding Virtual MFA via the AWS CLI
 
@@ -174,11 +184,54 @@ aws iam enable-mfa-device \
 ```
 # AWS Vault (experimenting)
 
+AWS valut will allow you to store your credentials securely.  This means that you end
+up with an empty ~/.aws/credentials file.  See https://github.com/99designs/aws-vault.
+
+## Install
+
 ```
 brew install aws-vault
 ```
 
-## IAM and MFA
+## Add Credentials to AWS Vault
+
+```
+aws-vault add dan.test
+```
+
+It will prompt for access key and access key secret.
+
+## Update ~/.aws/config
+
+```
+[profile dan.test]
+region             = us-east-2
+credential_process = /usr/local/bin/aws-vault exec -j --prompt=osascript dan.test 
+mfa_serial         = arn:aws:iam::12345678910:mfa/dan.test
+
+[profile dan.test.dev]
+region          = us-east-2
+source_profile  = dan.test
+include_profile = dan.test
+role_arn        = arn:aws:iam::12345678910:role/platform-test-dev-role
+
+[profile dan.test.admin]
+region          = us-east-2
+source_profile  = dan.test
+include_profile = dan.test
+role_arn        = arn:aws:iam::12345678910:role/platform-test-dev-admin-role
+```
+
+* The setup above uses MFA for the user dan.test 
+* dan.test is part of the dev and dev-admin groups and can assume both roles 
+* By passing --profile <profile> to the CLI, we're able to assume the appropriate role
+* Note the credentials_process uses AWS Vault
+* The prompt argumenent provides a GUI prompt on MacOS
+
+This is the same setup necessary for your terraform user if you follow the instructions
+in [AWS Setup](../README.md#option-2-rbac-with-mfa).
+
+# IAM and MFA
 
 When you make calls related to IAM, AWS is not going to authorized the call if you have
 an account that is MFA enabled but hasn't passed MFA tokens.  In this particular case 
@@ -188,7 +241,6 @@ the command below should work before MFA is enabled but not after.
 aws iam list-users --profile dan.test
 ```
 
-
 After MFA is enabled, you will need to do the following:
 
 ```
@@ -196,3 +248,11 @@ aws-vault exec dan.test --no-session -- aws iam list-users
 ```
 
 See https://github.com/99designs/aws-vault/issues/260 for details.
+
+Alternatively, add MFA so that the normal CLI 'aws iam list-users --profile dan.test' works
+with MFA.  In the example ~/.aws/config above note the line for MFA under the dan.test 
+profile.
+
+```
+mfa_serial         = arn:aws:iam::12345678910:mfa/dan.test
+```
