@@ -4,6 +4,12 @@ This module updates the identify and access management configuration to set up r
 policies to support System Manager related operations, such as automatic patching, and 
 policies, groups, and users for developers and developer admins.
 
+Our goal is to support role-based authentication (RBAC), multi-factor authentication (MFA),
+and to house credentials securely on the local machine.  Users, roles, groups, and policies
+are provisioned to support this model.  The process for providign keys to users, setting up
+~/.aws/config, configuring virtual MFA from the CLI sot that each user can provision his or
+her own MFA, and the setup required to use aws-vault is explained below.
+
 # User Management
 
 This module has a variable called "user_groups" in variables.tf that you'll update to 
