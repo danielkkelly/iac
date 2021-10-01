@@ -182,10 +182,16 @@ aws iam enable-mfa-device \
     --authentication-code1 123456 \
     --authentication-code2 789012
 ```
-# AWS Vault (experimenting)
+# AWS Vault
 
 AWS valut will allow you to store your credentials securely.  This means that you end
-up with an empty ~/.aws/credentials file.  See https://github.com/99designs/aws-vault.
+up with an empty ~/.aws/credentials file.  See https://github.com/99designs/aws-vault. It 
+will also allow users to
+
+* Rotate credentials
+* Clear stored sessions
+* Remove credentials from the vault
+* Nicely prompt for MFA
 
 ## Install
 
@@ -224,12 +230,30 @@ role_arn        = arn:aws:iam::12345678910:role/platform-test-dev-admin-role
 
 * The setup above uses MFA for the user dan.test 
 * dan.test is part of the dev and dev-admin groups and can assume both roles 
-* By passing --profile <profile> to the CLI, we're able to assume the appropriate role
+* By passing --profile parameter to the CLI, we're able to assume the appropriate role
 * Note the credentials_process uses AWS Vault
-* The prompt argumenent provides a GUI prompt on MacOS
+* The --prompt parameter provides a GUI prompt on MacOS
 
 This is the same setup necessary for your terraform user if you follow the instructions
 in [AWS Setup](../README.md#option-2-rbac-with-mfa).
+
+## Terraform
+
+Note that I initially received the following error running Terraform vs. the AWS CLI:
+
+```
+AssumeRoleTokenProviderNotSetError when using assume_role with mfa enabled
+```
+
+This required the following updates to the original configuration.
+
+* Moved the mfa_serial line up from the role to the base profile
+* Added include_profile in the role-based profiles
+
+See https://github.com/hashicorp/terraform-provider-aws/issues/10491 for details.
+
+After the above changes it works like a champ.  Perhaps at some point the config
+will become simpler but for now the workarounds aren't onerous.
 
 # IAM and MFA
 
