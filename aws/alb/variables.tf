@@ -1,5 +1,6 @@
 variable "region" {}
 variable "env" {}
+variable "replication_region" {}
 
 /*
  * This is the Elastic Load Balancing Account ID for the regions us-east-[1,2].  Update

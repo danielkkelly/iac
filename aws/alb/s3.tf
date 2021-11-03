@@ -1,3 +1,9 @@
+provider "aws" {
+  alias  = "replica"
+  region = var.replication_region
+  profile = var.env
+}
+
 /* 
  * Create an S3 bucket for logs and attach the appropriate policy.  Note the variable for 
  * the region-specific load balancer account.  More inforomation available in the docs.
@@ -7,6 +13,10 @@ module "alb_s3_bucket" {
   source     = "../secure-s3-bucket"
   name       = "lb-bucket"
   env        = var.env
+   providers = {
+    aws.default = aws
+    aws.replica = aws.replica
+  }
 }
 
 resource "aws_s3_bucket_policy" "alb_bucket_policy" {
