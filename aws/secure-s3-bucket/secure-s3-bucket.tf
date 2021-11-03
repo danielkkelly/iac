@@ -31,7 +31,6 @@ module "s3_bucket_replica" {
   env                 = var.env
   bucket_name         = local.bucket_name
   object_lock_enabled = var.object_lock_enabled
-  //replication_region = var.replication_region
   providers = {
     aws.default = aws.default
     aws.replica = aws.replica
