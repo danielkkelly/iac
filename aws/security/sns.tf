@@ -1,55 +1,7 @@
 data "aws_caller_identity" "current" {}
 
-
-/*
- * KMS key for SNS topic encryption
- */
-data "aws_iam_policy_document" "sns_kms_key_policy" {
-
-  policy_id = "Config Key Policy"
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:*"
-    ]
-    resources = ["*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
-    }
-  }
-
-  statement {
-    effect = "Allow"
-    actions = [
-      "kms:Decrypt",
-      "kms:GenerateDataKey"
-    ]
-    resources = ["*"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["config.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_kms_alias" "config_sns_kms_alias" {
-  name          = "alias/${var.env}-sns"
-  target_key_id = aws_kms_key.config_sns_kms_key.id
-}
-
-resource "aws_kms_key" "config_sns_kms_key" {
-  description         = "KMS key for AWS Config SNS"
-  enable_key_rotation = true
-
-  policy = data.aws_iam_policy_document.sns_kms_key_policy.json
-
-  tags = {
-    Name = "platform-config"
-  }
+data "aws_kms_key" "config_sns_kms_key" {
+  key_id = "alias/${var.env}-config-sns"
 }
 
 /*
@@ -97,7 +49,7 @@ resource "aws_sns_topic" "config_sns_topic" {
   display_name = "platform-${var.env}-config-topic"
   name         = "platform-${var.env}-config-topic"
 
-  kms_master_key_id = aws_kms_key.config_sns_kms_key.id
+  kms_master_key_id = data.aws_kms_key.config_sns_kms_key.id
 }
 
 resource "aws_sns_topic_policy" "config_sns_topic_policy" {
