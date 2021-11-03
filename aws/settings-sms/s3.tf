@@ -2,6 +2,10 @@ module "delivery_status_s3_bucket" {
   source = "../secure-s3-bucket"
   name   = var.usage_report_s3_bucket
   env    = var.env
+  providers = {
+    aws.default = aws.default
+    aws.replica = aws.replica
+  }
 }
 
 data "aws_iam_policy_document" "delivery_status_bucket_policy" {
