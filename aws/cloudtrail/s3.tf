@@ -1,7 +1,17 @@
+provider "aws" {
+  alias  = "replica"
+  region = var.replication_region
+  profile = var.env
+}
+
 module "cloudtrail_s3_bucket" {
   source = "../secure-s3-bucket"
   name   = "cloudtrail"
   env    = var.env
+    providers = {
+    aws.default = aws
+    aws.replica = aws.replica
+  }
 }
 
 resource "aws_s3_bucket_policy" "cloudtrail_bucket_policy" {
