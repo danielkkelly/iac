@@ -60,8 +60,8 @@ resource "aws_security_group" "msk_sg" {
   }
 }
 
-resource "aws_kms_key" "msk_kms" {
-  description = "platform-msk"
+data "aws_kms_key" "msk_kms_key" {
+  key_id = "alias/${var.env}-msk"
 }
 
 resource aws_cloudwatch_log_group log_group_msk {
@@ -82,7 +82,7 @@ resource "aws_msk_cluster" "platform_msk" {
   }
 
   encryption_info {
-    encryption_at_rest_kms_key_arn = aws_kms_key.msk_kms.arn
+    encryption_at_rest_kms_key_arn = data.aws_kms_key.msk_kms_key.arn
   }
 
   open_monitoring {

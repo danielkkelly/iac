@@ -5,6 +5,10 @@ provider "aws" {
 
 data "aws_caller_identity" "current" {}
 
+data "aws_kms_key" "cloudtrail_kms_key" {
+  key_id = "alias/${var.env}-cloudtrail"
+}
+
 resource "aws_cloudtrail" "cloudtrail" {
   name           = "platform-cloudtrail"
   s3_bucket_name = module.cloudtrail_s3_bucket.bucket
@@ -18,7 +22,7 @@ resource "aws_cloudtrail" "cloudtrail" {
   cloud_watch_logs_group_arn = "${module.cloudtrail_lg.arn}:*" # CloudTrail requires the Log Stream wildcard
   cloud_watch_logs_role_arn  = aws_iam_role.cloudtrail_cloudwatch_events_role.arn
 
-  kms_key_id = aws_kms_key.cloudtrail_kms_key.arn
+  kms_key_id = data.aws_kms_key.cloudtrail_kms_key.arn
 
   event_selector {
     read_write_type           = "All"
@@ -38,7 +42,7 @@ module "cloudtrail_api_alarms" {
   source         = "git::https://github.com/cloudposse/terraform-aws-cloudtrail-cloudwatch-alarms.git"
   log_group_name = module.cloudtrail_lg.name
 
-  kms_master_key_id = aws_kms_key.cloudtrail_kms_key.id
+  kms_master_key_id = data.aws_kms_key.cloudtrail_kms_key.id
 
   sns_policy_enabled = false
 }
