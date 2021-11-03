@@ -1,6 +1,7 @@
 // https://docs.aws.amazon.com/AmazonS3/latest/userguide/setting-repl-config-perm-overview.html
 
 resource "aws_iam_role" "replication" {
+  provider = aws.default
   name = "${var.bucket_name}-replication-role"
 
   assume_role_policy = <<POLICY
@@ -20,6 +21,7 @@ POLICY
 }
 
 resource "aws_iam_policy" "replication" {
+  provider = aws.default
   name = "${var.bucket_name}-replication-policy"
 
   policy = <<POLICY
@@ -72,6 +74,7 @@ POLICY
 }
 
 resource "aws_iam_role_policy_attachment" "replication" {
+  provider = aws.default
   role       = aws_iam_role.replication.name
   policy_arn = aws_iam_policy.replication.arn
 }

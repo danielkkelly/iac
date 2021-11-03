@@ -1,10 +1,18 @@
 module "s3_logging_bucket_replica" {
+  count               = var.logging_enabled ? 1 : 0
   source              = "../secure-s3-replica"
+  env                 = var.env
   bucket_name         = local.bucket_name_logging
   object_lock_enabled = var.object_lock_enabled
+  providers = {
+    aws.default = aws.default
+    aws.replica = aws.replica
+  }
 }
 
 resource "aws_s3_bucket" "s3_logging_bucket" {
+  count         = var.logging_enabled ? 1 : 0
+  provider = aws.default
   bucket        = local.bucket_name_logging
   acl           = "log-delivery-write"
   force_destroy = true
@@ -53,14 +61,14 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
 
   // AU-9, CP-6
   replication_configuration {
-    role = module.s3_bucket_replica.replication_role_arn
+    role = module.s3_bucket_replica[0].replication_role_arn
 
     rules {
       id     = local.bucket_name_logging
       status = "Enabled"
 
       destination {
-        bucket        = module.s3_logging_bucket_replica.arn
+        bucket        = module.s3_logging_bucket_replica[0].arn
         storage_class = "GLACIER"
       }
     }
@@ -68,7 +76,9 @@ resource "aws_s3_bucket" "s3_logging_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "logging_bucket_policy" {
-  bucket = aws_s3_bucket.s3_logging_bucket.id
+  count  = var.logging_enabled ? 1 : 0
+  provider = aws.default
+  bucket = aws_s3_bucket.s3_logging_bucket[0].id
   policy = <<POLICY
 {
     "Version": "2012-10-17",
@@ -78,7 +88,7 @@ resource "aws_s3_bucket_policy" "logging_bucket_policy" {
             "Effect": "Deny",
             "Principal": "*",
             "Action": "*",
-            "Resource": "${aws_s3_bucket.s3_logging_bucket.arn}/*",
+            "Resource": "${aws_s3_bucket.s3_logging_bucket[0].arn}/*",
             "Condition": {
                 "Bool": {
                 "aws:SecureTransport": "false"
@@ -91,7 +101,9 @@ POLICY
 }
 
 resource "aws_s3_bucket_public_access_block" "s3_logging_bucket_pab" {
-  bucket = aws_s3_bucket.s3_logging_bucket.id
+  count  = var.logging_enabled ? 1 : 0
+  provider = aws.default
+  bucket = aws_s3_bucket.s3_logging_bucket[0].id
 
   block_public_acls       = true
   block_public_policy     = true

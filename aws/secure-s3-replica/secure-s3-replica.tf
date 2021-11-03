@@ -1,6 +1,11 @@
-provider "aws" {
-  alias  = "replication-region"
-  region = var.replication_region
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 2.7.0"
+      configuration_aliases = [ aws.default, aws.replica ]
+    }
+  }
 }
 
 locals {
@@ -8,7 +13,7 @@ locals {
 }
 
 resource "aws_s3_bucket" "replication_bucket" {
-  provider      = aws.replication-region
+  provider      = aws.replica
   bucket        = local.bucket_name_replica
   force_destroy = true
 
@@ -36,7 +41,7 @@ resource "aws_s3_bucket" "replication_bucket" {
 }
 
 resource "aws_s3_bucket_policy" "replication_bucket_policy" {
-  provider = aws.replication-region
+  provider = aws.replica
   bucket   = aws_s3_bucket.replication_bucket.id
   policy   = <<POLICY
 {
@@ -60,7 +65,7 @@ POLICY
 }
 
 resource "aws_s3_bucket_public_access_block" "s3_replication_bucket_pab" {
-  provider = aws.replication-region
+  provider = aws.replica
   bucket   = aws_s3_bucket.replication_bucket.id
 
   block_public_acls       = true

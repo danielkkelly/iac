@@ -1,3 +1,16 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 2.7.0"
+      configuration_aliases = [ aws.default, aws.replica ]
+    }
+  }
+}
+
+/* 
+ * Local variables to compute bucket names
+ */
 locals {
   bucket_name         = "platform-${var.env}-${var.name}-${random_id.random_s3_index.hex}"
   bucket_name_logging = "${local.bucket_name}-logging"
@@ -13,9 +26,16 @@ resource "random_id" "random_s3_index" {
 }
 
 module "s3_bucket_replica" {
+  count               = var.replication_enabled ? 1 : 0
   source              = "../secure-s3-replica"
+  env                 = var.env
   bucket_name         = local.bucket_name
   object_lock_enabled = var.object_lock_enabled
+  //replication_region = var.replication_region
+  providers = {
+    aws.default = aws.default
+    aws.replica = aws.replica
+  }
 }
 
 /* 
@@ -25,6 +45,7 @@ module "s3_bucket_replica" {
  * in all cases.  Audited via Security Hub and AWS Config CMMC L3 conformance pack.
  */
 resource "aws_s3_bucket" "s3_bucket" {
+  provider = aws.default
   bucket        = local.bucket_name
   acl           = "private"
   force_destroy = true
@@ -35,9 +56,12 @@ resource "aws_s3_bucket" "s3_bucket" {
   }
 
   // AU-2, AU-3, AU-9, AU-11
-  logging {
-    target_bucket = aws_s3_bucket.s3_logging_bucket.id
-    target_prefix = var.name
+  dynamic "logging" {
+    for_each = var.logging_enabled == false ? toset([]) : toset([1])
+    content {
+      target_bucket = aws_s3_bucket.s3_logging_bucket[0].id
+      target_prefix = var.name
+    }
   }
 
   // SC-13, SC-28
@@ -72,17 +96,21 @@ resource "aws_s3_bucket" "s3_bucket" {
     }
   }
 
-  // AU-9, CP-6
-  replication_configuration {
-    role = module.s3_bucket_replica.replication_role_arn
+  dynamic "replication_configuration" {
+    for_each = var.replication_enabled == false ? toset([]) : toset([1])
 
-    rules {
-      id     = local.bucket_name
-      status = "Enabled"
+    content {
+      // AU-9, CP-6
+      role = module.s3_bucket_replica[0].replication_role_arn
 
-      destination {
-        bucket        = module.s3_bucket_replica.arn
-        storage_class = "GLACIER"
+      rules {
+        id     = local.bucket_name
+        status = "Enabled"
+
+        destination {
+          bucket        = module.s3_bucket_replica[0].arn
+          storage_class = "GLACIER"
+        }
       }
     }
   }
