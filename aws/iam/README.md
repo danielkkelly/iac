@@ -153,6 +153,28 @@ role_arn       = arn:aws:iam::12345678910:role/platform-test-dev-role
 mfa_serial     = arn:aws:iam::12345678910:mfa/dan.test
 ```
 
+#### Troubleshooting
+
+##### No valid credential sources
+
+```
+│ Error: error configuring Terraform AWS Provider: no valid credential sources for Terraform AWS Provider found.
+│ 
+│ Please see https://registry.terraform.io/providers/hashicorp/aws
+│ for more information about providing credentials.
+│ 
+│ Error: ProcessProviderExecutionError: error in credential_process
+│ caused by: exit status 1
+│ 
+│ 
+│   with provider["registry.terraform.io/hashicorp/aws"],
+│   on kms-keys.tf line 1, in provider "aws":
+│    1: provider "aws" {
+│ 
+╵
+```
+This could occur when the wrong MFA code is provided.
+
 ## AWS CLI / API Restriction by IP Ranges
 
 The variable "networks" allows you to specify an IP range or ranges that AWS will require
