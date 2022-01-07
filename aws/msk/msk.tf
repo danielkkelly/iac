@@ -27,8 +27,8 @@ data "aws_subnet" "msk_subnet_id" {
 // open to specific private networks that will use the service
 locals {
   ingress_cidr_blocks = [var.cidr_block_subnet_pri_1,
-                         var.cidr_block_subnet_pri_2,
-                         var.cidr_block_subnet_vpn_1]
+    var.cidr_block_subnet_pri_2,
+  var.cidr_block_subnet_vpn_1]
 }
 
 resource "aws_security_group" "msk_sg" {
@@ -64,7 +64,7 @@ data "aws_kms_key" "msk_kms_key" {
   key_id = "alias/${var.env}-msk"
 }
 
-resource aws_cloudwatch_log_group log_group_msk {
+resource "aws_cloudwatch_log_group" "log_group_msk" {
   name              = "platform-msk"
   retention_in_days = 14
 }
@@ -83,6 +83,11 @@ resource "aws_msk_cluster" "platform_msk" {
 
   encryption_info {
     encryption_at_rest_kms_key_arn = data.aws_kms_key.msk_kms_key.arn
+
+    encryption_in_transit {
+      client_broker = "TLS"
+      in_cluster    = true
+    }
   }
 
   open_monitoring {
