@@ -137,17 +137,21 @@ to the user's MFA device (see below on how to configure MFA).
 
 #### AWS Credentials
 
+```
 [dan.test]
 aws_access_key_id=A..M
 aws_secret_access_key=R..Q
+```
 
 #### AWS Config
 
+```
 [profile test]
 region         = us-east-2
 source_profile = dan.test
 role_arn       = arn:aws:iam::12345678910:role/platform-test-dev-role
 mfa_serial     = arn:aws:iam::12345678910:mfa/dan.test
+```
 
 ## AWS CLI / API Restriction by IP Ranges
 
