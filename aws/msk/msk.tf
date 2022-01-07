@@ -71,7 +71,7 @@ resource aws_cloudwatch_log_group log_group_msk {
 
 resource "aws_msk_cluster" "platform_msk" {
   cluster_name           = "platform-msk"
-  kafka_version          = "2.4.1"
+  kafka_version          = "2.8.1"
   number_of_broker_nodes = length(var.brokers)
 
   broker_node_group_info {
