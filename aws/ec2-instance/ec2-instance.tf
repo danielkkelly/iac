@@ -29,6 +29,10 @@ resource "aws_instance" "instance" {
     }
   }
 
+  lifecycle { /* avoid repacing the instance when a later AMI is available */
+     ignore_changes = [ami]
+  }
+
   tags = {
     Name          = "platform-${var.host_type}"
     HostType      = var.host_type
