@@ -84,10 +84,6 @@ variable "parameters" {
   ]
 }
 
-variable "max_allowed_packet" {
-  default = "64MB"
-}
-
 variable "mysql_port" {
   default = "8809"
 }
