@@ -207,7 +207,6 @@ aws rds describe-db-log-files --db-instance-identifier platform-rds-cluster-0
 This results in a list of files available.
 
 ```
-
 {
     "DescribeDBLogFiles": [
         {
@@ -216,6 +215,7 @@ This results in a list of files available.
             "Size": 38492
         },
 ...
+```
 
 ```
 aws rds download-db-log-file-portion --db-instance-identifier platform-rds-cluster-0 \
