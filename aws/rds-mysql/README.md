@@ -229,3 +229,4 @@ Or for the slow query log.
 aws rds download-db-log-file-portion --db-instance-identifier platform-rds-cluster-0 \
 	--log-file-name slowquery/mysql-slowquery.log \
 	--output text > mysql-slowquery.log
+```
