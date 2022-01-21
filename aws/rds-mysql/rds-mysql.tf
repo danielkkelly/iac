@@ -45,7 +45,7 @@ data "aws_security_group" "bastion_sg" {
 resource "aws_security_group" "rds_sg" {
   vpc_id      = data.aws_vpc.vpc.id
   name        = "platform-rds"
-  description = "MySQL from private networks and vpn"
+  description = "MySQL from bastion host, app subnets, and VPN"
 
   ingress {
     from_port = var.mysql_port
