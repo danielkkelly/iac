@@ -1,2 +1,8 @@
 variable "env" {}
-variable "name" {}
+variable "name" {
+  type = string
+}
+variable "policy" {
+  type    = string
+  default = null
+}
