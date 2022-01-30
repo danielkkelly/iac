@@ -22,7 +22,7 @@ resource "aws_instance" "instance" {
 
   root_block_device {
     volume_size = var.volume_size
-    encrypted = true
+    encrypted   = true
 
     tags = {
       Backup = "1"
@@ -30,7 +30,7 @@ resource "aws_instance" "instance" {
   }
 
   lifecycle { /* avoid repacing the instance when a later AMI is available */
-     ignore_changes = [ami]
+    ignore_changes = [ami]
   }
 
   tags = {
