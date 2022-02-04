@@ -3,6 +3,12 @@ provider "aws" {
   profile = var.env
 }
 
+provider "aws" {
+  alias  = "replica"
+  region = var.replication_region
+  profile = var.env
+}
+
 locals {
   backups = {
     schedule  = "cron(0 5 ? * MON-FRI *)" /* UTC Time */
@@ -11,6 +17,15 @@ locals {
 }
 
 resource "aws_backup_vault" "backup_vault" {
+  name = "platform-backup-vault"
+  tags = {
+    Project = "platform"
+    Role    = "backup-vault"
+  }
+}
+
+resource "aws_backup_vault" "backup_vault_replica" {
+  provider = aws.replica
   name = "platform-backup-vault"
   tags = {
     Project = "platform"
@@ -36,6 +51,10 @@ resource "aws_backup_plan" "backup_plan" {
       Project = "platform"
       Role    = "backup"
       Creator = "aws-backups"
+    }
+    
+    copy_action {
+      destination_vault_arn = aws_backup_vault.backup_vault_replica.arn
     }
   }
 
