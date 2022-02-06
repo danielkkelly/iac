@@ -1,0 +1,40 @@
+# AWS Region
+variable "region" {}
+
+# Specifies the environment
+variable "env" {}
+variable "key_pair_name" {}
+
+# Host
+variable "volume_size" {
+  default = 30
+}
+
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+# Network
+variable "vip_number" {
+  default = "21"
+}
+
+variable "host1_number" {
+  default = "22"
+}
+
+variable "host2_number" {
+  default = "23"
+}
+
+# Variables that help allow private network access to the RDS server
+variable "cidr_block_subnet_pri_1" {}
+variable "cidr_block_subnet_pri_2" {}
+
+# To silence TF warnings
+variable "cidr_block_vpc" {}
+variable "cidr_block_subnet_pub_1" {}
+variable "cidr_block_subnet_pub_2" {}
+variable "cidr_block_subnet_rds_1" {}
+variable "cidr_block_subnet_rds_2" {}
+variable "cidr_block_subnet_vpn_1" {}

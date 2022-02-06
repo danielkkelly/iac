@@ -1,0 +1,32 @@
+#!/bin/bash
+
+DAEMON=rsyslog
+SCRIPT=/usr/libexec/keepalived/self-assign-vip
+
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
+
+#Values passed in from keepalived
+TYPE=$1
+NAME=$2
+STATE=$3
+
+STATEFILE=/var/run/$DAEMON-ha-keepalived.state
+
+logger -t $DAEMON-ha-keepalived "Params and Values: TYPE=$TYPE -- NAME=$NAME -- STATE=$STATE -- STATEFILE=$STATEFILE"
+
+logger -t $DAEMON-ha-keepalived "Transition to state '$STATE' on VRRP instance '$NAME'."
+
+case $STATE in
+        "MASTER")
+                  echo "STATE=$STATE" > $STATEFILE
+                  $SCRIPT > /var/run/$DAEMON-ha-script-output
+                  exit 0
+                  ;;
+        "BACKUP"|"FAULT")
+                  echo "STATE=$STATE" > $STATEFILE
+                  exit 0
+                  ;;
+        *)        logger -t $DAEMON-ha-keepalived "Unknown state: '$STATE'"
+                  exit 1
+                  ;;
+esac

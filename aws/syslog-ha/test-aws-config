@@ -1,0 +1,4 @@
+[profile ha-monitor]
+region            = us-east-2
+credential_source = Ec2InstanceMetadata
+role_arn          = arn:aws:iam::464267695814:role/platform-test-ha-monitor-role
