@@ -1,10 +1,15 @@
 module "default_ami" {
   source = "../ami"
+} 
+
+locals {
+  instance_profile_name = var.instance_profile_name == null ?  "platform-${var.env}-ec2-profile" : var.instance_profile_name
 }
 
-data "aws_iam_instance_profile" "ec2_ssm_profile" {
-  name = "platform-${var.env}-ec2-ssm-profile"
-}
+/*
+data "aws_iam_instance_profile" "iam_instance_profile" {
+  name = local.iam_instance_profile_name
+}*/
 
 resource "aws_instance" "instance" {
   ami                    = module.default_ami.id
@@ -13,7 +18,7 @@ resource "aws_instance" "instance" {
   subnet_id              = var.subnet_id
   vpc_security_group_ids = var.vpc_security_group_ids
   private_ip             = var.private_ip
-  iam_instance_profile   = data.aws_iam_instance_profile.ec2_ssm_profile.name
+  iam_instance_profile   = local.instance_profile_name
 
   metadata_options {
     http_endpoint = "enabled"
@@ -28,6 +33,8 @@ resource "aws_instance" "instance" {
       Backup = "1"
     }
   }
+
+  secondary_private_ips = var.secondary_private_ips
 
   lifecycle { /* avoid repacing the instance when a later AMI is available */
     ignore_changes = [ami]
