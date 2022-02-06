@@ -2,14 +2,14 @@
  * Assume role policy that creates a trust relationship with the account from another
  * role
  */
- data "aws_iam_policy_document" "assume_role_trust_account_policy_document" {
+data "aws_iam_policy_document" "assume_role_trust_account_policy_document" {
   statement {
     effect = "Allow"
 
     actions = ["sts:AssumeRole"]
 
     principals {
-      type = "AWS"
+      type        = "AWS"
       identifiers = ["arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"]
     }
   }

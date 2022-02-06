@@ -7,7 +7,7 @@ resource "aws_iam_role" "aws_support_role" {
   name               = "${var.env}-aws-support-role"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.assume_role_trust_account_policy_document.json
-/*<<EOF
+  /*<<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
