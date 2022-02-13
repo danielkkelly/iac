@@ -1,0 +1,40 @@
+- name: Install keepalived
+  yum:
+   name: keepalived
+   state: present
+- name: Install jq
+  yum:
+   name: jq
+   state: present
+- name: Copy keepalived.conf to /etc/keepalived using keepalived.conf.j2 template
+  template:
+   src: '{{ iac_home }}/ansible/syslog-ha/conf/keepalived/conf/keepalived.conf.j2'
+   dest: /etc/keepalived/keepalived2.conf
+   owner: root
+   group: root
+   mode: '0644'
+- name: Copy self-assing-ip script
+  template:
+   src: '{{ iac_home }}/ansible/syslog-ha/conf/keepalived/libexec/self-assign-vip.j2'
+   dest: /usr/libexec/keepalived/self-assign-vip
+   owner: root
+   group: root
+   mode: '0744'   
+- name: Copy keepalive health-check script
+  copy:
+   src: '{{ iac_home }}/ansible/syslog-ha/conf/keepalived/libexec/health-check'
+   dest: /usr/libexec/keepalived/health-check
+   owner: root
+   group: root
+   mode: '0744'  
+- name: Copy keepalive notify script
+  copy:
+   src: '{{ iac_home }}/ansible/syslog-ha/conf/keepalived/libexec/notify'
+   dest: /usr/libexec/keepalived/notify
+   owner: root
+   group: root
+   mode: '0744'    
+- name: Restart keepalived service
+  service:
+   name: keepalived
+   state: restarted

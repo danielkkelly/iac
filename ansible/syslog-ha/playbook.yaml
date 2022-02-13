@@ -1,0 +1,41 @@
+- hosts: localhost
+  tasks:
+  - name: Find host1 IPv4 address
+    shell: tfctl.sh --provider aws --module syslog-ha --action output --qualifier host1_ip --env {{ env }}
+    register: host1_ip
+  - debug:
+     var: host1_ip.stdout
+  - name: Find host2 IPv4 address
+    shell: tfctl.sh --provider aws --module syslog-ha --action output --qualifier host2_ip --env {{ env }}
+    register: host2_ip
+  - debug:
+     var: host2_ip.stdout
+  - name: Find vip
+    shell: tfctl.sh --provider aws --module syslog-ha --action output --qualifier vip --env {{ env }}
+    register: vip
+  - debug:
+     var: vip.stdout
+
+- hosts: "{{ env | default('dev')}}-syslog-ha1"
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+  tasks:
+   - include_tasks: include-keepalived.yaml
+     vars:
+      priority: "101"
+      host_ip:  "{{ hostvars['localhost']['host1_ip']['stdout'] }}"
+      peer_ip:  "{{ hostvars['localhost']['host2_ip']['stdout'] }}"
+      vip:      "{{ hostvars['localhost']['vip']['stdout'] }}"
+
+- hosts: "{{ env | default('dev')}}-syslog-ha2"
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+  tasks:
+   - include_tasks: include-keepalived.yaml
+     vars:
+      priority: "100"
+      host_ip:  "{{ hostvars['localhost']['host2_ip']['stdout'] }}"
+      peer_ip:  "{{ hostvars['localhost']['host1_ip']['stdout'] }}"
+      vip:      "{{ hostvars['localhost']['vip']['stdout'] }}"

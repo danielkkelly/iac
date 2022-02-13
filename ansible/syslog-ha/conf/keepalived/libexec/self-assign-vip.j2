@@ -1,0 +1,29 @@
+#!/bin/bash
+
+declare VIP="{{ vip }}"
+
+function get_eni {
+        local primary_ip_address=$1
+
+        echo $(aws ec2 describe-instances --profile ha-monitor \
+            | jq -r ".Reservations[] 
+                     | .Instances[] 
+                     | .NetworkInterfaces[] 
+                     | select(.PrivateIpAddresses[].Primary==true and 
+                              .PrivateIpAddresses[].PrivateIpAddress==\"$primary_ip_address\") 
+                     | .NetworkInterfaceId")
+}
+
+function main {
+        local vip_host_ip=$1
+
+        aws ec2 assign-private-ip-addresses --profile ha-monitor \
+                --allow-reassignment \
+                --network-interface-id $(get_eni $vip_host_ip) \
+                --private-ip-addresses $VIP
+
+        sleep 5
+        service network restart
+}
+
+main {{ host_ip }}

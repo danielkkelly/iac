@@ -1,0 +1,23 @@
+vrrp_script chk_service {
+    script "/usr/libexec/keepalived/health-check"
+    interval 3
+    weight 50
+}
+vrrp_instance VI_1 {
+    interface eth0
+    priority {{ priority }}
+    virtual_router_id 51
+    advert_int 1
+    unicast_src_ip {{ host_ip }} 
+    unicast_peer {
+        {{ peer_ip }}
+    }
+    authentication {
+        auth_type PASS
+        auth_pass top-s3cr3t!
+    }
+    track_script {
+        chk_service
+    }
+    notify "/usr/libexec/keepalived/notify"
+}
