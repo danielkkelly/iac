@@ -1,15 +1,11 @@
 module "default_ami" {
   source = "../ami"
-} 
-
-locals {
-  instance_profile_name = var.instance_profile_name == null ?  "platform-${var.env}-ec2-profile" : var.instance_profile_name
 }
 
-/*
-data "aws_iam_instance_profile" "iam_instance_profile" {
-  name = local.iam_instance_profile_name
-}*/
+locals {
+  instance_profile_name = var.instance_profile_name == null ? "platform-${var.env}-ec2-profile" : var.instance_profile_name
+  host_name             = var.host_name == null ? var.host_type : var.host_name
+}
 
 resource "aws_instance" "instance" {
   ami                    = module.default_ami.id
@@ -41,7 +37,7 @@ resource "aws_instance" "instance" {
   }
 
   tags = {
-    Name          = "platform-${var.host_type}"
+    Name          = "platform-${local.host_name}"
     HostType      = var.host_type
     Environment   = var.env
     "Patch Group" = var.env

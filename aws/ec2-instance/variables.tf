@@ -9,6 +9,12 @@ variable "volume_size" {
   default = 30
 }
 
+variable "host_name" {
+  description = "The name for this host in the Route53 internal zone"
+  type        = string
+  default     = null
+}
+
 variable "host_type" {
   description = "The type of host machine by function (e.g. bastion)"
 }
@@ -16,7 +22,7 @@ variable "host_type" {
 variable "private_ip" {}
 
 variable "secondary_private_ips" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
@@ -31,6 +37,6 @@ variable "vpc_security_group_ids" {
 
 variable "instance_profile_name" {
   description = "Allows setting the IAM role for the EC2 instance"
-  type = string
-  default = null
+  type        = string
+  default     = null
 }
