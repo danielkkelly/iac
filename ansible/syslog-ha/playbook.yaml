@@ -15,6 +15,27 @@
     register: vip
   - debug:
      var: vip.stdout
+  - name: Find region
+    shell: tfctl.sh --provider aws --module network --action output --qualifier region --env {{ env }}
+    register: region
+  - debug:
+     var: region.stdout
+  - name: Find the HA monitor role for RBAC
+    shell: tfctl.sh --provider aws --module iam --action output --qualifier ha_monitor_role_arn --env {{ env }}
+    register: ha_monitor_role_arn
+  - debug:
+     var: ha_monitor_role_arn.stdout
+
+- hosts: "{{ env | default('dev')}}-syslog-ha1, {{ env | default('dev')}}-syslog-ha2"
+  become: yes
+  vars:
+    iac_home: "{{ lookup('env', 'IAC_HOME') }}"
+  tasks:
+   - include_tasks: include-aws.yaml
+     vars:
+      profile:  "ha-monitor"
+      region:   "{{ hostvars['localhost']['region']['stdout'] }}"
+      role_arn: "{{ hostvars['localhost']['ha_monitor_role_arn']['stdout'] }}"
 
 - hosts: "{{ env | default('dev')}}-syslog-ha1"
   become: yes

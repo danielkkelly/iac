@@ -9,7 +9,7 @@
 - name: Copy keepalived.conf to /etc/keepalived using keepalived.conf.j2 template
   template:
    src: '{{ iac_home }}/ansible/syslog-ha/conf/keepalived/conf/keepalived.conf.j2'
-   dest: /etc/keepalived/keepalived2.conf
+   dest: /etc/keepalived/keepalived.conf
    owner: root
    group: root
    mode: '0644'
