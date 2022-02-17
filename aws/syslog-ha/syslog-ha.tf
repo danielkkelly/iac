@@ -2,22 +2,16 @@
 # This could become its own module for active-passive ec2 instances as another abstraction.  
 # For now this is specific to an HA syslog implementation.  TODO: make into a generic module, ec2-ha-instances.
 
-#TODO:
-# add instance role
-# add secondary ip 
-# create instances
-# test by manually implementing monitoring script
-# add monitoring via ansible
-
 provider "aws" {
   region  = var.region
   profile = var.env
 }
 
 locals {
-  host1_ip = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host1_number)
-  host2_ip = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host2_number)
-  vip      = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.vip_number)
+  host_type = "syslog-ha"
+  host1_ip  = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host1_number)
+  host2_ip  = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.host2_number)
+  vip       = cidrhost(data.aws_subnet.subnet_syslog.cidr_block, var.vip_number)
 }
 
 data "aws_vpc" "vpc" {
@@ -91,7 +85,8 @@ module "syslog_ha_instance1" {
   source                 = "../ec2-instance"
   env                    = var.env
   key_pair_name          = var.key_pair_name
-  host_type              = "syslog-ha1"
+  host_type              = local.host_type
+  host_name              = "${local.host_type}1"
   instance_type          = var.instance_type
   volume_size            = var.volume_size
   private_ip             = local.host1_ip
@@ -105,7 +100,8 @@ module "syslog_ha_instance2" {
   source                 = "../ec2-instance"
   env                    = var.env
   key_pair_name          = var.key_pair_name
-  host_type              = "syslog-ha2"
+  host_type              = local.host_type
+  host_name              = "${local.host_type}2"
   instance_type          = var.instance_type
   volume_size            = var.volume_size
   private_ip             = local.host2_ip
