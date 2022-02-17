@@ -1,12 +1,12 @@
 #!/usr/local/bin/bash
 
 # Default to the bastion host for a given environment
-hostType=bastion
+declare hostType=bastion
 
 # Default to the default environment
-env=default
+declare env=default
 
-propertyName=InstanceId
+declare propertyName=InstanceId
 
 # Transform long options to short ones
 #
@@ -39,15 +39,19 @@ while getopts "e:t:p:" opt; do
   esac
 done
 
-host=`aws ec2 describe-instances --profile $env \
+
+declare properties=`aws ec2 describe-instances --profile $env \
                                  --filters "Name=tag:HostType,Values=$hostType" \
                                            "Name=instance-state-name,Values=running" \
         | jq -r ".Reservations[] | .Instances[] | .$propertyName"`
 
-if [ "$host" == "null" ]; then
+if [ "$properties" == "null" ]; then
         echo "$hostType isn't running in $env"
         exit 1;
 else 
-	echo $host
+  for property in $properties
+  do
+	  echo $property
+  done
 fi
 
