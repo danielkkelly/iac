@@ -1,0 +1,14 @@
+- name: Creates directory
+  file:
+    path: /root/.aws
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+- name: Copy AWS config to /root/.aws/config using config.j2 template
+  template:
+   src: '{{ iac_home }}/ansible/syslog-ha/conf/aws/config.j2'
+   dest: /root/.aws/config
+   owner: root
+   group: root
+   mode: 0600
