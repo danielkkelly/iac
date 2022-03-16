@@ -2,8 +2,11 @@
   hosts: localhost
   connection: local
   tasks:
+    - name: 'whoami'
+      shell: "whoami >/tmp/whoami"
     - name: 'Update kubeconfig'
-      shell: "aws eks --region `tfctl.sh --provider aws --module network --action output --qualifier region --env {{ env }}` update-kubeconfig --name platform-eks"
+      shell: "aws eks --region `tfctl.sh --provider aws --module network --action output --qualifier region --env {{ env }}` \
+                  update-kubeconfig --name platform-eks --profile {{ env }}"
     
     - name: 'Patch CoreDNS deployment, which is required to run on Fargate'
       shell: "kubectl patch deployment coredns \
