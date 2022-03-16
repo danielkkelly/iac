@@ -17,3 +17,8 @@ output "aws_lbc_role_arn" {
   description = "AWS Load Balancer Controller Role ARN"
   value       = aws_iam_role.lbc_iam_role.arn
 }
+
+output "platform_target_group_arn" {
+  description = "Used to set up the load balancer target group and the platform pod"
+  value       = aws_lb_target_group.platform_pod_lb_tg.arn
+}
