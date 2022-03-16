@@ -115,6 +115,7 @@ resource "kubernetes_service_account" "lbc_service_account" {
  */
 module "cloudwatch_log_group" {
   source = "../cloudwatch-log-group"
+  region = var.region
   env    = var.env
   name   = "eks"
 }
