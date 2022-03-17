@@ -11,8 +11,8 @@ provider "aws" {
 
 locals {
   backups = {
-    schedule  = "cron(0 5 ? * MON-FRI *)" /* UTC Time */
-    retention = 7 // days
+    schedule  = var.schedule_cron
+    retention = var.retention_in_days
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_backup_plan" "backup_plan" {
   name = "platform-backup-plan"
 
   rule {
-    rule_name         = "weekdays-every-2-hours-${local.backups.retention}-day-retention"
+    rule_name         = "daily-${local.backups.retention}-day-retention"
     target_vault_name = aws_backup_vault.backup_vault.name
     schedule          = local.backups.schedule
     start_window      = 60
