@@ -105,6 +105,31 @@ kubectl port-forward service/my-service 80:80  -n default
 kubectl delete namespaces default
 ```
 
+# Developer Access
+
+By default the creation of a EKS cluster allows the creator the cluster-admin role with system:masters
+associated group.  To allow others to access the clusters mapping to an AWS role is required.  You 
+could map individual users as well but the example below uses a role.
+
+We map to the dev role.  This role is created in our IAM module and profiles the appropriate permissions
+to the role for EKS.  To map the role to a user on the cluster, use the following command to edit the 
+aws-auth configmap.
+
+```
+kubectl edit -n kube-system configmap/aws-auth
+```
+
+Find the "mapRoles" section and add the following, updating the rolearn with your correct account number.
+
+```
+  - rolearn: arn:aws:iam::1234567890:role/platform-test-dev-role
+      username: DevAdmin
+      groups:
+      - system:masters
+```
+
+It's likely that the above could and will be automated at some point.
+
 # Logging
 
 Logging follows https://aws.amazon.com/blogs/containers/fluent-bit-for-amazon-eks-on-aws-fargate-is-here/.
