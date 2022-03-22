@@ -131,7 +131,14 @@ aws logs get-log-events --log-group-name platform \
                         --profile test
 ```
 
+# Getting a Shell 
 
+This could need some dialing in but given one container the following works well.  Use the name of the pod
+after --tty.
+
+```
+kubectl exec --stdin --tty platform-deployment-68499488d8-flgzp -- /bin/bash
+```
 
 # Metrics Server
 
