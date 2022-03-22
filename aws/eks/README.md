@@ -140,6 +140,14 @@ after --tty.
 kubectl exec --stdin --tty platform-deployment-68499488d8-flgzp -- /bin/bash
 ```
 
+# Updating an App
+
+The following command initiates a rolling deployment.
+
+```
+kubectl set image deployments/platform-deployment platform=image:v2
+```
+
 # Metrics Server
 
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
