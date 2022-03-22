@@ -1,8 +1,10 @@
 # Overview
 
-This module updates the identify and access management configuration to set up roles and
-policies to support System Manager related operations, such as automatic patching, and 
-policies, groups, and users for developers and developer admins.
+This module sets up policies, groups, and users for developers and developer admins.  It 
+also creates instance profiles, support roles, etc.  It's the module that handles the bulk
+of the users, groups, roles, and policies we require.
+
+## RBAC
 
 Our goal is to support role-based authentication (RBAC), multi-factor authentication (MFA),
 and to house credentials securely on the local machine.  Users, roles, groups, and policies
@@ -189,6 +191,18 @@ generates a QR Code.  Use that with your virtual MFA app.  Then make the enable 
 enable the device for the user.  That command requires two generated access codes from
 the virtual MFA device.
 
+The instructions assume that you are using the AWS credentials file.  If you add your 
+credentials to AWS Vault as shown below, prior to executing the steps below, then you'll
+need to use the following command first:
+
+```
+aws-vault exec dan.test --no-session
+```
+
+This allows you to interact with IAM without using session tokens.  Session tokens can't
+be used without MFA and since you're setting up MFA you don't have it yet.  So you either
+need to use the usual credentials file or make sure that AWS Vault isn't using a session.
+
 ## Create a Virual MFA Device
 
 ```
@@ -269,6 +283,14 @@ role_arn        = arn:aws:iam::12345678910:role/platform-test-dev-admin-role
 This is the same setup necessary for your terraform user if you follow the instructions
 in [AWS Setup](../README.md#option-2-rbac-with-mfa).
 
+## IAM and AWS Vault
+
+AWS Vault uses sessions.  Each time you authenticate you receive a temporary token that 
+you are able to use to authenticate with AWS.  However, IAM won't allow the user of
+these tokens unless you have MFA enabled.  Once you have MFA in place this isn't really
+an issue.  But if you don't, see the instructions above for how to set up MFA with and
+without the use of AWS Vault.
+
 ## Terraform
 
 Note that I initially received the following error running Terraform vs. the AWS CLI:
@@ -297,7 +319,7 @@ the command below should work before MFA is enabled but not after.
 aws iam list-users --profile dan.test
 ```
 
-After MFA is enabled, you will need to do the following:
+After MFA is enabled, you will need to do the following unless you profile an MFA token:
 
 ```
 aws-vault exec dan.test --no-session -- aws iam list-users
