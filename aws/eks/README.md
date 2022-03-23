@@ -9,7 +9,6 @@ You must have the following installed:
 * kubctl
 * Helm
 
-
 # Setup
 
 1. Set the alb_target_port in variables.tf - please ensure it is set to 80 for the example below
