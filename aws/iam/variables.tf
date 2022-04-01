@@ -7,7 +7,8 @@ variable "iac_home" {}
 # Users and groups
 variable "users_groups" {
   default = {
-    dan = ["dev", "dev-admin"]
+    dan  = ["dev", "dev-admin"]
+    ryan = ["dev"]
   }
 }
 
