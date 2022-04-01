@@ -54,6 +54,10 @@ export GPG_TTY
 gpg --generate-key
 ```
 
+Note: generate RSA keys.  Later versions of GPG will default to ECC keys, which are
+not compatible with our setup.  Specifically, Terraform doesn't support it.  See 
+https://github.com/hashicorp/terraform-provider-aws/issues/15384 for details.
+
 ### List keys
 
 ```
