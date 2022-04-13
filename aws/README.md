@@ -4,18 +4,22 @@
 
 * Install aws cli (v2)
 * Install the aws session manager plugin
-* Create a user that will run terraform, a group, and role for that user
 * Configure aws (~/.aws/credentials and config)
+* Create a user that will run terraform, a group, and role for that user
+* Configure SSH and an AWS Key Pair
 
-## Installing
+# Install AWS CLI and Session Manager plugin
 
 I follow the download and install instructions that AWS provides.  This approach creates
 directories under /usr/local and then creates symlinks to the appropriate binaries in 
 /usr/local/bin.  It's easy to understand what is going on and how to roll back the install.
 The instructions are a bit more generic.  That said you could use package managers to do
-the same thing (e.g. brew if using a Mac)
+the same thing (e.g. brew if using a Mac).  More below.
 
-# AWS Terraform User
+* https://aws.amazon.com/cli/
+* https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html
+
+# Create a Terraform User
 
 You can use terraform with straight forward credentials and config, shown in option 1. 
 You could also use role-based authentication (RBAC) and MFA, shown in option 2.  You would
