@@ -11,7 +11,7 @@ For more information, review the [project overview and tools](script/README.md)
 
 # Prerequisites
 
-* terriform (download from https://www.terraform.io/downloads.html and unzip in your path)
+* terraform (download from https://www.terraform.io/downloads.html and unzip in your path)
 * ansible 
 * paramiko
 * passlib (allows creating password hashes for users, not strictly required)
