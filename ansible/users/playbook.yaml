@@ -3,14 +3,21 @@
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
-    users:
+    admins:
       - dan
+    users:
       - ryan
   tasks:
     - include_tasks: "playbook-admin.yaml"
-      loop: "{{ users }}"
+      loop: "{{ admins }}"
       loop_control:
         loop_var: user
+      tags:
+      - admin
+    - include_tasks: "playbook-user.yaml"
+      loop: "{{ users }}"
+      loop_control:
+        loop_var: user 
       tags:
       - user
 
