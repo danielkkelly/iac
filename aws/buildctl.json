@@ -11,14 +11,14 @@
         {
             "module": "base",
             "action": "apply",
-            "target": ["local", "kms-keys", "network", "iam", "ssm", "settings", "backup", "cloudwatch-alarm-topic"],
+            "target": ["local", "kms-keys", "network", "iam", "ssm", "settings", "backup", "cloudwatch-alarms-topic"],
             "terraform": true,
             "ansible": false
         },
         {
             "module": "base",
             "action": "destroy",
-            "target": ["cloudwatch-alarm-topic", "backup", "settings", "ssm", "iam", "network"],
+            "target": ["cloudwatch-alarms-topic", "backup", "settings", "ssm", "iam", "network"],
             "terraform": true,
             "ansible": false
         }, 
