@@ -1,4 +1,5 @@
 *.tfstate*
+.DS_Store
 .terraform.lock.hcl
 .terraform
 service-account.json
