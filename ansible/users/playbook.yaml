@@ -10,8 +10,10 @@
       loop: "{{ users }}"
       loop_control:
         loop_var: user
+      tags:
+      - user
 
-- hosts: dev-docker
+- hosts: "{{ env | default('dev')}}-docker" 
   become: yes
   vars:
     users:
@@ -21,3 +23,5 @@
       loop: "{{ users }}"
       loop_control:
         loop_var: user
+      tags:
+      - docker
