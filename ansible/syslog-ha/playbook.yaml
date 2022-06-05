@@ -60,3 +60,6 @@
       host_ip:  "{{ hostvars['localhost']['host2_ip']['stdout'] }}"
       peer_ip:  "{{ hostvars['localhost']['host1_ip']['stdout'] }}"
       vip:      "{{ hostvars['localhost']['vip']['stdout'] }}"
+
+- name: Run the syslog playbook
+  import_playbook: "{{ lookup('env', 'IAC_HOME') }}/ansible/syslog/playbook.yaml"

@@ -6,7 +6,6 @@ This module sets up system manager.  It updates the identify and access manageme
 configuration to set up roles and policies to support System Manager related operations, 
 such as automatic patching, as well as configures maintenace windows, patching, etc.
 
-
 Systems Manager allows fleet management.  Use it to:
 
 * View details about your fleet of EC2 instances (Fleet Manager)

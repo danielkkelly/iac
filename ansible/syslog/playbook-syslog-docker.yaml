@@ -1,5 +1,5 @@
 ---
-- hosts: "{{ env | default('dev')}}-syslog"
+- hosts: "{{ env | default('dev')}}-syslog*"
   become: yes
   vars:
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"

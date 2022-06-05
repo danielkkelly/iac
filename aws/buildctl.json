@@ -11,14 +11,14 @@
         {
             "module": "base",
             "action": "apply",
-            "target": ["local", "kms-keys", "network", "iam", "ssm", "settings", "backup"],
+            "target": ["local", "kms-keys", "network", "iam", "ssm", "settings", "backup", "cloudwatch-alarm-topic"],
             "terraform": true,
             "ansible": false
         },
         {
             "module": "base",
             "action": "destroy",
-            "target": ["backup", "settings", "ssm", "iam", "network"],
+            "target": ["cloudwatch-alarm-topic", "backup", "settings", "ssm", "iam", "network"],
             "terraform": true,
             "ansible": false
         }, 
@@ -168,6 +168,10 @@
         },
         {
             "target": "syslog",
+            "type": "vm"
+        },
+        {
+            "target": "syslog-ha",
             "type": "vm"
         }
     ]
