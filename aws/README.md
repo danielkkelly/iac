@@ -35,6 +35,7 @@ how users and groups are configured to get set up in [IAM](iam/README.md).
 
 * Create a user (e.g. "terraform" or a named user if you prefer)
 * Create a group named for that user (e.g. "terraform")
+* Add the terraform user to the terraform group
 * Create a role (e.g. "terraform-role")
 * Create a trust relationship with your account for terraform-role
 
