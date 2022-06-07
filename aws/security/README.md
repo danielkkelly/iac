@@ -39,7 +39,7 @@ custom coded.  If integrations are enabled, Security Hub will pull findings and
 insights from those.  For example, if you enable GuardDuty, the AWS SIEM, it 
 will share data with Security Hub.
 
-# Continuous Monnitoring
+# Continuous Monitoring
 
 Another benefit of enabling this level of security is that it allows for ongoing
 monitoring of resources.  It allows us to attach an SNS resource that notifies
