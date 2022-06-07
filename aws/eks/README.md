@@ -71,11 +71,13 @@ helm upgrade -i aws-load-balancer-controller eks/aws-load-balancer-controller \
   -n kube-system
 ```
 
-### View the logs
+### Check the logs
 
 ```
 kubectl logs -n kube-system deployment.apps/aws-load-balancer-controller
 ```
+
+
 
 # Test using nginx
 
@@ -104,6 +106,33 @@ kubectl port-forward service/my-service 80:80  -n default
 kubectl delete namespaces default
 ```
 
+## Create a Target Group Binding
+
+TODO: update below for cohesiveness with examples.  It's necessary to great a target group
+binding so that the pod informs the load balancer of of the targets the load balancer 
+needs to include to route requests.  
+
+At the time of this writing this is a new feature of the AWS Load Balancer Controller.
+
+This feature is useful because it allows developers to work within a set of well defined
+target groups vs. spinning up load balancers from Kubernetes and through the the ALB.  This
+provides for better management of cost and better overall governance and security.  Target
+groups are set up using Terraform and only then are they integrated with Kubernetes, giving
+the infrastructure administrator control over load balancing.
+
+```
+apiVersion: elbv2.k8s.aws/v1beta1
+kind: TargetGroupBinding
+metadata:
+  name: my-tgb
+spec:
+  serviceRef:
+    name: platform-service
+    port: 8080
+  targetGroupARN: arn:aws:elasticloadbalancing:us-east-1:1234567890:targetgroup/platform-pod/0331cb3c8ac55651
+```
+
+
 # Developer Access
 
 By default the creation of a EKS cluster allows the creator the cluster-admin role with system:masters
@@ -122,14 +151,17 @@ Find the "mapRoles" section and add the following, updating the rolearn with you
 
 ```
   - rolearn: arn:aws:iam::1234567890:role/platform-test-dev-role
-      username: DevAdmin
-      groups:
-      - system:masters
+    username: DevAdmin
+    groups:
+    - system:masters
 ```
 
 It's likely that the above could and will be automated at some point.
 
 # Logging
+
+This section explains basic use of logs.  With many instances of pods it's preferrable to 
+centralize log analysis.
 
 Logging follows https://aws.amazon.com/blogs/containers/fluent-bit-for-amazon-eks-on-aws-fargate-is-here/.
 Formatting will differ from the example to reduce the noise and offload more of the log formatting to 
