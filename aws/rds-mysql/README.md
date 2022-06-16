@@ -22,6 +22,22 @@ keeps it relatively straight-forward.  My applications use a regular MySQL user 
 password and IAM authentication for developers.  There are some performance related concerns with
 using IAM authentication for applications.
 
+# Instance Class
+
+Choose the correct instance class for your use cases.  By default the rds_instance_class in 
+variables.tf sets the instance class to something reasonable for personal use of a featurful
+web app.  You'll need to select the correct memory, CPU, and network performance.  
+
+Also, make sure you have enough capacity for connections.  For example, t2.medium has a 
+max_connections default value of 90.  AWS recommends scaling connections by icreasing the 
+size of the instance, as max_connections scales with memory by default.  You could also simply
+increase max_connections for any given instance class if the recommendation doesn't fit your
+use case.
+
+https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Managing.Performance.html
+https://aws.amazon.com/premiumsupport/knowledge-center/rds-mysql-max-connections/
+
+
 # IAM Policy and Group Attachment
 
 To use RDS IAM authentication requires a policy for the accounts that will authenticate
