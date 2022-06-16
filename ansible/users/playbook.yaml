@@ -5,14 +5,7 @@
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
     admins:
       - dan
-<<<<<<< HEAD
-<<<<<<< HEAD
     users:
-=======
->>>>>>> Adds Ryan as a Linux user
-=======
-    users:
->>>>>>> Updates playbook for non-admin users
       - ryan
   tasks:
     - include_tasks: "playbook-admin.yaml"
