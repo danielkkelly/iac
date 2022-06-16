@@ -136,6 +136,10 @@ resource "aws_rds_cluster" "platform_rds_cluster" {
   # Port should be non-standard
   port = var.mysql_port
 
+ lifecycle { /* we allow auto_minor_version_upgrade = true (defalut) so this could change */
+    ignore_changes = [engine_version]
+  }
+
   depends_on = [
     module.cluster_audit_lg,
     module.cluster_error_lg,
@@ -161,5 +165,9 @@ resource "aws_rds_cluster_instance" "cluster_instances" {
 
   tags = {
     Backup = "1"
+  }
+
+   lifecycle { /* we allow auto_minor_version_upgrade = true (defalut) so this could change */
+    ignore_changes = [engine_version]
   }
 }
