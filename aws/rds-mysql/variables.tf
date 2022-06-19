@@ -14,7 +14,7 @@ variable "rds_instance_count" {
 }
 
 variable "rds_instance_class" {
-  default = "db.t2.medium"
+  default = "db.r4.large"
 }
 
 variable "rds_deletion_protection" {
