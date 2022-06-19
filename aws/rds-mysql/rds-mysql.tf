@@ -73,14 +73,8 @@ resource "aws_rds_cluster_parameter_group" "platform_rds_cluster_pg" {
   description = "Cluster parameter group"
   family      = "aurora-mysql5.7"
 
-  parameter {
-    name         = "lower_case_table_names"
-    value        = "1"
-    apply_method = "pending-reboot"
-  }
-
   dynamic "parameter" {
-    for_each = var.parameters
+    for_each = var.cluster_parameters
     content {
       name         = parameter.value["name"]
       value        = parameter.value["value"]
@@ -95,7 +89,7 @@ resource "aws_db_parameter_group" "platform_rds_cluster_instance_pg" {
   family      = "aurora-mysql5.7"
 
   dynamic "parameter" {
-    for_each = var.parameters
+    for_each = var.instance_parameters
     content {
       name         = parameter.value["name"]
       value        = parameter.value["value"]

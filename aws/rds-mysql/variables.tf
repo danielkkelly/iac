@@ -48,8 +48,24 @@ variable "enhanced_monitoring_interval" {
 
 # Cluster and DB parameters
 # https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraMySQL.Reference.html#AuroraMySQL.Reference.ParameterGroups
-variable "parameters" {
-  description = "List of database parameters"
+variable "cluster_parameters" {
+  description = "List of database cluster parameters"
+  type = list(object({
+    name         = string
+    value        = string
+    apply_method = string
+  }))
+  default = [
+    {
+      name         = "lower_case_table_names"
+      value        = "1"
+      apply_method = "pending-reboot"
+    }
+  ]
+}
+
+variable "instance_parameters" {
+  description = "List of database instance parameters"
   type = list(object({
     name         = string
     value        = string
