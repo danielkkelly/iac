@@ -5,8 +5,6 @@
     iac_home: "{{ lookup('env', 'IAC_HOME') }}"
     admins:
       - dan
-    users:
-      - ryan
   tasks:
     - include_tasks: "playbook-admin.yaml"
       loop: "{{ admins }}"
